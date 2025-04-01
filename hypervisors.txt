@@ -1,0 +1,8 @@
+#
+# list with the hypervisors to migrate and the corresponding JIRA ticket
+# lines starting with # are ignored
+#
+
+# hv8880.nubes.rl.ak.uk CLDSCRM-123450
+# hv8881.nubes.rl.ak.uk CLDSCRM-123451
+# hv8882.nubes.rl.ak.uk CLDSCRM-123452

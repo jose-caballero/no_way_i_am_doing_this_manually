@@ -1,0 +1,24 @@
+icinga_query:
+  username: 
+  password: 
+icinga_downtime:
+  username: 
+  password: 
+openstack:
+  username: 
+  password: 
+alertmanager:
+  username: 
+  password: 
+netbox:
+  api_token: 
+aquilon:
+  username: 
+  password: 
+jira:
+  username: 
+  api_token: 
+ssh:
+  key_path: 
+  username: 
+  passphrase: 
