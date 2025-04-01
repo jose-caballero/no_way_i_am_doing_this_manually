@@ -16,7 +16,7 @@ class MigrationManager:
         self.hypervisors_file = hypervisors_file
         self.request_l = self._parse_hypervisors_file()
         self.time_interval = TimeInterval()
-        self.jira = HVJira()
+        self.jira = HVJira(self.credentials_handler)
 
     def _parse_hypervisors_file(self):
         results = []

@@ -39,7 +39,7 @@ class HVIcinga:
             "type": "Host",
             "filter": f'host.name=="{self.hostname}"',
             "all_services": True,
-            "comment": "RL9 Reinstall {self.time_interval.start_str} - JCB",
+            "comment": f"RL9 Reinstall {self.time_interval.start_str} - JCB",
             "author": "admin",
             "fixed": True,
             "start_time": self.time_interval.start_seconds,

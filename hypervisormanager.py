@@ -29,7 +29,7 @@ class HyperVisorManager:
             hv_icinga.create_downtime()
             self.jira.add_comment(self.request.jira_issue_key, f"downtime in Icinga created successfully, from {self.time_interval.start_str} to {self.time_interval.end_str}")
         else:
-            self.jira.add_comment(self.request.jira_issue_key, "Hypervisor is not registered in Icinga, no need for dowmtine.")
+            self.jira.add_comment(self.request.jira_issue_key, "Hypervisor is not registered in Icinga, no need for downtine.")
 
         hv_alertmanager = HVAlertManager(self.creds_handler, self.request.hypervisor, self.time_interval)
         hv_alertmanager.create_silence()
@@ -48,7 +48,7 @@ class HyperVisorManager:
         if out != "":
             self.jira.add_comment(self.request.jira_issue_key, "Mellanox card found on the hypervisor")
             ssh_kayobe = HVSSH(self.creds_handler, "hv815.nubes.rl.ac.uk")
-            kayobe_cmd = f'source ./kayobe-prod/production-env-vars.sh; ansible-playbook ansible/mellanox-enable-uefi-pxe.yml -i {self.hostname}, --extra-vars "pxe_target={self.hostname}'
+            kayobe_cmd = f'source ./kayobe-prod/production-env-vars.sh; ansible-playbook ansible/mellanox-enable-uefi-pxe.yml -i {self.request.hypervisor}, --extra-vars "pxe_target={self.hostname}'
             ssh_kayobe.run(kayobe_cmd)
             self.jira.add_comment(self.request.jira_issue_key, "ansible playbook mellanox-enable-uefi-pxe.yml executed for the hypervisor")
         else:
