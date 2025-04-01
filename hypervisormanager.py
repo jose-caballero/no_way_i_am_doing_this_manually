@@ -48,7 +48,7 @@ class HyperVisorManager:
         if out != "":
             self.jira.add_comment(self.request.jira_issue_key, "Mellanox card found on the hypervisor")
             ssh_kayobe = HVSSH(self.creds_handler, "hv815.nubes.rl.ac.uk")
-            kayobe_cmd = f'source ./kayobe-prod/production-env-vars.sh; ansible-playbook ansible/mellanox-enable-uefi-pxe.yml -i {self.request.hypervisor}, --extra-vars "pxe_target={self.hostname}"'
+            kayobe_cmd = f'source ./kayobe-prod/production-env-vars.sh; ansible-playbook ansible/mellanox-enable-uefi-pxe.yml -i {self.request.hypervisor}, --extra-vars "pxe_target={self.request.hypervisor}"'
             ssh_kayobe.run(kayobe_cmd)
             self.jira.add_comment(self.request.jira_issue_key, "ansible playbook mellanox-enable-uefi-pxe.yml executed for the hypervisor")
         else:
