@@ -55,7 +55,7 @@ class Aquilon:
 class CredentialsHandler:
     icinga_query: IcingaQueryCredentialsHandler = field(default=None)
     icinga_downtime: IcingaDowntimeCredentialsHandler = field(default=None)
-    openstack: OpenstackCredentialsHanlder  = field(default=None)
+    openstack: OpenstackCredentialsHandler  = field(default=None)
     alertmanager: AlertmanagerCredentialsHandler = field(default=None)
     netbox: NetboxCredentialsHandler = field(default=None)
     jira: JiraCredentialsHandler = field(default=None)
@@ -69,7 +69,7 @@ class CredentialsHandler:
 
         self.icinga_query = IcingaQueryCredentialsHandler(**data['icinga_query'])
         self.icinga_downtime = IcingaDowntimeCredentialsHandler(**data['icinga_downtime'])
-        self.openstack = OpenstackCredentialsHanlder(**data['openstack'])
+        self.openstack = OpenstackCredentialsHandler(**data['openstack'])
         self.alertmanager = AlertmanagerCredentialsHandler(**data['alertmanager'])
         self.netbox = NetboxCredentialsHandler(**data['netbox'])
         self.jira = JiraCredentialsHandler(**data['jira'])

@@ -5,7 +5,7 @@ import json
 class HVNetbox:
     def __init__(self, creds_handler, hostname):
         self.creds_handler = creds_handler
-        self.hostname = hostnanme
+        self.hostname = hostname
         self.netbox_url = "https://netbox.esc.rl.ac.uk/"
         self.conn = pynetbox.api(
             self.netbox_url,
