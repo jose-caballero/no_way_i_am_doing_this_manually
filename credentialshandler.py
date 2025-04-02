@@ -49,6 +49,13 @@ class SSH:
 class Aquilon:
     username: str
     password: str
+    
+
+@dataclass
+class Kayobe:
+    hostname: str
+    username: str
+    prod_env_path: str
 
 
 @dataclass
@@ -61,6 +68,7 @@ class CredentialsHandler:
     jira: JiraCredentialsHandler = field(default=None)
     ssh: SSH = field(default=None)
     aquilon: Aquilon = field(default=None)
+    kayobe: Kayobe = field(default=None)
 
     def __init__(self, yaml_path: str):
         # Open and parse the YAML file
@@ -75,4 +83,5 @@ class CredentialsHandler:
         self.jira = JiraCredentialsHandler(**data['jira'])
         self.ssh = SSH(**data['ssh'])
         self.aquilon = Aquilon(**data['aquilon'])
+        self.kayobe = Kayobe(**data['kayobe'])
 

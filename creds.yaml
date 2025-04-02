@@ -22,3 +22,7 @@ ssh:
   key_path: 
   username: 
   passphrase: 
+kayobe:
+  hostname:
+  username:
+  prod_env_path:
