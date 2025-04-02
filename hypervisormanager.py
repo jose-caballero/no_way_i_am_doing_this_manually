@@ -44,7 +44,8 @@ class HyperVisorManager:
         self.jira.add_comment(self.request.jira_issue_key, "status changed in NetBox to value Planned")
 
         ssh_hypervisor = HVSSH(self.creds_handler, self.request.hypervisor)
-        out, err, rc = ssh_hypervisor.run("lspci | grep -i mellanox", "root")
+        #out, err, rc = ssh_hypervisor.run("lspci | grep -i mellanox", "root")
+        out, err, rc = ssh_hypervisor.run("lspci | grep -i mellanox")
         if out != "":
             self.jira.add_comment(self.request.jira_issue_key, "Mellanox card found on the hypervisor")
             ssh_kayobe = HVSSH(self.creds_handler, "hv815.nubes.rl.ac.uk")
