@@ -26,8 +26,12 @@ class HyperVisorManager:
 
         hv_icinga = HVIcinga(self.creds_handler, self.request.hypervisor, self.time_interval)
         if hv_icinga.host_is_registered:
-            hv_icinga.create_downtime()
-            self.jira.add_comment(self.request.jira_issue_key, f"downtime in Icinga created successfully, from {self.time_interval.start_str} to {self.time_interval.end_str}")
+            response = hv_icinga.create_downtime()
+            if response.ok:
+                downtime_name = response['results'][0]['name']
+                self.jira.add_comment(self.request.jira_issue_key, f"downtime in Icinga created successfully, from {self.time_interval.start_str} to {self.time_interval.end_str}. Downtime name: {downtime_name}")
+            else:
+                self.jira.add_comment(self.request.jira_issue_key, f"creating downtime from {self.time_interval.start_str} to {self.time_interval.end_str} failed: {response.text}")
         else:
             self.jira.add_comment(self.request.jira_issue_key, "Hypervisor is not registered in Icinga, no need for downtime.")
 

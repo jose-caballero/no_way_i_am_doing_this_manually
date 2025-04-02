@@ -59,6 +59,7 @@ class HVIcinga:
                 print("OK")
             else:
                 print("failed")
+            return response
         except Exception as e:
             # In case of any exception, print "failed"
             print("failed")
