@@ -39,3 +39,10 @@ class HVNetbox:
         except pynetbox.RequestError as e:
             print(f"Failed to update the device status: {e}")
 
+    @property
+    def ipmi_address(self):
+        interfaces = self.conn.dcim.interfaces.filter(device_id=self.device.id)
+        for i in interfaces:
+            if i.name == "bmc0":
+                ip_assignments = self.conn.ipam.ip_addresses.filter(interface_id=i.id)
+                return next(ip_assignments).address
