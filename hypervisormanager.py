@@ -60,7 +60,7 @@ class HyperVisorManager:
             self.jira.add_comment(self.request.jira_issue_key, "no Mellanox card found on the hypervisor")
 
         aq = HVAquilon(self.creds_handler)
-        aq.run(f"remove_host.sh {self.request.hypervisor}")
+        aq.run(f"remove-host.sh {self.request.hypervisor}")
         self.jira.add_comment(self.request.jira_issue_key, "remote_host script executed on the Aquilon host")
         aq.run(f"aq make --hostname {self.request.hypervisor} --personality inventory --archetype cloud --osname rocky --osversion 9x-x86_64")
         self.jira.add_comment(self.request.jira_issue_key, "hypervisor recompiled on the Aquilon host with Personality inventory")
