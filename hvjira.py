@@ -10,7 +10,8 @@ class HVJira:
         self.conn = jira.client.JIRA(server=self.endpoint, basic_auth=(self.username, self.token))
 
     def add_comment(self, issue_key, message):
-        self.conn.add_comment(issue_key, message, is_internal=True)
+        final_msg = f"Message from automation library:\n{message}"
+        self.conn.add_comment(issue_key, final_msg, is_internal=True)
 
     def move_to_in_progress(self, issue_key):
         self._change_state(issue_key, "In Progress")
