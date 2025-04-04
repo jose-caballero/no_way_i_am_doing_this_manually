@@ -4,6 +4,7 @@ from hvnetbox import HVNetbox
 from hvopenstack import HVOpenstack
 from hvssh import HVSSH
 from hvaquilon import HVAquilon
+from hvkayobe import HVKayobe
 
 class HyperVisorManager:
     def __init__(self, creds_handler, request, time_interval, jira): 
@@ -52,8 +53,11 @@ class HyperVisorManager:
         out, err, rc = ssh_hypervisor.run("lspci | grep -i mellanox")
         if out != "":
             self.jira.add_comment(self.request.jira_issue_key, "Mellanox card found on the hypervisor")
-            ssh_kayobe = HVSSH(self.creds_handler, "hv815.nubes.rl.ac.uk")
-            kayobe_cmd = f'source ./kayobe-prod/production-env-vars.sh; ansible-playbook ansible/mellanox-enable-uefi-pxe.yml -i {self.request.hypervisor}, --extra-vars "pxe_target={self.request.hypervisor}"'
+            ssh_kayobe = HVKayobe(self.creds_handler)
+            kayobe_cmd = (
+                f"source {self.creds_handler.kayobe.prod_env_var}; "
+                f'ansible-playbook ansible/mellanox-enable-uefi-pxe.yml -i {self.request.hypervisor}, --extra-vars "pxe_target={self.request.hypervisor}"'
+            )
             ssh_kayobe.run(kayobe_cmd)
             self.jira.add_comment(self.request.jira_issue_key, "ansible playbook mellanox-enable-uefi-pxe.yml executed for the hypervisor")
         else:
