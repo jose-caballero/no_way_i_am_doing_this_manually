@@ -13,6 +13,16 @@ class HVJira:
         final_msg = f"Message from automation library:\n{message}"
         self.conn.add_comment(issue_key, final_msg, is_internal=True)
 
+    def add_error(self, issue_key, message, error):
+        msg = (
+            f"{message}"
+            "\n"
+            "{code}"
+            f"{error}"
+            "{code}"
+        )
+        self.add_comment(issue_key, msg)
+
     def move_to_in_progress(self, issue_key):
         self._change_state(issue_key, "In Progress")
 
