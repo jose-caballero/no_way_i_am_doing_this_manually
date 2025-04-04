@@ -30,6 +30,7 @@ cd no_way_i_am_doing_this_manually/
 ```
 
 ```bash
+cp creds.yaml.template creds.yaml
 vi creds.yaml
 ```
 
@@ -37,15 +38,23 @@ Edit the `creds.yaml` file and add your secrets.
 Ask around to get the credentials for services like Icinga, Alertmanager, etc.
 
 ```bash
+cp hypervisors.txt.template hypervisors.txt
 vi hypervisors.txt
 ```
 
 Edit the `hypervisors.txt` file with the list of HVs you want to migrate.
 
-Then run:
+Then, to see the options, just run:
 
 ```bash
 python ./run.py --help
 ```
 
 Or use `python3` depending on your environment.
+
+Example:
+
+```bash
+python ./run.py --pre-bios
+python ./run.py --pre-bios --creds-file /path/to/my/creds.yaml
+```
