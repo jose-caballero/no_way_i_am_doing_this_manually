@@ -24,7 +24,23 @@ class HyperVisorManager:
             print("huh!?")
 
     def _run_pre_bios(self):
+        self._pre_bios_icinga()
+        self._pre_bios_alertmanager()
+        self._pre_bios_openstack()
+        self._pre_bios_netbox()
+        self._pre_bios_mellanox()
+        self._pre_bios_aquilon()
 
+    def _run_post_bios(self):
+        self._post_bios_aquilon()
+        self._post_bios_netbox()
+
+    def _run_finish(self):
+        self._finish_icinga()
+        self._finish_alertmanager()
+
+
+    def _pre_bios_icinga(self):
         hv_icinga = HVIcinga(self.creds_handler, self.request.hypervisor, self.time_interval)
         if hv_icinga.host_is_registered:
             response = hv_icinga.create_downtime()
@@ -36,18 +52,22 @@ class HyperVisorManager:
         else:
             self.jira.add_comment(self.request.jira_issue_key, "Hypervisor is not registered in Icinga, no need for downtime.")
 
+    def _pre_bios_alertmanager(self):
         hv_alertmanager = HVAlertManager(self.creds_handler, self.request.hypervisor, self.time_interval)
         hv_alertmanager.create_silence()
         self.jira.add_comment(self.request.jira_issue_key, f"silence created in AlertManager successfully, from {self.time_interval.start_str} to {self.time_interval.end_str}")
-        
+
+    def _pre_bios_openstack(self):
         hv_openstack = HVOpenstack(self.creds_handler, self.request.hypervisor, self.time_interval)
         hv_openstack.disable_service()
         self.jira.add_comment(self.request.jira_issue_key, "hypervisor disabled from OpenStack")
 
+    def _pre_bios_netbox(self):
         hv_netbox = HVNetbox(self.creds_handler, self.request.hypervisor)
         hv_netbox.change_status("planned")
         self.jira.add_comment(self.request.jira_issue_key, "status changed in NetBox to value Planned")
 
+    def _pre_bios_mellanox(self):
         ssh_hypervisor = HVSSH(self.creds_handler, self.request.hypervisor)
         #out, err, rc = ssh_hypervisor.run("lspci | grep -i mellanox", "root")
         out, err, rc = ssh_hypervisor.run("lspci | grep -i mellanox")
@@ -63,6 +83,7 @@ class HyperVisorManager:
         else:
             self.jira.add_comment(self.request.jira_issue_key, "no Mellanox card found on the hypervisor")
 
+    def _pre_bios_aquilon(self):
         aq = HVAquilon(self.creds_handler)
         aq.run(f"remove-host.sh {self.request.hypervisor}")
         self.jira.add_comment(self.request.jira_issue_key, "remote_host script executed on the Aquilon host")
@@ -72,12 +93,12 @@ class HyperVisorManager:
         self.jira.add_comment(self.request.jira_issue_key, "hypervisor pxeswitched on the Aquilon host")
 
 
-    def _run_post_bios(self):
-
+    def _post_bios_aquilon(self):
         aq = HVAquilon(self.creds_handler)
         aq.run(f"aq make --hostname {self.request.hypervisor} --personality kayobe-prod")
         self.jira.add_comment(self.request.jira_issue_key, "hypervisor recompiled on the Aquilon host with Personality kayobe-prod")
 
+    def _post_bios_netbox(self):
         hv_netbox = HVNetbox(self.creds_handler, self.request.hypervisor)
         hv_netbox.change_status("staged")
         self.jira.add_comment(self.request.jira_issue_key, "status changed in NetBox to value Staged")
@@ -85,12 +106,12 @@ class HyperVisorManager:
         self.jira.add_comment(self.request.jira_issue_key, "role changed in NetBox to value Openstack Prod Kolla_Compute")
 
 
-    def _run_finish(self):
-        
+    def _finish_icinga(self):
         hv_icinga = HVIcinga(self.creds_handler, self.request.hypervisor)
         hv_icinga.remove_downtime()
         self.jira.add_comment(self.request.jira_issue_key, "downtime removed from Icinga")
 
+    def _finish_alertmanager(self):
         hv_alertmanager = HVAlertManager(self.creds_handler, self.request.hypervisor)
         hv_alertmanager.remove_silence()
         self.jira.add_comment(self.request.jira_issue_key, "silence removed from AlertManager")
