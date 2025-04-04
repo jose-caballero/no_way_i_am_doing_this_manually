@@ -32,7 +32,9 @@ class HyperVisorManager:
             self._pre_bios_mellanox()
             self._pre_bios_aquilon()
         except Exception as ex:
-            pass
+            msg = f"An ERROR occurred {ex}. Aborting automation for hypervsor {self.request.hypervsor}"
+            print(msg)
+            self.jira.add_comment(msg)
 
     def _run_post_bios(self):
         try:
