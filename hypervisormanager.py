@@ -24,6 +24,7 @@ class HyperVisorManager:
             print("huh!?")
 
     def _run_pre_bios(self):
+        self.jira.move_to_in_progress(self.request.jira_issue_key)
         try:
             self._pre_bios_icinga()
             self._pre_bios_alertmanager()
@@ -34,7 +35,8 @@ class HyperVisorManager:
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervsor {self.request.hypervsor}"
             print(msg)
-            self.jira.add_comment(msg)
+            self.jira.add_comment(self.request.jira_issue_key, msg)
+            self.jira.move_to_blocked(self.request.jira_issue_key)
 
     def _run_post_bios(self):
         try:
