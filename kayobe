@@ -7,13 +7,26 @@ log_user 0
 set timeout 10
 
 # Argument parsing:
-#   argv[0] -> kayobe hostname
-#   argv[1] -> username
-#   argv[2..N] -> command to run
-set remoteHost [lindex $argv 0]
-set username [lindex $argv 1]
-set remaining_args [lrange $argv 2 end]
+#   
+#   argv[0] -> passphrase for ssh agent 
+#   argv[1] -> kayobe hostname
+#   argv[2] -> username to ssh to the kayobe host
+#   argv[3..N] -> command to run
+#
+set passphrase [lindex $argv 0]
+set remoteHost [lindex $argv 1]
+set username [lindex $argv 2]
+set remaining_args [lrange $argv 3 end]
 set commandToExecute [join $remaining_args " "]
+
+
+# SSH Agent
+spawn /bin/sh -c "eval \$(ssh-agent) && ssh-add"
+# Wait for the passphrase prompt
+expect "Enter passphrase for"
+# Send the passphrase
+send "$passphrase\r"
+
 
 # Spawn SSH
 spawn ssh -A $username@$remoteHost

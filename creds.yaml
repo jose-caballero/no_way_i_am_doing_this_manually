@@ -23,6 +23,7 @@ ssh:
   username: 
   passphrase: 
 kayobe:
-  hostname:
+  passphrase:
   username:
+  hostname:
   prod_env_path:
