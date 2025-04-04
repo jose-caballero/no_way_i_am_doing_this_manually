@@ -12,3 +12,18 @@ class HVJira:
     def add_comment(self, issue_key, message):
         self.conn.add_comment(issue_key, message, is_internal=True)
 
+    def move_to_in_progress(self, issue_key):
+        self._change_state(issue_key, "In Progress")
+
+    def move_to_blocked(self, issue_key):
+        self._change_state(issue_key, "Blocked")
+
+    def _change_state(self, issue_key, new_state):
+        allowed_transitions = self.conn.transitions(issue_key)
+        for transition in allowed_transitions:
+            # If we find the transition whose "to" state matches, perform the transition and return
+            if transition["to"]["name"] == new_state:
+                conn.transition_issue(issue_key, transition["id"])
+                break
+
+
