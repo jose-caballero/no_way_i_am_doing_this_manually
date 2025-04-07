@@ -1,9 +1,11 @@
 import pynetbox
 import json
 
+from logger import SetLogger
 
-class HVNetbox:
+class HVNetbox(SetLogger):
     def __init__(self, creds_handler, hostname):
+        self._set_logger()
         self.creds_handler = creds_handler
         self.hostname = hostname
         self.netbox_url = "https://netbox.esc.rl.ac.uk/"
@@ -17,6 +19,7 @@ class HVNetbox:
             print(f"No device found with name '{self.hostname}'")
 
     def change_role(self, new_role):
+        self.log.debug('starting change_role')
         new_role = new_role.lower()
         role = self.conn.dcim.device_roles.get(name=new_role)
         if not role:
@@ -27,17 +30,20 @@ class HVNetbox:
             self.device.device_role = role
             self.device.role = role
             self.device.save()
-            print(f"Successfully updated role for device '{self.hostname}' to '{new_role}'")
+            self.log.debug(f"Successfully updated role for device '{self.hostname}' to '{new_role}'")
         except pynetbox.RequestError as e:
-            print(f"Failed to update the device role: {e}")
+            self.log.debug(f"Failed to update the device role: {e}")
+            raise e
+        self.log.debug('leaving change_role')
         
     def change_status(self, new_status):
         try:
             self.device.status = new_status
             self.device.save()
-            print(f"Successfully updated status for device '{self.hostname}' to '{new_status}'")
+            self.log.debug(f"Successfully updated status for device '{self.hostname}' to '{new_status}'")
         except pynetbox.RequestError as e:
-            print(f"Failed to update the device status: {e}")
+            self.log.debug(f"Failed to update the device status: {e}")
+            raise e
 
     @property
     def ipmi_address(self):
