@@ -2,15 +2,19 @@ import json
 import requests
 import sys
 
+from logger import SetLogger
 
-class HVAlertManager:
+
+class HVAlertManager(SetLogger):
     def __init__(self, creds_handler, hostname, time_interval=None):
+        self._set_logger()
         self.creds_handler = creds_handler
         self.hostname = hostname
         self.alertmanager_url = "https://openstack.stfc.ac.uk:9093"
         self.time_interval = time_interval
 
     def create_silence(self):
+        self.log.debug("starting create_silence")
         silences_endpoint = f"{self.alertmanager_url}/api/v2/silences"
     
         try:
@@ -37,18 +41,21 @@ class HVAlertManager:
             response = requests.post(silences_endpoint, auth=basic, json=silence_data, headers=headers)
     
             if response.status_code != 200:
-                print("Failed to create silence. Response status code:", response.status_code)
-                print("Response text:", response.text)
+                self.log.debug(f"Failed to create silence. Response status code: {response.status_code}")
+                self.log.debug(f"Response text: {response.text}")
             else:
-                print(f"Silence successfully created: {response.json()}")
+                self.log.debug(f"Silence successfully created: {response.json()}")
     
         except requests.exceptions.RequestException as e:
-            print(f"Failed to create silence in Alertmanager: {e}")
+            self.log.debug(f"Failed to create silence in Alertmanager: {e}")
             if e.response is not None:
-                print("Response status code:", e.response.status_code)
-                print("Response text:", e.response.text)
+                self.log.debug("Response status code:", e.response.status_code)
+                self.log.debug("Response text:", e.response.text)
+            raise e
         except Exception as e:
-            print(f"An error occurred while creating the silence: {e}")
+            self.log.debug(f"An error occurred while creating the silence: {e}")
+            raise e
+        self.log.debug('leaving create_silence')
 
 
     def remove_silence(self):
