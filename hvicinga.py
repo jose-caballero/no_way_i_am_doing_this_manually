@@ -3,14 +3,16 @@ import sys
 import argparse
 import time
 
+from logger import SetLogger
 
 # Disable SSL warnings (use with caution in production environments)
 requests.packages.urllib3.disable_warnings()
 
 
-class HVIcinga:
+class HVIcinga(SetLogger):
 
     def __init__(self, creds_handler, hostname, time_interval=None):
+        self._set_logger()
         self.api_url = "https://icinga.scd.stfc.ac.uk:5665"
         self.creds_handler = creds_handler
         self.hostname = hostname
@@ -27,13 +29,14 @@ class HVIcinga:
             elif response.status_code == 404:
                 return False
             else:
-                print(f"Unexpected response from API: {response.status_code}")
+                sef.log.debug(f"Unexpected response from API: {response.status_code}")
                 return False
         except requests.exceptions.RequestException as e:
-            print(f"Error connecting to Icinga API: {e}")
+            self.log.debug(f"Error connecting to Icinga API: {e}")
             return False
 
     def create_downtime(self):
+        self.log.debug('staring create_downtime')
         url = f"{self.api_url}/v1/actions/schedule-downtime"
         payload = {
             "type": "Host",
@@ -45,24 +48,20 @@ class HVIcinga:
             "start_time": self.time_interval.start_seconds,
             "end_time": self.time_interval.end_seconds
         }
-
-        try:
-            response = requests.post(
-                url,
-                json=payload,
-                auth=(self.creds_handler.icinga_downtime.username, self.creds_handler.icinga_downtime.password),
-                headers={"Accept": "application/json"},
-                verify=False  # Replicates '-k' to ignore SSL certificate
-            )
-            # If request is successful, respond with "OK", otherwise "failed"
-            if response.ok:
-                print("OK")
-            else:
-                print("failed")
-            return response
-        except Exception as e:
-            # In case of any exception, print "failed"
-            print("failed")
+        response = requests.post(
+            url,
+            json=payload,
+            auth=(self.creds_handler.icinga_downtime.username, self.creds_handler.icinga_downtime.password),
+            headers={"Accept": "application/json"},
+            verify=False  # Replicates '-k' to ignore SSL certificate
+        )
+        # If request is successful, respond with "OK", otherwise "failed"
+        if response.ok:
+            self.log.debug("OK")
+        else:
+            self.log.debug("failed")
+        self.log.debug('leaving create_downtime')
+        return response
 
 
     def remove_downtime(self):
