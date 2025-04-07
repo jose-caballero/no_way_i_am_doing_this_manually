@@ -16,14 +16,15 @@ class HVNetbox(SetLogger):
         # Retrieve the device by name (returns None if not found)
         self.device = self.conn.dcim.devices.get(name=self.hostname)
         if not self.device:
-            print(f"No device found with name '{self.hostname}'")
+            self.log.debug(f"No device found with name '{self.hostname}'")
 
     def change_role(self, new_role):
         self.log.debug('starting change_role')
         new_role = new_role.lower()
         role = self.conn.dcim.device_roles.get(name=new_role)
         if not role:
-            print("Could not find the specified role in NetBox.")
+            self.log.debug("Could not find the specified role in NetBox.")
+            self.log.debug('leaving change_role')
             return
         try:
             # Assign the retrieved role object

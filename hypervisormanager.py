@@ -24,8 +24,6 @@ class HyperVisorManager:
             self._run_post_bios()
         elif step == "finish":
             self._run_finish()
-        else:
-            print("huh!?")
         self.log.debug('leaving run')
 
     def _run_pre_bios(self):
