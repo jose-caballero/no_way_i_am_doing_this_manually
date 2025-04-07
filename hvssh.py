@@ -12,7 +12,7 @@ class HVSSH(SetLogger):
         self.private_key = paramiko.RSAKey.from_private_key_file(self.creds_handler.ssh.key_path, password=self.creds_handler.ssh.passphrase)
 
     def run(self, cmd, username=None):
-        self.log.debug('staring run')
+        self.log.debug('starting run')
         if not username:
             # if not username is passed, e.g. "root", 
             # we SSH as the regular user set in creds.yaml

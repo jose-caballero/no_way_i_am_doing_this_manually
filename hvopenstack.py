@@ -20,7 +20,7 @@ class HVOpenstack(SetLogger):
         )
    
     def disable_service(self):
-        self.log.debug('staring disable_service')
+        self.log.debug('starting disable_service')
         disable_reason = f"RL9 Reinstall {self.time_interval.start_str} - JCB"
         try:
             response = self.conn.compute.disable_service(

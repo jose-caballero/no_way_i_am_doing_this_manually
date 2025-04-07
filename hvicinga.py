@@ -36,7 +36,7 @@ class HVIcinga(SetLogger):
             return False
 
     def create_downtime(self):
-        self.log.debug('staring create_downtime')
+        self.log.debug('starting create_downtime')
         url = f"{self.api_url}/v1/actions/schedule-downtime"
         payload = {
             "type": "Host",

@@ -174,7 +174,7 @@ class HyperVisorManager:
         self.log.debug('leaving _post_bios_netbox')
 
     def _finish_icinga(self):
-        self.log.debug('staring _finish_icinga')
+        self.log.debug('starting _finish_icinga')
         hv_icinga = HVIcinga(self.creds_handler, self.request.hypervisor)
         hv_icinga.remove_downtime()
         msg = "downtime removed from Icinga"
@@ -183,7 +183,7 @@ class HyperVisorManager:
         self.log.debug('leaving _finish_icinga')
 
     def _finish_alertmanager(self):
-        self.log.debug('staring _finish_alertmanager')
+        self.log.debug('starting _finish_alertmanager')
         hv_alertmanager = HVAlertManager(self.creds_handler, self.request.hypervisor)
         hv_alertmanager.remove_silence()
         msg = "silence removed from AlertManager"

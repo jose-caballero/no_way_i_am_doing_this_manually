@@ -8,7 +8,7 @@ import inspect
 #       hypervisormanager:<hypervisor_nmame>.hvicinga
 # but we don't know in each case the exact logger name from hypervisormanager,
 # as it changes for each case. 
-# This classes finds that out, and just add ".hvicinga" (or whatever) to the logger name
+# This class finds that out, and just add ".hvicinga" (or whatever) to the logger name
 #
 
 

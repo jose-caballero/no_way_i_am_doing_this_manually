@@ -34,7 +34,7 @@ class HVJira:
         for transition in allowed_transitions:
             # If we find the transition whose "to" state matches, perform the transition and return
             if transition["to"]["name"] == new_state:
-                conn.transition_issue(issue_key, transition["id"])
+                self.conn.transition_issue(issue_key, transition["id"])
                 break
 
 
