@@ -1,8 +1,10 @@
 import paramiko
 
+from logger import SetLogger
 
-class HVSSH:
+class HVSSH(SetLogger):
     def __init__(self, creds_handler, hostname):
+        self._set_logger()
         self.creds_handler = creds_handler
         self.hostname = hostname
         self.client = paramiko.SSHClient()
@@ -10,6 +12,7 @@ class HVSSH:
         self.private_key = paramiko.RSAKey.from_private_key_file(self.creds_handler.ssh.key_path, password=self.creds_handler.ssh.passphrase)
 
     def run(self, cmd, username=None):
+        self.log.debug('staring run')
         if not username:
             # if not username is passed, e.g. "root", 
             # we SSH as the regular user set in creds.yaml
@@ -20,6 +23,7 @@ class HVSSH:
         error = stderr.read().decode('utf-8')
         rc = stdout.channel.recv_exit_status()
         self.client.close()
+        self.log.debug('leaving run')
         return output, error, rc
 
 
