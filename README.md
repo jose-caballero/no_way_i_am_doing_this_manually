@@ -55,6 +55,6 @@ Or use `python3` depending on your environment.
 Example:
 
 ```bash
-python ./run.py --pre-bios
-python ./run.py --pre-bios --creds-file /path/to/my/creds.yaml
+python ./run.py --step pre-bios
+python ./run.py --step pre-bios --creds-file /path/to/my/creds.yaml
 ```
