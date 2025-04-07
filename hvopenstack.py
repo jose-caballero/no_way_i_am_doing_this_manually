@@ -1,8 +1,10 @@
 import openstack
 
+from logger import SetLogger
 
-class HVOpenstack:
+class HVOpenstack(SetLogger):
     def __init__(self, creds_handler, hostname, time_interval=None):
+        self._set_logger()
         self.creds_handler = creds_handler
         self.hostname = hostname
         self.time_interval = time_interval
@@ -18,6 +20,7 @@ class HVOpenstack:
         )
    
     def disable_service(self):
+        self.log.debug('staring disable_service')
         disable_reason = f"RL9 Reinstall {self.time_interval.start_str} - JCB"
         try:
             response = self.conn.compute.disable_service(
@@ -25,9 +28,10 @@ class HVOpenstack:
                 binary=self.binary_type,
                 reason=disable_reason
             )
-            print(f"Service '{self.binary_type}' on host '{self.hostname}' disabled successfully.")
+            self.log.debug(f"Service '{self.binary_type}' on host '{self.hostname}' disabled successfully.")
             # The 'response' object may contain additional info depending on your OpenStack version.
-            print("Response:", response)
+            self.log.debug(f"Response: {response}")
         except Exception as e:
-            print(f"Failed to disable service '{self.binary_type}' on host '{self.hostname}': {e}")
-
+            self.log.debug(f"Failed to disable service '{self.binary_type}' on host '{self.hostname}': {e}")
+            raise e
+        self.log.debug('leaving disable_service')
