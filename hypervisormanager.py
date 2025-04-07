@@ -66,160 +66,130 @@ class HyperVisorManager:
 
     def _pre_bios_icinga(self):
         self.log.debug('starting _pre_bios_icinga')
-        try:
-            hv_icinga = HVIcinga(self.creds_handler, self.request.hypervisor, self.time_interval)
-            if hv_icinga.host_is_registered:
-                response = hv_icinga.create_downtime()
-                if response.ok:
-                    downtime_name = response['results'][0]['name']
-                    msg = f"downtime in Icinga created successfully, from {self.time_interval.start_str} to {self.time_interval.end_str}. Downtime name: {downtime_name}"
-                    self.log.debug(msg)
-                    self.jira.add_comment(self.request.jira_issue_key, msg)
-                else:
-                    msg = f"creating downtime from {self.time_interval.start_str} to {self.time_interval.end_str} failed: {response.text}"
-                    self.log.debug(msg)
-                    self.jira.add_comment(self.request.jira_issue_key, msg)
-            else:
-                msg "Hypervisor is not registered in Icinga, no need for downtime."
+        hv_icinga = HVIcinga(self.creds_handler, self.request.hypervisor, self.time_interval)
+        if hv_icinga.host_is_registered:
+            response = hv_icinga.create_downtime()
+            if response.ok:
+                downtime_name = response['results'][0]['name']
+                msg = f"downtime in Icinga created successfully, from {self.time_interval.start_str} to {self.time_interval.end_str}. Downtime name: {downtime_name}"
                 self.log.debug(msg)
                 self.jira.add_comment(self.request.jira_issue_key, msg)
-        except Exception as ex:
-            raise ex
+            else:
+                msg = f"creating downtime from {self.time_interval.start_str} to {self.time_interval.end_str} failed: {response.text}"
+                self.log.debug(msg)
+                self.jira.add_comment(self.request.jira_issue_key, msg)
+        else:
+            msg "Hypervisor is not registered in Icinga, no need for downtime."
+            self.log.debug(msg)
+            self.jira.add_comment(self.request.jira_issue_key, msg)
         self.log.debug('leaving _pre_bios_icinga')
 
     def _pre_bios_alertmanager(self):
         self.log.debug('starting _pre_bios_alertmanager')
-        try:
-            hv_alertmanager = HVAlertManager(self.creds_handler, self.request.hypervisor, self.time_interval)
-            hv_alertmanager.create_silence()
-            msg = f"silence created in AlertManager successfully, from {self.time_interval.start_str} to {self.time_interval.end_str}"
-            self.log.debug(msg)
-            self.jira.add_comment(self.request.jira_issue_key, msg)
-        except Exception as ex:
-            raise ex
+        hv_alertmanager = HVAlertManager(self.creds_handler, self.request.hypervisor, self.time_interval)
+        hv_alertmanager.create_silence()
+        msg = f"silence created in AlertManager successfully, from {self.time_interval.start_str} to {self.time_interval.end_str}"
+        self.log.debug(msg)
+        self.jira.add_comment(self.request.jira_issue_key, msg)
         self.log.debug('leaving _pre_bios_alertmanager')
 
     def _pre_bios_openstack(self):
         self.log.debug('starting _pre_bios_openstack')
-        try:
-            hv_openstack = HVOpenstack(self.creds_handler, self.request.hypervisor, self.time_interval)
-            hv_openstack.disable_service()
-            msg = "hypervisor disabled from OpenStack"
-            self.log.debug(msg)
-            self.jira.add_comment(self.request.jira_issue_key, msg)
-        except Exception as ex:
-            raise ex
+        hv_openstack = HVOpenstack(self.creds_handler, self.request.hypervisor, self.time_interval)
+        hv_openstack.disable_service()
+        msg = "hypervisor disabled from OpenStack"
+        self.log.debug(msg)
+        self.jira.add_comment(self.request.jira_issue_key, msg)
         self.log.debug('leaving _pre_bios_openstack')
 
     def _pre_bios_netbox(self):
         self.log.debug('starting _pre_bios_netbox')
-        try:
-            hv_netbox = HVNetbox(self.creds_handler, self.request.hypervisor)
-            hv_netbox.change_status("planned")
-            msg = "status changed in NetBox to value Planned"
-            self.log.debug(msg)
-            self.jira.add_comment(self.request.jira_issue_key, msg)
-        except Exception as ex:
-            raise ex
+        hv_netbox = HVNetbox(self.creds_handler, self.request.hypervisor)
+        hv_netbox.change_status("planned")
+        msg = "status changed in NetBox to value Planned"
+        self.log.debug(msg)
+        self.jira.add_comment(self.request.jira_issue_key, msg)
         self.log.debug('leaving _pre_bios_netbox')
 
     def _pre_bios_mellanox(self):
         self.log.debug('starting _pre_bios_mellanox')
-        try:
-            ssh_hypervisor = HVSSH(self.creds_handler, self.request.hypervisor)
-            #out, err, rc = ssh_hypervisor.run("lspci | grep -i mellanox", "root")
-            out, err, rc = ssh_hypervisor.run("lspci | grep -i mellanox")
-            if out != "":
-                msg = "Mellanox card found on the hypervisor"
-                self.log.debug(msg)
-                self.jira.add_comment(self.request.jira_issue_key, msg)
-                ssh_kayobe = HVKayobe(self.creds_handler)
-                kayobe_cmd = (
-                    f"source {self.creds_handler.kayobe.prod_env_var}; "
-                    f'ansible-playbook ansible/mellanox-enable-uefi-pxe.yml -i {self.request.hypervisor}, --extra-vars "pxe_target={self.request.hypervisor}"'
-                )
-                ssh_kayobe.run(kayobe_cmd)
-                msg = "ansible playbook mellanox-enable-uefi-pxe.yml executed for the hypervisor"
-                self.log.debug(msg)
-                self.jira.add_comment(self.request.jira_issue_key, msg)
-            else:
-                msg = "no Mellanox card found on the hypervisor"
-                self.log.debug(msg)
-                self.jira.add_comment(self.request.jira_issue_key, msg)
-        except Exception as ex:
-            raise ex
+        ssh_hypervisor = HVSSH(self.creds_handler, self.request.hypervisor)
+        #out, err, rc = ssh_hypervisor.run("lspci | grep -i mellanox", "root")
+        out, err, rc = ssh_hypervisor.run("lspci | grep -i mellanox")
+        if out != "":
+            msg = "Mellanox card found on the hypervisor"
+            self.log.debug(msg)
+            self.jira.add_comment(self.request.jira_issue_key, msg)
+            ssh_kayobe = HVKayobe(self.creds_handler)
+            kayobe_cmd = (
+                f"source {self.creds_handler.kayobe.prod_env_var}; "
+                f'ansible-playbook ansible/mellanox-enable-uefi-pxe.yml -i {self.request.hypervisor}, --extra-vars "pxe_target={self.request.hypervisor}"'
+            )
+            ssh_kayobe.run(kayobe_cmd)
+            msg = "ansible playbook mellanox-enable-uefi-pxe.yml executed for the hypervisor"
+            self.log.debug(msg)
+            self.jira.add_comment(self.request.jira_issue_key, msg)
+        else:
+            msg = "no Mellanox card found on the hypervisor"
+            self.log.debug(msg)
+            self.jira.add_comment(self.request.jira_issue_key, msg)
         self.log.debug('leaving _pre_bios_mellanox')
 
     def _pre_bios_aquilon(self):
         self.log.debug('starting _pre_bios_aquilon')
-        try:
-            aq = HVAquilon(self.creds_handler)
-            aq.run(f"remove-host.sh {self.request.hypervisor}")
-            msg = "remote_host script executed on the Aquilon host"
-            self.log.debug(msg)
-            self.jira.add_comment(self.request.jira_issue_key, msg)
-            aq.run(f"aq make --hostname {self.request.hypervisor} --personality inventory --archetype cloud --osname rocky --osversion 9x-x86_64")
-            msg = "hypervisor recompiled on the Aquilon host with Personality inventory"
-            self.log.debug(msg)
-            self.jira.add_comment(self.request.jira_issue_key, msg)
-            aq.run(f"aq pxeswitch --hostname {self.request.hypervisor} --install")
-            msg = "hypervisor pxeswitched on the Aquilon host"
-            self.log.debug(msg)
-            self.jira.add_comment(self.request.jira_issue_key, msg)
-        except Exception as ex:
-            raise ex
+        aq = HVAquilon(self.creds_handler)
+        aq.run(f"remove-host.sh {self.request.hypervisor}")
+        msg = "remote_host script executed on the Aquilon host"
+        self.log.debug(msg)
+        self.jira.add_comment(self.request.jira_issue_key, msg)
+        aq.run(f"aq make --hostname {self.request.hypervisor} --personality inventory --archetype cloud --osname rocky --osversion 9x-x86_64")
+        msg = "hypervisor recompiled on the Aquilon host with Personality inventory"
+        self.log.debug(msg)
+        self.jira.add_comment(self.request.jira_issue_key, msg)
+        aq.run(f"aq pxeswitch --hostname {self.request.hypervisor} --install")
+        msg = "hypervisor pxeswitched on the Aquilon host"
+        self.log.debug(msg)
+        self.jira.add_comment(self.request.jira_issue_key, msg)
         self.log.debug('leaving _pre_bios_aquilon')
 
 
     def _post_bios_aquilon(self):
         self.log.debug('starting _post_bios_aquilon')
-        try:
-            aq = HVAquilon(self.creds_handler)
-            aq.run(f"aq make --hostname {self.request.hypervisor} --personality kayobe-prod")
-            msg = "hypervisor recompiled on the Aquilon host with Personality kayobe-prod"
-            self.log.debug(msg)
-            self.jira.add_comment(self.request.jira_issue_key, msg)
-        except Exception as ex:
-            raise ex
+        aq = HVAquilon(self.creds_handler)
+        aq.run(f"aq make --hostname {self.request.hypervisor} --personality kayobe-prod")
+        msg = "hypervisor recompiled on the Aquilon host with Personality kayobe-prod"
+        self.log.debug(msg)
+        self.jira.add_comment(self.request.jira_issue_key, msg)
         self.log.debug('leaving _post_bios_aquilon')
 
     def _post_bios_netbox(self):
         self.log.debug('starting _post_bios_netbox')
-        try:
-            hv_netbox = HVNetbox(self.creds_handler, self.request.hypervisor)
-            hv_netbox.change_status("staged")
-            msg = "status changed in NetBox to value Staged"
-            self.log.debug(msg)
-            self.jira.add_comment(self.request.jira_issue_key, msg)
-            hv_netbox.change_role("Openstack Prod Kolla_Compute")
-            msg = "role changed in NetBox to value Openstack Prod Kolla_Compute"
-            self.log.debug(msg)
-            self.jira.add_comment(self.request.jira_issue_key, msg)
-        except Exception as ex:
-            raise ex
+        hv_netbox = HVNetbox(self.creds_handler, self.request.hypervisor)
+        hv_netbox.change_status("staged")
+        msg = "status changed in NetBox to value Staged"
+        self.log.debug(msg)
+        self.jira.add_comment(self.request.jira_issue_key, msg)
+        hv_netbox.change_role("Openstack Prod Kolla_Compute")
+        msg = "role changed in NetBox to value Openstack Prod Kolla_Compute"
+        self.log.debug(msg)
+        self.jira.add_comment(self.request.jira_issue_key, msg)
         self.log.debug('leaving _post_bios_netbox')
 
     def _finish_icinga(self):
         self.log.debug('staring _finish_icinga')
-        try:
-            hv_icinga = HVIcinga(self.creds_handler, self.request.hypervisor)
-            hv_icinga.remove_downtime()
-            msg = "downtime removed from Icinga"
-            self.log.debug(msg)
-            self.jira.add_comment(self.request.jira_issue_key, msg)
-        except Exception as ex:
-            raise ex
+        hv_icinga = HVIcinga(self.creds_handler, self.request.hypervisor)
+        hv_icinga.remove_downtime()
+        msg = "downtime removed from Icinga"
+        self.log.debug(msg)
+        self.jira.add_comment(self.request.jira_issue_key, msg)
         self.log.debug('leaving _finish_icinga')
 
     def _finish_alertmanager(self):
         self.log.debug('staring _finish_alertmanager')
-        try:
-            hv_alertmanager = HVAlertManager(self.creds_handler, self.request.hypervisor)
-            hv_alertmanager.remove_silence()
-            msg = "silence removed from AlertManager"
-            self.log.debug(msg)
-            self.jira.add_comment(self.request.jira_issue_key, msg)
-        except Exception as ex:
-            raise ex
+        hv_alertmanager = HVAlertManager(self.creds_handler, self.request.hypervisor)
+        hv_alertmanager.remove_silence()
+        msg = "silence removed from AlertManager"
+        self.log.debug(msg)
+        self.jira.add_comment(self.request.jira_issue_key, msg)
         self.log.debug('leaving _finish_alertmanager')
 
