@@ -37,7 +37,7 @@ class HyperVisorManager:
             self._pre_bios_mellanox()
             self._pre_bios_aquilon()
         except Exception as ex:
-            msg = f"An ERROR occurred {ex}. Aborting automation for hypervsor {self.request.hypervsor}"
+            msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             self.log.debug(msg)
             self.jira.add_comment(self.request.jira_issue_key, msg)
             self.jira.move_to_blocked(self.request.jira_issue_key)
@@ -77,7 +77,7 @@ class HyperVisorManager:
                 self.log.debug(msg)
                 self.jira.add_comment(self.request.jira_issue_key, msg)
         else:
-            msg "Hypervisor is not registered in Icinga, no need for downtime."
+            msg = "Hypervisor is not registered in Icinga, no need for downtime."
             self.log.debug(msg)
             self.jira.add_comment(self.request.jira_issue_key, msg)
         self.log.debug('leaving _pre_bios_icinga')
@@ -120,7 +120,7 @@ class HyperVisorManager:
             self.jira.add_comment(self.request.jira_issue_key, msg)
             ssh_kayobe = HVKayobe(self.creds_handler)
             kayobe_cmd = (
-                f"source {self.creds_handler.kayobe.prod_env_var}; "
+                f"source {self.creds_handler.kayobe.prod_env_path}; "
                 f'ansible-playbook ansible/mellanox-enable-uefi-pxe.yml -i {self.request.hypervisor}, --extra-vars "pxe_target={self.request.hypervisor}"'
             )
             ssh_kayobe.run(kayobe_cmd)

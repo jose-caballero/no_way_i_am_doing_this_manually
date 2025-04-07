@@ -1,10 +1,11 @@
 import subprocess
+import datetime
 
 from logger import SetLogger
 
 class HVKayobe(SetLogger):
     def __init__(self, creds_handler):
-        self._get_logger()
+        self._set_logger()
         self.creds_handler = creds_handler
 
     def run(self, cmd):

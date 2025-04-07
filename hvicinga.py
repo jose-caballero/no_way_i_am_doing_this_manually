@@ -29,7 +29,7 @@ class HVIcinga(SetLogger):
             elif response.status_code == 404:
                 return False
             else:
-                sef.log.debug(f"Unexpected response from API: {response.status_code}")
+                self.log.debug(f"Unexpected response from API: {response.status_code}")
                 return False
         except requests.exceptions.RequestException as e:
             self.log.debug(f"Error connecting to Icinga API: {e}")
