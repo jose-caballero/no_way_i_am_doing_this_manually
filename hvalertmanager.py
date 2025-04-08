@@ -15,25 +15,36 @@ class HVAlertManager(SetLogger):
 
     def create_silence(self):
         self.log.debug("starting create_silence")
-        silences_endpoint = f"{self.alertmanager_url}/api/v2/silences"
-    
-        try:
-            # Create a new silence
-            silence_data = {
-                "matchers": [
-                    {"name": "hostname",
-                     "value": self.hostname,
-                     "isRegex": False},
-                    {"name": "instance",
-                     "value": self.hostname,
-                     "isRegex": False},
-                ],
-                "startsAt": self.time_interval.start_str,
-                "endsAt": self.time_interval.end_str, 
-                "createdBy": "admin",
-                "comment": f"RL9 Reinstall {self.time_interval.start_str} - JCB"
-            }
+        silence_data_hostname = {
+            "matchers": [
+                {"name": "hostname",
+                 "value": self.hostname,
+                 "isRegex": False},
+            ],
+            "startsAt": self.time_interval.start_str,
+            "endsAt": self.time_interval.end_str, 
+            "createdBy": "admin",
+            "comment": f"RL9 Reinstall {self.time_interval.start_str} - JCB"
+        }
+        silence_data_instance = {
+            "matchers": [
+                {"name": "instance",
+                 "value": self.hostname,
+                 "isRegex": False},
+            ],
+            "startsAt": self.time_interval.start_str,
+            "endsAt": self.time_interval.end_str, 
+            "createdBy": "admin",
+            "comment": f"RL9 Reinstall {self.time_interval.start_str} - JCB"
+        }
+        self._create_silence(silence_data_hostname)
+        self._create_silence(silence_data_instance)
+        self.log.debug('leaving create_silence')
 
+
+    def _create_silence(self, silence_data):
+        silences_endpoint = f"{self.alertmanager_url}/api/v2/silences"
+        try:
             # Make a POST request to the Alertmanager API with basic auth
             headers = {"Content-Type": "application/json"}
             from requests.auth import HTTPBasicAuth
@@ -45,7 +56,6 @@ class HVAlertManager(SetLogger):
                 self.log.debug(f"Response text: {response.text}")
             else:
                 self.log.debug(f"Silence successfully created: {response.json()}")
-    
         except requests.exceptions.RequestException as e:
             self.log.debug(f"Failed to create silence in Alertmanager: {e}")
             if e.response is not None:
@@ -55,7 +65,6 @@ class HVAlertManager(SetLogger):
         except Exception as e:
             self.log.debug(f"An error occurred while creating the silence: {e}")
             raise e
-        self.log.debug('leaving create_silence')
 
 
     def remove_silence(self):
