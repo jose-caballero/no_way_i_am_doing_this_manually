@@ -44,5 +44,5 @@ aq del_machine --machine $SYSTEMID
 echo "Machine deleted..."
 
 echo "Importing ${SCRIPTHOST}"
-netbox2aquilon --hostname $SCRIPTHOST --archetype cloud --domain prod_cloud prod_cloud_hvs --archetype cloud --osname rocky --osversion 9x-x86_64
+netbox2aquilon --hostname $SCRIPTHOST --archetype cloud --domain prod_cloud prod_cloud_hvs --osname rocky --osversion 9x-x86_64
 aq update_interface --hostname $SCRIPTHOST --interface eth0 --boot --default_route

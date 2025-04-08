@@ -22,13 +22,13 @@ class HVJira:
             f"{error}"
             "{code}"
         )
-        self.add_comment(self.issue_key, msg)
+        self.add_comment(msg)
 
     def move_to_in_progress(self):
-        self._change_state(self.issue_key, "In Progress")
+        self._change_state("In Progress")
 
     def move_to_blocked(self):
-        self._change_state(self.issue_key, "Blocked")
+        self._change_state("Blocked")
 
     def _change_state(self, new_state):
         allowed_transitions = self.conn.transitions(self.issue_key)

@@ -53,7 +53,7 @@ class Aquilon:
 
 @dataclass
 class Kayobe:
-    password: str
+    passphrase: str
     username: str
     hostname: str
     prod_env_path: str

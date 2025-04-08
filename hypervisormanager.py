@@ -15,7 +15,7 @@ class HyperVisorManager:
         self.creds_handler = creds_handler
         self.request = request
         self.time_interval = time_interval
-        self.jira = HVJira(self.credentials_handler, self.request.jira_issue_key)
+        self.jira = HVJira(self.creds_handler, self.request.jira_issue_key)
 
     def run(self, step):
         self.log.debug('starting run')
@@ -69,7 +69,7 @@ class HyperVisorManager:
         if hv_icinga.host_is_registered:
             response = hv_icinga.create_downtime()
             if response.ok:
-                downtime_name = response['results'][0]['name']
+                downtime_name = response.json()['results'][0]['name']
                 msg = f"downtime in Icinga created successfully, from {self.time_interval.start_str} to {self.time_interval.end_str}. Downtime name: {downtime_name}"
                 self.log.debug(msg)
                 self.jira.add_comment(msg)
