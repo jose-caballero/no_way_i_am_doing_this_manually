@@ -2,7 +2,7 @@ import jira
 from logger import SetLogger
 
 
-class HVJira:
+class HVJira(SetLogger):
     def __init__(self, creds_handler, issue_key):
         self._set_logger()
         self.creds_handler = creds_handler
