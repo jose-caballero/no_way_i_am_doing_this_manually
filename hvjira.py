@@ -1,14 +1,17 @@
 import jira
+from logger import SetLogger
 
 
 class HVJira:
     def __init__(self, creds_handler, issue_key):
+        self._set_logger()
         self.creds_handler = creds_handler
         self.issue_key = issue_key
         self.endpoint = "https://stfc.atlassian.net/"
         self.username = self.creds_handler.jira.username
         self.token = self.creds_handler.jira.api_token
         self.conn = jira.client.JIRA(server=self.endpoint, basic_auth=(self.username, self.token))
+        self.log.debug("HVJira object created successfully")
 
     def add_comment(self, message):
         final_msg = f"Message from automation library:\n{message}"
@@ -36,6 +39,7 @@ class HVJira:
             # If we find the transition whose "to" state matches, perform the transition and return
             if transition["to"]["name"] == new_state:
                 self.conn.transition_issue(self.issue_key, transition["id"])
+                self.log.debug(f'jira issue {self.issue} moved to state {new_state}')
                 break
 
 
