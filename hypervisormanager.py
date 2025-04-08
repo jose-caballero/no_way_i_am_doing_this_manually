@@ -5,16 +5,17 @@ from hvopenstack import HVOpenstack
 from hvssh import HVSSH
 from hvaquilon import HVAquilon
 from hvkayobe import HVKayobe
+from hvjira import HVJira
 
 import logging
 
 class HyperVisorManager:
-    def __init__(self, creds_handler, request, time_interval, jira): 
+    def __init__(self, creds_handler, request, time_interval): 
         self.log = logging.getLogger(f'hypervisormanager:{request.hypervisor}')
         self.creds_handler = creds_handler
         self.request = request
         self.time_interval = time_interval
-        self.jira = jira
+        self.jira = HVJira(self.credentials_handler, self.request.jira_issue_key)
 
     def run(self, step):
         self.log.debug('starting run')
@@ -28,7 +29,7 @@ class HyperVisorManager:
 
     def _run_pre_bios(self):
         self.log.debug('starting _run_pre_bios')
-        self.jira.move_to_in_progress(self.request.jira_issue_key)
+        self.jira.move_to_in_progress()
         try:
             self._pre_bios_icinga()
             self._pre_bios_alertmanager()
@@ -39,8 +40,8 @@ class HyperVisorManager:
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             self.log.debug(msg)
-            self.jira.add_comment(self.request.jira_issue_key, msg)
-            self.jira.move_to_blocked(self.request.jira_issue_key)
+            self.jira.add_comment(msg)
+            self.jira.move_to_blocked()
         self.log.debug('leaving _run_pre_bios')
 
     def _run_post_bios(self):
@@ -71,15 +72,15 @@ class HyperVisorManager:
                 downtime_name = response['results'][0]['name']
                 msg = f"downtime in Icinga created successfully, from {self.time_interval.start_str} to {self.time_interval.end_str}. Downtime name: {downtime_name}"
                 self.log.debug(msg)
-                self.jira.add_comment(self.request.jira_issue_key, msg)
+                self.jira.add_comment(msg)
             else:
                 msg = f"creating downtime from {self.time_interval.start_str} to {self.time_interval.end_str} failed: {response.text}"
                 self.log.debug(msg)
-                self.jira.add_comment(self.request.jira_issue_key, msg)
+                self.jira.add_comment(msg)
         else:
             msg = "Hypervisor is not registered in Icinga, no need for downtime."
             self.log.debug(msg)
-            self.jira.add_comment(self.request.jira_issue_key, msg)
+            self.jira.add_comment(msg)
         self.log.debug('leaving _pre_bios_icinga')
 
     def _pre_bios_alertmanager(self):
@@ -88,7 +89,7 @@ class HyperVisorManager:
         hv_alertmanager.create_silence()
         msg = f"silence created in AlertManager successfully, from {self.time_interval.start_str} to {self.time_interval.end_str}"
         self.log.debug(msg)
-        self.jira.add_comment(self.request.jira_issue_key, msg)
+        self.jira.add_comment(msg)
         self.log.debug('leaving _pre_bios_alertmanager')
 
     def _pre_bios_openstack(self):
@@ -97,7 +98,7 @@ class HyperVisorManager:
         hv_openstack.disable_service()
         msg = "hypervisor disabled from OpenStack"
         self.log.debug(msg)
-        self.jira.add_comment(self.request.jira_issue_key, msg)
+        self.jira.add_comment(msg)
         self.log.debug('leaving _pre_bios_openstack')
 
     def _pre_bios_netbox(self):
@@ -106,7 +107,7 @@ class HyperVisorManager:
         hv_netbox.change_status("planned")
         msg = "status changed in NetBox to value Planned"
         self.log.debug(msg)
-        self.jira.add_comment(self.request.jira_issue_key, msg)
+        self.jira.add_comment(msg)
         self.log.debug('leaving _pre_bios_netbox')
 
     def _pre_bios_mellanox(self):
@@ -117,7 +118,7 @@ class HyperVisorManager:
         if out != "":
             msg = "Mellanox card found on the hypervisor"
             self.log.debug(msg)
-            self.jira.add_comment(self.request.jira_issue_key, msg)
+            self.jira.add_comment(msg)
             ssh_kayobe = HVKayobe(self.creds_handler)
             kayobe_cmd = (
                 f"source {self.creds_handler.kayobe.prod_env_path}; "
@@ -126,11 +127,11 @@ class HyperVisorManager:
             ssh_kayobe.run(kayobe_cmd)
             msg = "ansible playbook mellanox-enable-uefi-pxe.yml executed for the hypervisor"
             self.log.debug(msg)
-            self.jira.add_comment(self.request.jira_issue_key, msg)
+            self.jira.add_comment(msg)
         else:
             msg = "no Mellanox card found on the hypervisor"
             self.log.debug(msg)
-            self.jira.add_comment(self.request.jira_issue_key, msg)
+            self.jira.add_comment(msg)
         self.log.debug('leaving _pre_bios_mellanox')
 
     def _pre_bios_aquilon(self):
@@ -139,15 +140,15 @@ class HyperVisorManager:
         aq.run(f"remove-host.sh {self.request.hypervisor}")
         msg = "remote_host script executed on the Aquilon host"
         self.log.debug(msg)
-        self.jira.add_comment(self.request.jira_issue_key, msg)
+        self.jira.add_comment(msg)
         aq.run(f"aq make --hostname {self.request.hypervisor} --personality inventory --archetype cloud --osname rocky --osversion 9x-x86_64")
         msg = "hypervisor recompiled on the Aquilon host with Personality inventory"
         self.log.debug(msg)
-        self.jira.add_comment(self.request.jira_issue_key, msg)
+        self.jira.add_comment(msg)
         aq.run(f"aq pxeswitch --hostname {self.request.hypervisor} --install")
         msg = "hypervisor pxeswitched on the Aquilon host"
         self.log.debug(msg)
-        self.jira.add_comment(self.request.jira_issue_key, msg)
+        self.jira.add_comment(msg)
         self.log.debug('leaving _pre_bios_aquilon')
 
 
@@ -157,7 +158,7 @@ class HyperVisorManager:
         aq.run(f"aq make --hostname {self.request.hypervisor} --personality kayobe-prod")
         msg = "hypervisor recompiled on the Aquilon host with Personality kayobe-prod"
         self.log.debug(msg)
-        self.jira.add_comment(self.request.jira_issue_key, msg)
+        self.jira.add_comment(msg)
         self.log.debug('leaving _post_bios_aquilon')
 
     def _post_bios_netbox(self):
@@ -166,11 +167,11 @@ class HyperVisorManager:
         hv_netbox.change_status("staged")
         msg = "status changed in NetBox to value Staged"
         self.log.debug(msg)
-        self.jira.add_comment(self.request.jira_issue_key, msg)
+        self.jira.add_comment(msg)
         hv_netbox.change_role("Openstack Prod Kolla_Compute")
         msg = "role changed in NetBox to value Openstack Prod Kolla_Compute"
         self.log.debug(msg)
-        self.jira.add_comment(self.request.jira_issue_key, msg)
+        self.jira.add_comment(msg)
         self.log.debug('leaving _post_bios_netbox')
 
     def _finish_icinga(self):
@@ -179,7 +180,7 @@ class HyperVisorManager:
         hv_icinga.remove_downtime()
         msg = "downtime removed from Icinga"
         self.log.debug(msg)
-        self.jira.add_comment(self.request.jira_issue_key, msg)
+        self.jira.add_comment(msg)
         self.log.debug('leaving _finish_icinga')
 
     def _finish_alertmanager(self):
@@ -188,6 +189,6 @@ class HyperVisorManager:
         hv_alertmanager.remove_silence()
         msg = "silence removed from AlertManager"
         self.log.debug(msg)
-        self.jira.add_comment(self.request.jira_issue_key, msg)
+        self.jira.add_comment(msg)
         self.log.debug('leaving _finish_alertmanager')
 

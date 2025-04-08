@@ -1,7 +1,6 @@
 from credentialshandler import CredentialsHandler
 from hypervisormanager import HyperVisorManager
 from timeinterval import TimeInterval
-from hvjira import HVJira
 
 import logging
 import logging.handlers
@@ -23,7 +22,6 @@ class MigrationManager:
         self._setup_login()
         self.request_l = self._parse_hypervisors_file()
         self.time_interval = TimeInterval()
-        self.jira = HVJira(self.credentials_handler)
 
     def _setup_login(self):
         self.log = logging.getLogger()
@@ -54,6 +52,6 @@ class MigrationManager:
 
     def run(self, step):
         for request in self.request_l:
-            hv_manager = HyperVisorManager(self.credentials_handler, request, self.time_interval, self.jira)
+            hv_manager = HyperVisorManager(self.credentials_handler, request, self.time_interval)
             hv_manager.run(step)
 
