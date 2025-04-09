@@ -25,7 +25,7 @@ class HVOpenstack(SetLogger):
         hypervisors = self.conn.compute.hypervisors()
         for hypervisor in hypervisors:
             if hypervisor.name == self.hostname:
-                out = (hypervisor.satus.lower() == "enabled")
+                out = (hypervisor.status.lower() == "enabled")
                 break
         self.log.debug(f'leaving is_enabled with value {out}')
         return out
