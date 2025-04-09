@@ -19,6 +19,18 @@ class HVOpenstack(SetLogger):
             verify=True
         )
    
+    @property
+    def is_enabled(self):
+        self.log.debug('starting is_enabled')
+        hypervisors = self.conn.compute.hypervisors()
+        for hypervisor in hypervisors:
+            if hypervisor.name == self.hostname:
+                out = (hypervisor.satus.lower() == "enabled")
+                break
+        self.log.debug(f'leaving is_enabled with value {out}')
+        return out
+
+
     def disable_service(self):
         self.log.debug('starting disable_service')
         disable_reason = f"RL9 Reinstall {self.time_interval.start_str} - JCB"

@@ -97,10 +97,15 @@ class HyperVisorManager:
     def _pre_bios_openstack(self):
         self.log.debug('starting _pre_bios_openstack')
         hv_openstack = HVOpenstack(self.creds_handler, self.request.hypervisor, self.time_interval)
-        hv_openstack.disable_service()
-        msg = "hypervisor disabled from OpenStack"
-        self.log.debug(msg)
-        self.jira.add_comment(msg)
+        if hv_openstack.is_enabled:
+            hv_openstack.disable_service()
+            msg = "hypervisor disabled from OpenStack"
+            self.log.debug(msg)
+            self.jira.add_comment(msg)
+        else:
+            msg = "the hypervisor was already disabled from OpenStack. Nothing to do"
+            self.log.debug(msg)
+            self.jira.add_comment(msg)
         self.log.debug('leaving _pre_bios_openstack')
 
     def _pre_bios_netbox(self):
