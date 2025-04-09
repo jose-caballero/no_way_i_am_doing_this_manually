@@ -126,6 +126,8 @@ class HyperVisorManager:
         out, err, rc = ssh_hypervisor.run("lspci | grep -i mellanox")
         if out != "":
             msg = "Mellanox card found on the hypervisor"
+            msg += "\n"
+            msg += out
             self.log.debug(msg)
             self.jira.add_comment(msg)
             ssh_kayobe = HVKayobe(self.creds_handler)
