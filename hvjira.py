@@ -30,6 +30,9 @@ class HVJira(SetLogger):
     def move_to_in_progress(self):
         self._change_state("In Progress")
 
+    def move_to_working_on_pre_bios(self):
+        self._change_state("Working On Pre Bios")
+
     def move_to_blocked(self):
         self._change_state("Blocked")
 
@@ -39,7 +42,7 @@ class HVJira(SetLogger):
             # If we find the transition whose "to" state matches, perform the transition and return
             if transition["to"]["name"] == new_state:
                 self.conn.transition_issue(self.issue_key, transition["id"])
-                self.log.debug(f'jira issue {self.issue} moved to state {new_state}')
+                self.log.debug(f'jira issue {self.issue_key} moved to state {new_state}')
                 break
 
 

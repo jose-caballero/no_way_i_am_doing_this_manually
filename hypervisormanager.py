@@ -29,7 +29,7 @@ class HyperVisorManager:
 
     def _run_pre_bios(self):
         self.log.debug('starting _run_pre_bios')
-        self.jira.move_to_in_progress()
+        self.jira.move_to_working_on_pre_bios()
         try:
             self._pre_bios_icinga()
             self._pre_bios_alertmanager()
