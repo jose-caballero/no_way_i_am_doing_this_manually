@@ -22,7 +22,7 @@ pip install pynetbox
 
 ---
 
-## Execution
+## Set working environment
 
 ```bash
 git clone https://github.com/jose-caballero/no_way_i_am_doing_this_manually.git
@@ -44,7 +44,15 @@ vi hypervisors.txt
 
 Edit the `hypervisors.txt` file with the list of HVs you want to migrate.
 
-Then, to see the options, just run:
+### Copy scripts to remote hosts
+
+* copy scripts/remove-host.sh to your account in Aquilon
+* copy scripts/mellanox-playbook.sh to your kayobe environment server, under directory ~/bin/
+
+
+## Execution 
+
+To see the options, just run:
 
 ```bash
 python ./run.py --help
