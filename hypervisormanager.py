@@ -113,6 +113,8 @@ class HyperVisorManager:
         hv_netbox = HVNetbox(self.creds_handler, self.request.hypervisor)
         hv_netbox.change_status("planned")
         msg = "status changed in NetBox to value Planned"
+        msg += "\n"
+        msg += hv_netbox.url
         self.log.debug(msg)
         self.jira.add_comment(msg)
         self.log.debug('leaving _pre_bios_netbox')

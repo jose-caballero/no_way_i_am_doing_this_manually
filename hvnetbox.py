@@ -53,3 +53,9 @@ class HVNetbox(SetLogger):
             if i.name == "bmc0":
                 ip_assignments = self.conn.ipam.ip_addresses.filter(interface_id=i.id)
                 return next(ip_assignments).address
+
+    @property
+    def url(self):
+        return f'{self.netbox_url}/dcim/devices/{self.device.id}/'
+
+
