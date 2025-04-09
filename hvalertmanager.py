@@ -37,9 +37,13 @@ class HVAlertManager(SetLogger):
             "createdBy": "admin",
             "comment": f"RL9 Reinstall {self.time_interval.start_str} - JCB"
         }
-        self._create_silence(silence_data_hostname)
-        self._create_silence(silence_data_instance)
+        response = self._create_silence(silence_data_hostname)
+        out_msg = f"Silence for hostname: {self.alertmanager_url}/#/silences/{response.json()['silenceID']}"
+        response = self._create_silence(silence_data_instance)
+        out_msg += "\n"
+        out_msg += f"Silence for instance: {self.alertmanager_url}/#/silences/{response.json()['silenceID']}"
         self.log.debug('leaving create_silence')
+        return out_msg
 
 
     def _create_silence(self, silence_data):
@@ -56,6 +60,7 @@ class HVAlertManager(SetLogger):
                 self.log.debug(f"Response text: {response.text}")
             else:
                 self.log.debug(f"Silence successfully created: {response.json()}")
+                return response
         except requests.exceptions.RequestException as e:
             self.log.debug(f"Failed to create silence in Alertmanager: {e}")
             if e.response is not None:

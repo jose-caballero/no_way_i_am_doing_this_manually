@@ -86,8 +86,10 @@ class HyperVisorManager:
     def _pre_bios_alertmanager(self):
         self.log.debug('starting _pre_bios_alertmanager')
         hv_alertmanager = HVAlertManager(self.creds_handler, self.request.hypervisor, self.time_interval)
-        hv_alertmanager.create_silence()
+        out_msg = hv_alertmanager.create_silence()
         msg = f"silence created in AlertManager successfully, from {self.time_interval.start_str} to {self.time_interval.end_str}"
+        msg += "\n"
+        msg += out_msg
         self.log.debug(msg)
         self.jira.add_comment(msg)
         self.log.debug('leaving _pre_bios_alertmanager')
