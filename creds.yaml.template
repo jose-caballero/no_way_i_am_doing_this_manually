@@ -76,7 +76,7 @@ ssh:
 # ================================================== 
 # All the parameters needed to login your Kayobe
 # Management host of your choice:
-#   - the passphrase to be used for ssh-add
+#   - the path to your unencrypted SSH key
 #   - the username you will use to login to that
 #     host. e.g. "ubuntu"
 #   - the hostname of the Kayobe Mgmt host
@@ -85,7 +85,7 @@ ssh:
 #     ./kayobe-prod/env-vars.sh
 # ================================================== 
 kayobe:
-  passphrase:
+  nopassfile:
   username:
   hostname:
   prod_env_path:
