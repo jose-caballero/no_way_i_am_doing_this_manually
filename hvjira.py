@@ -2,6 +2,23 @@ import jira
 from logger import SetLogger
 
 
+class HVJiraMessage:
+    def __init__(self):
+        self.text = "Message from automation library:\n"
+
+    def add(self, text):
+        self.text += "\n"
+        self.text += text
+
+    def add_block(self, text):
+        self.text += "\n"
+        self.text += (
+            "{code}"
+            f'{text}'
+            "{code}"
+        )
+
+
 class HVJira(SetLogger):
     def __init__(self, creds_handler, issue_key):
         self._set_logger()
@@ -13,19 +30,14 @@ class HVJira(SetLogger):
         self.conn = jira.client.JIRA(server=self.endpoint, basic_auth=(self.username, self.token))
         self.log.debug("HVJira object created successfully")
 
-    def add_comment(self, message):
-        final_msg = f"Message from automation library:\n{message}"
-        self.conn.add_comment(self.issue_key, final_msg, is_internal=True)
-
-    def add_error(self, message, error):
-        msg = (
-            f"{message}"
-            "\n"
-            "{code}"
-            f"{error}"
-            "{code}"
-        )
-        self.add_comment(msg)
+    def add_comment(self, text):
+        if isinstance(text, str):
+            message = HVJiraMessage()
+            message.add(text)
+            text = message.text
+        else:
+            text = text.text
+        self.conn.add_comment(self.issue_key, text, is_internal=True)
 
     def move_to_in_progress(self):
         self._change_state("In Progress")
