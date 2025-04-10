@@ -47,7 +47,7 @@ Edit the `hypervisors.txt` file with the list of HVs you want to migrate.
 ### Copy scripts to remote hosts
 
 * copy scripts/remove-host.sh to your account in Aquilon
-* copy scripts/mellanox-playbook.sh to your kayobe environment server, under directory ~/bin/
+* copy scripts/mellanox-playbook.sh to your kayobe environment server
 
 
 ## Execution 
