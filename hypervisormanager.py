@@ -5,7 +5,7 @@ from hvopenstack import HVOpenstack
 from hvssh import HVSSH
 from hvaquilon import HVAquilon
 from hvkayobe import HVKayobe
-from hvjira import HVJira
+from hvjira import HVJira, HVJiraMessage
 
 import logging
 
@@ -122,25 +122,27 @@ class HyperVisorManager:
     def _pre_bios_mellanox(self):
         self.log.debug('starting _pre_bios_mellanox')
         ssh_hypervisor = HVSSH(self.creds_handler, self.request.hypervisor)
-        #out, err, rc = ssh_hypervisor.run("lspci | grep -i mellanox", "root")
         out, err, rc = ssh_hypervisor.run("lspci | grep -i mellanox")
         if out != "":
+            jiramsg = HVJiraMessage()
             msg = "Mellanox card found on the hypervisor"
+            jiramsg.add(msg)
             msg += "\n"
             msg += out
             self.log.debug(msg)
-            self.jira.add_comment(msg)
-            ssh_kayobe = HVKayobe(self.creds_handler)
-            kayobe_cmd = (
-                f"source {self.creds_handler.kayobe.prod_env_path}; "
-                f'ansible-playbook ansible/mellanox-enable-uefi-pxe.yml -i {self.request.hypervisor}, --extra-vars "pxe_target={self.request.hypervisor}"'
-            )
-            ssh_kayobe.run(kayobe_cmd)
-            msg = "ansible playbook mellanox-enable-uefi-pxe.yml executed for the hypervisor"
+            jiramsg.add_block(out)
+            ssh_kayobe = HVKayobe(self.creds_handler, self.request.hypervisor)
+            out_kayobe, err_kayobe, rc_kayobe = ssh_kayobe.run_mellanox()
+            if rc_kayobe == 0:
+                msg = "ansible playbook mellanox-enable-uefi-pxe.yml executed for the hypervisor"
+            else:
+                msg = "ansible playbook mellanox-enable-uefi-pxe.yml failed for the hypervisor"
             self.log.debug(msg)
-            self.jira.add_comment(msg)
+            jiramsg.add(msg)
+            jiramsg.add_block(out_kayobe)
+            self.jira.add_comment(jiramsg)
         else:
-            msg = "no Mellanox card found on the hypervisor"
+            msg = "no Mellanox card found on the hypervisor, nothing to do"
             self.log.debug(msg)
             self.jira.add_comment(msg)
         self.log.debug('leaving _pre_bios_mellanox')

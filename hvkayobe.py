@@ -8,17 +8,24 @@ class HVKayobe(SetLogger):
         self._set_logger()
         self.creds_handler = creds_handler
 
-    def run(self, cmd):
+    def run_mellanox(self):
+        cmd = f"~/mellanox_playbook.sh {self.hostname}"
+        return self._run(cmd)
+
+    def _run(self, cmd):
         """
-        we call an expect script in a subshell
-        arguments for the expect scripts:
-             password for the ssh agent
+        arguments for the remote command:
+             path to file with unencrypted SSH key 
              hostname with the kayobe environment
              username to ssh to that host
              command to execute
         """
         self.log.debug('starting run')
-        cmd = f"kayobe {self.creds_handler.kayobe.passphrase} {self.creds_handler.kayobe.hostname} {self.creds_handler.kayobe.username} {cmd}"
+        cmd = (
+            "eval $(ssh-agent) >/dev/null; "
+            f"ssh-add {self.creds_handler.kayobe.nopassfile}; "
+            f"ssh -A {self.creds_handler.kayobe.username}@{self.creds_handler.kayobe.hostname} '{cmd}'"
+        )
         subproc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, universal_newlines=True)
         (out, err) = subproc.communicate()
         end_t = datetime.datetime.now()
