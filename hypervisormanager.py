@@ -141,6 +141,8 @@ class HyperVisorManager:
             jiramsg.add(msg)
             jiramsg.add_block(out_kayobe)
             self.jira.add_comment(jiramsg)
+            if rc_kayobe != 0:
+                raise Exception(msg)
         else:
             msg = "no Mellanox card found on the hypervisor, nothing to do"
             self.log.debug(msg)
