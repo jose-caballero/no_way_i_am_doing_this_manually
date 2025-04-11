@@ -28,7 +28,6 @@ class HVKayobe(SetLogger):
         )
         subproc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, universal_newlines=True)
         (out, err) = subproc.communicate()
-        end_t = datetime.datetime.now()
         st = subproc.returncode
         self.log.debug('leaving run')
-        return out, err, st
+        return out
