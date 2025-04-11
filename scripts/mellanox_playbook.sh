@@ -3,7 +3,7 @@
 HYPERVISOR=$1
 
 current_datetime=$(date +"%Y_%m_%d_%H_%M")
-LOGFILE="logs.mallanox.${HYPERVISOR}.${current_datetime}"
+LOGFILE="logs_mellanox_${HYPERVISOR}_${current_datetime}"
 
 source ~/kayobe-prod/env-vars.sh
 echo ""
