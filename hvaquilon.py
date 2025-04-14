@@ -22,6 +22,18 @@ class HVAquilon(SetLogger):
         error = stderr.read().decode('utf-8').strip()
         rc = stdout.channel.recv_exit_status()
         self.client.close()
+        self.log.debug(f'cmd = {aqcmd}')
+        self.log.debug(f'output = {output}')
+        self.log.debug(f'err = {err}')
+        self.log.debug(f'rc = {rc}')
+        self.jira.add_comment("command:")
+        self.jira.add_block(aqcmd)
+        self.jira.add_comment("output:")
+        self.jira.add_block(output)
+        self.jira.add_comment("error:")
+        self.jira.add_block(err)
+        self.jira.add_comment("return code:")
+        self.jira.add_block(rc)
         self.log.debug('leaving run')
         return output, error, rc
 
