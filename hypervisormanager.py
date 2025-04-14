@@ -118,7 +118,7 @@ class HyperVisorManager:
     def _pre_bios_netbox(self):
         self.log.debug('starting _pre_bios_netbox')
         hv_netbox = HVNetbox(self.creds_handler, self.request.hypervisor)
-        hv_netbox.change_status("planned")
+        hv_netbox.change({"status":"planned"})
         msg = "status changed in NetBox to value Planned"
         msg += "\n"
         msg += hv_netbox.url
