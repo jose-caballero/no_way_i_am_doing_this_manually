@@ -34,6 +34,12 @@ class HVOpenstack(SetLogger):
 
     def disable_service(self):
         self.log.debug('starting disable_service')
+        if not self.is_enabled:
+            msg = "the hypervisor was already disabled from OpenStack. Nothing to do"
+            self.log.debug(msg)
+            self.jira.add_comment(msg)
+            return
+        # if the host is enabled in OpenStack...
         disable_reason = f"RL9 Reinstall {self.time_interval.start_str} - JCB"
         try:
             response = self.conn.compute.disable_service(
@@ -41,10 +47,16 @@ class HVOpenstack(SetLogger):
                 binary=self.binary_type,
                 reason=disable_reason
             )
-            self.log.debug(f"Service '{self.binary_type}' on host '{self.hostname}' disabled successfully.")
-            # The 'response' object may contain additional info depending on your OpenStack version.
-            self.log.debug(f"Response: {response}")
+            msg = f"Service '{self.binary_type}' on host '{self.hostname}' disabled successfully."
+            response = f"Response: {response}")
+            self.log.debug(msg)
+            self.log.debug(response)
+            self.jira.add(msg)
+            self.jira.add_block(response)
+            self.jira.add_comment()
         except Exception as e:
             self.log.debug(f"Failed to disable service '{self.binary_type}' on host '{self.hostname}': {e}")
             raise e
         self.log.debug('leaving disable_service')
+
+
