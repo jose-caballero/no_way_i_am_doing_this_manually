@@ -17,6 +17,7 @@ class HVIcinga(SetLogger):
         self.creds_handler = hypervisormanager.creds_handler
         self.hostname = hypervisormanager.request.hypervisor
         self.time_interval = hypervisormanager.time_interval
+        self.jira = hypervisormanager.hvjira
 
     @property
     def host_is_registered(self):
@@ -37,6 +38,12 @@ class HVIcinga(SetLogger):
 
     def create_downtime(self):
         self.log.debug('starting create_downtime')
+        if not self.host_is_registered:
+            msg = "Hypervisor is not registered in Icinga, no need for downtime."
+            self.log.debug(msg)
+            self.jira.add_comment(msg)
+
+
         url = f"{self.api_url}/v1/actions/schedule-downtime"
         payload = {
             "type": "Host",
@@ -66,5 +73,30 @@ class HVIcinga(SetLogger):
 
     def remove_downtime(self):
         raise NotImplementedError 
+
+
+
+
+
+###     def _pre_bios_icinga(self):
+###         self.log.debug('starting _pre_bios_icinga')
+###         hv_icinga = HVIcinga(self.creds_handler, self.request.hypervisor, self.time_interval)
+###         if hv_icinga.host_is_registered:
+###             response = hv_icinga.create_downtime()
+###             if response.ok:
+###                 downtime_name = response.json()['results'][0]['name']
+###                 msg = f"downtime in Icinga created successfully, from {self.time_interval.start_str} to {self.time_interval.end_str}. Downtime name: {downtime_name}"
+###                 self.log.debug(msg)
+###                 self.jira.add_comment(msg)
+###             else:
+###                 msg = f"creating downtime from {self.time_interval.start_str} to {self.time_interval.end_str} failed: {response.text}"
+###                 self.log.debug(msg)
+###                 self.jira.add_comment(msg)
+###         else:
+###             msg = "Hypervisor is not registered in Icinga, no need for downtime."
+###             self.log.debug(msg)
+###             self.jira.add_comment(msg)
+###         self.log.debug('leaving _pre_bios_icinga')
+
 
 

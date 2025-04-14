@@ -7,6 +7,7 @@ class HVSSH(SetLogger):
         self._set_logger()
         self.creds_handler = hypervisormanager.creds_handler
         self.hostname = hypervisormanager.request.hypervisor
+        self.jira = hypervisormanager.hvjira
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.private_key = paramiko.RSAKey.from_private_key_file(self.creds_handler.ssh.key_path, password=self.creds_handler.ssh.passphrase)

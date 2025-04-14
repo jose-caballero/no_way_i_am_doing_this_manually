@@ -8,6 +8,7 @@ class HVOpenstack(SetLogger):
         self.creds_handler = hypervisormanager.creds_handler
         self.hostname = hypervisormanager.request.hypervisor
         self.time_interval = hypervisormanager.time_interval
+        self.jira = hypervisormanager.hvjira
         self.binary_type = "nova-compute"
         self.conn = openstack.connection.Connection(
             auth_url = "https://openstack.stfc.ac.uk:5000/v3", 

@@ -8,6 +8,7 @@ class HVNetbox(SetLogger):
         self._set_logger()
         self.creds_handler = hypervisormanager.creds_handler
         self.hostname = hypervisormanager.request.hypervisor 
+        self.jira = hypervisormanager.hvjira
         self.netbox_url = "https://netbox.esc.rl.ac.uk/"
         self.conn = pynetbox.api(
             self.netbox_url,
