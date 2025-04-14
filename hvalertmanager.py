@@ -43,8 +43,12 @@ class HVAlertManager(SetLogger):
         response = self._create_silence(silence_data_instance)
         out_msg += "\n"
         out_msg += f"Silence for instance: {self.alertmanager_url}/#/silences/{response.json()['silenceID']}"
+        msg = f"silence created in AlertManager successfully, from {self.time_interval.start_str} to {self.time_interval.end_str}"
+        msg += "\n"
+        msg += out_msg
+        self.log.debug(msg)
+        self.jira.add_comment(msg)
         self.log.debug('leaving create_silence')
-        return out_msg
 
 
     def _create_silence(self, silence_data):
@@ -57,11 +61,17 @@ class HVAlertManager(SetLogger):
             response = requests.post(silences_endpoint, auth=basic, json=silence_data, headers=headers)
     
             if response.status_code != 200:
-                self.log.debug(f"Failed to create silence. Response status code: {response.status_code}")
-                self.log.debug(f"Response text: {response.text}")
+                msg = f"Failed to create silence. Response status code: {response.status_code}"
+                self.log.debug(msg)
+                self.jira.add(msg)
+                text = f"Response text: {response.text}"
+                self.log.debug(text)
+                self.jira.add_block(response.text)
+                self.jira.add_comment()
             else:
-                self.log.debug(f"Silence successfully created: {response.json()}")
-                return response
+                msg = f"Silence created successfully"
+                self.log.debug(msg)
+
         except requests.exceptions.RequestException as e:
             self.log.debug(f"Failed to create silence in Alertmanager: {e}")
             if e.response is not None:
@@ -75,7 +85,6 @@ class HVAlertManager(SetLogger):
 
     def remove_silence(self):
         raise NotImplementedError
-
 
 
 
