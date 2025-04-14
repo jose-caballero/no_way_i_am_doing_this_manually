@@ -19,14 +19,12 @@ class HVNetbox(SetLogger):
         if not self.device:
             self.log.debug(f"No device found with name '{self.hostname}'")
 
-
     def change(self, changes_d):
         for k,v in changes_d.items():
             if k == "role":
                 self._change_role(v)
             if k == "status":
                 self._change_status(v)
-
 
     def _change_role(self, new_role):
         self.log.debug('starting change_role')
@@ -51,7 +49,11 @@ class HVNetbox(SetLogger):
         try:
             self.device.status = new_status
             self.device.save()
-            self.log.debug(f"Successfully updated status for device '{self.hostname}' to '{new_status}'")
+            msg = f"Successfully updated status for device '{self.hostname}' to '{new_status}'"
+            msg += "\n"
+            msg += self.url
+            self.log.debug(msg)
+            self.jira.add_comment(msg)
         except pynetbox.RequestError as e:
             self.log.debug(f"Failed to update the device status: {e}")
             raise e
@@ -71,13 +73,3 @@ class HVNetbox(SetLogger):
 
 
 
-###     def _pre_bios_netbox(self):
-###         self.log.debug('starting _pre_bios_netbox')
-###         hv_netbox = HVNetbox(self.creds_handler, self.request.hypervisor)
-###         hv_netbox.change_status("planned")
-###         msg = "status changed in NetBox to value Planned"
-###         msg += "\n"
-###         msg += hv_netbox.url
-###         self.log.debug(msg)
-###         self.jira.add_comment(msg)
-###         self.log.debug('leaving _pre_bios_netbox')j
