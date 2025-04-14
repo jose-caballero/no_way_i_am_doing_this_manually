@@ -19,7 +19,16 @@ class HVNetbox(SetLogger):
         if not self.device:
             self.log.debug(f"No device found with name '{self.hostname}'")
 
-    def change_role(self, new_role):
+
+    def change(self, changes_d):
+        for k,v in changes_d.items():
+            if k == "role":
+                self._change_role(v)
+            if k == "status":
+                self._change_status(v)
+
+
+    def _change_role(self, new_role):
         self.log.debug('starting change_role')
         new_role = new_role.lower()
         role = self.conn.dcim.device_roles.get(name=new_role)
@@ -38,7 +47,7 @@ class HVNetbox(SetLogger):
             raise e
         self.log.debug('leaving change_role')
         
-    def change_status(self, new_status):
+    def _change_status(self, new_status):
         try:
             self.device.status = new_status
             self.device.save()
@@ -60,3 +69,15 @@ class HVNetbox(SetLogger):
         return f'{self.netbox_url}/dcim/devices/{self.device.id}/'
 
 
+
+
+###     def _pre_bios_netbox(self):
+###         self.log.debug('starting _pre_bios_netbox')
+###         hv_netbox = HVNetbox(self.creds_handler, self.request.hypervisor)
+###         hv_netbox.change_status("planned")
+###         msg = "status changed in NetBox to value Planned"
+###         msg += "\n"
+###         msg += hv_netbox.url
+###         self.log.debug(msg)
+###         self.jira.add_comment(msg)
+###         self.log.debug('leaving _pre_bios_netbox')j
