@@ -4,9 +4,9 @@ import datetime
 from logger import SetLogger
 
 class HVKayobe(SetLogger):
-    def __init__(self, creds_handler):
+    def __init__(self, hypervisormanager):
         self._set_logger()
-        self.creds_handler = creds_handler
+        self.creds_handler = hypervisormanager.creds_handler
 
     def run_mellanox(self):
         cmd = f"~/mellanox_playbook.sh {self.hostname}"

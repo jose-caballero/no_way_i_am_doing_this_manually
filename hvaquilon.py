@@ -4,9 +4,9 @@ from logger import SetLogger
 
 
 class HVAquilon(SetLogger):
-    def __init__(self, creds_handler):
+    def __init__(self, hypervisormanager):
         self._set_logger()
-        self.creds_handler = creds_handler
+        self.creds_handler = hypervisormanager.creds_handler
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 

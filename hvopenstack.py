@@ -3,11 +3,11 @@ import openstack
 from logger import SetLogger
 
 class HVOpenstack(SetLogger):
-    def __init__(self, creds_handler, hostname, time_interval=None):
+    def __init__(self, hypervisormanager):
         self._set_logger()
-        self.creds_handler = creds_handler
-        self.hostname = hostname
-        self.time_interval = time_interval
+        self.creds_handler = hypervisormanager.creds_handler
+        self.hostname = hypervisormanager.request.hypervisor
+        self.time_interval = hypervisormanager.time_interval
         self.binary_type = "nova-compute"
         self.conn = openstack.connection.Connection(
             auth_url = "https://openstack.stfc.ac.uk:5000/v3", 

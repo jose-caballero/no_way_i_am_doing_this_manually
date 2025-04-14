@@ -15,7 +15,14 @@ class HyperVisorManager:
         self.creds_handler = creds_handler
         self.request = request
         self.time_interval = time_interval
-        self.jira = HVJira(self.creds_handler, self.request.jira_issue_key)
+        self.hvjira = HVJira(self)
+        self.hvicinga = HVIcinga(self)
+        self.hvalertmanager = HVAlertManager(self)
+        self.hvnetbox = HVNetbox(self)
+        self.hvopenstack = HVOpenstack(self)
+        self.hvssh = HVSSH(self)
+        self.hvaquilon = HVAquilon(self)
+        self.hvkayobe = HVKayobe(self)
 
     def run(self, step):
         self.log.debug('starting run')

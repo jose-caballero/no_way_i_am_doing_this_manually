@@ -6,12 +6,12 @@ from logger import SetLogger
 
 
 class HVAlertManager(SetLogger):
-    def __init__(self, creds_handler, hostname, time_interval=None):
+    def __init__(self, hypervisormanager):
         self._set_logger()
-        self.creds_handler = creds_handler
-        self.hostname = hostname
+        self.creds_handler = hypervisormanager.creds_handler
+        self.hostname = hypervisormanager.request.hypervisor
         self.alertmanager_url = "https://openstack.stfc.ac.uk:9093"
-        self.time_interval = time_interval
+        self.time_interval = hypervisormanager.time_interval
 
     def create_silence(self):
         self.log.debug("starting create_silence")

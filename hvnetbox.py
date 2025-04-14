@@ -4,10 +4,10 @@ import json
 from logger import SetLogger
 
 class HVNetbox(SetLogger):
-    def __init__(self, creds_handler, hostname):
+    def __init__(self, hypervisormanager):
         self._set_logger()
-        self.creds_handler = creds_handler
-        self.hostname = hostname
+        self.creds_handler = hypervisormanager.creds_handler
+        self.hostname = hypervisormanager.request.hypervisor 
         self.netbox_url = "https://netbox.esc.rl.ac.uk/"
         self.conn = pynetbox.api(
             self.netbox_url,

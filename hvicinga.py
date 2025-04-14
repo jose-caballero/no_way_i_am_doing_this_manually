@@ -11,12 +11,12 @@ requests.packages.urllib3.disable_warnings()
 
 class HVIcinga(SetLogger):
 
-    def __init__(self, creds_handler, hostname, time_interval=None):
+    def __init__(self, hypervisormanager):
         self._set_logger()
         self.api_url = "https://icinga.scd.stfc.ac.uk:5665"
-        self.creds_handler = creds_handler
-        self.hostname = hostname
-        self.time_interval = time_interval
+        self.creds_handler = hypervisormanager.creds_handler
+        self.hostname = hypervisormanager.request.hypervisor
+        self.time_interval = hypervisormanager.time_interval
 
     @property
     def host_is_registered(self):
