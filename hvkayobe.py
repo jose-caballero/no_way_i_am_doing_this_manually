@@ -30,5 +30,17 @@ class HVKayobe(SetLogger):
         subproc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, universal_newlines=True)
         (out, err) = subproc.communicate()
         st = subproc.returncode
+        self.log.debug(f'cmd = {cmd}')
+        self.log.debug(f'output = {out}')
+        self.log.debug(f'err = {err}')
+        self.log.debug(f'rc = {st}')
+        self.jira.add_comment("command:")
+        self.jira.add_block(cmd)
+        self.jira.add_comment("output:")
+        self.jira.add_block(out)
+        self.jira.add_comment("error:")
+        self.jira.add_block(err)
+        self.jira.add_comment("return code:")
+        self.jira.add_block(st)
         self.log.debug('leaving run')
         return out
