@@ -1,4 +1,6 @@
 import paramiko
+import os
+from getpass import getpass
 
 from logger import SetLogger
 
@@ -7,10 +9,14 @@ class HVSSH(SetLogger):
         self._set_logger()
         self.creds_handler = hypervisormanager.creds_handler
         self.hostname = hypervisormanager.request.hypervisor
+        self.ssh_private_key_path = self.creds_handler.ssh.key_path
+        self.ssh_public_key_path = self.ssh_private_key_path + '.pub'
+        self.ssh_username = self.creds_handler.ssh.username
+        self.ssh_passphrase = self.creds_handler.ssh.passphrase
         self.jira = hypervisormanager.hvjira
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        self.private_key = paramiko.RSAKey.from_private_key_file(self.creds_handler.ssh.key_path, password=self.creds_handler.ssh.passphrase)
+        self.private_key = paramiko.RSAKey.from_private_key_file(self.ssh_private_key_path, password=self.ssh_passphrase)
 
     def run(self, cmd, username=None):
         self.log.debug('starting run')
@@ -27,4 +33,47 @@ class HVSSH(SetLogger):
         self.log.debug('leaving run')
         return output, error, rc
 
+    
+    @property
+    def has_root_access(self):
+        try:
+            root_client = paramiko.SSHClient()
+            root_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            root_client.connect(self.hostname, username="root", key_filename=self.ssh_public_key_path, timeout=5)
+            # FIXME !!!
+            # Is it public key or private key what I need ???
+            root_client.exec_command("true")  # Simple command to confirm access
+            root_client.close()
+            return True
+        except Exception:
+            return False
 
+
+    def ensure_root_access(self):
+
+        if self.has_root_access:
+            msg = f"user {self.username} has root acccess to hypervisor {self.hostname}"
+            self.log.debug(msg)
+            self.jira.add_comment(msg)
+            return
+
+        # if not root access...
+        # Connect as regular user
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        client.connect(self.hostname, username=self.username, key_filename=self.ssh_private_key_path)
+        # Append the public key to /root/.ssh/authorized_keys via sudo
+
+        # Read your public SSH key
+        with open(self.ssh_public_key_path, "r") as pubkey_file:
+            public_key = pubkey_file.read().strip()
+
+        command = f"""
+        sudo -S su -c 'mkdir -p /root/.ssh && \
+        touch /root/.ssh/authorized_keys && \
+        grep -qF "{public_key}" /root/.ssh/authorized_keys || echo "{public_key}" >> /root/.ssh/authorized_keys && \
+        chmod 700 /root/.ssh && chmod 600 /root/.ssh/authorized_keys'
+        """
+        stdin, stdout, stderr = client.exec_command(command)
+        stdin.flush()
+        client.close()
