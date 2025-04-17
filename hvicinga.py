@@ -17,7 +17,7 @@ class HVIcinga(SetLogger):
         self.creds_handler = hypervisormanager.creds_handler
         self.hostname = hypervisormanager.request.hypervisor
         self.time_interval = hypervisormanager.time_interval
-        self.jira = hypervisormanager.hvjira
+        self.jira = hypervisormanager.jira
 
     @property
     def host_is_registered(self):

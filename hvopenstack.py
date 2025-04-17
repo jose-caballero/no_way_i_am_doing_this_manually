@@ -8,7 +8,7 @@ class HVOpenstack(SetLogger):
         self.creds_handler = hypervisormanager.creds_handler
         self.hostname = hypervisormanager.request.hypervisor
         self.time_interval = hypervisormanager.time_interval
-        self.jira = hypervisormanager.hvjira
+        self.jira = hypervisormanager.jira
         self.binary_type = "nova-compute"
         self.conn = openstack.connection.Connection(
             auth_url = "https://openstack.stfc.ac.uk:5000/v3", 
@@ -48,7 +48,7 @@ class HVOpenstack(SetLogger):
                 reason=disable_reason
             )
             msg = f"Service '{self.binary_type}' on host '{self.hostname}' disabled successfully."
-            response = f"Response: {response}")
+            response = f"Response: {response}"
             self.log.debug(msg)
             self.log.debug(response)
             self.jira.add(msg)

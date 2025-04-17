@@ -12,7 +12,7 @@ class HVAlertManager(SetLogger):
         self.hostname = hypervisormanager.request.hypervisor
         self.alertmanager_url = "https://openstack.stfc.ac.uk:9093"
         self.time_interval = hypervisormanager.time_interval
-        self.jira = hypervisormanager.hvjira
+        self.jira = hypervisormanager.jira
 
     def create_silence(self):
         self.log.debug("starting create_silence")

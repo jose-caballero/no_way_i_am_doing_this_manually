@@ -15,7 +15,7 @@ class HyperVisorManager:
         self.creds_handler = creds_handler
         self.request = request
         self.time_interval = time_interval
-        self.hvjira = HVJira(self)
+        self.jira = HVJira(self)
         self.hvicinga = HVIcinga(self)
         self.hvalertmanager = HVAlertManager(self)
         self.hvnetbox = HVNetbox(self)
@@ -60,28 +60,28 @@ class HyperVisorManager:
         self.hvnetbox.change({"status":"staged", "role":"Openstack Prod Kolla_Compute"})
         self.log.debug('leaving _run_post_bios')
 
-    def _run_finish(self):
-        self.log.debug('starting _run_finish')
-        self._finish_icinga()
-        self._finish_alertmanager()
-        self.log.debug('leaving _run_finish')
-
-
-    def _finish_icinga(self):
-        self.log.debug('starting _finish_icinga')
-        hv_icinga = HVIcinga(self.creds_handler, self.request.hypervisor)
-        hv_icinga.remove_downtime()
-        msg = "downtime removed from Icinga"
-        self.log.debug(msg)
-        self.jira.add_comment(msg)
-        self.log.debug('leaving _finish_icinga')
-
-    def _finish_alertmanager(self):
-        self.log.debug('starting _finish_alertmanager')
-        hv_alertmanager = HVAlertManager(self.creds_handler, self.request.hypervisor)
-        hv_alertmanager.remove_silence()
-        msg = "silence removed from AlertManager"
-        self.log.debug(msg)
-        self.jira.add_comment(msg)
-        self.log.debug('leaving _finish_alertmanager')
+#    def _run_finish(self):
+#        self.log.debug('starting _run_finish')
+#        self._finish_icinga()
+#        self._finish_alertmanager()
+#        self.log.debug('leaving _run_finish')
+#
+#
+#    def _finish_icinga(self):
+#        self.log.debug('starting _finish_icinga')
+#        hv_icinga = HVIcinga(self.creds_handler, self.request.hypervisor)
+#        hv_icinga.remove_downtime()
+#        msg = "downtime removed from Icinga"
+#        self.log.debug(msg)
+#        self.jira.add_comment(msg)
+#        self.log.debug('leaving _finish_icinga')
+#
+#    def _finish_alertmanager(self):
+#        self.log.debug('starting _finish_alertmanager')
+#        hv_alertmanager = HVAlertManager(self.creds_handler, self.request.hypervisor)
+#        hv_alertmanager.remove_silence()
+#        msg = "silence removed from AlertManager"
+#        self.log.debug(msg)
+#        self.jira.add_comment(msg)
+#        self.log.debug('leaving _finish_alertmanager')
 

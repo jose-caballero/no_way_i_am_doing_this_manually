@@ -6,7 +6,7 @@ class HVJira(SetLogger):
     def __init__(self, hypervisormanager):
         self._set_logger()
         self.creds_handler = hypervisormanager.creds_handler
-        self.issue_key = hypervisormanager.requeset.issue_key
+        self.issue_key = hypervisormanager.request.issue_key
         self.endpoint = "https://stfc.atlassian.net/"
         self.username = self.creds_handler.jira.username
         self.token = self.creds_handler.jira.api_token

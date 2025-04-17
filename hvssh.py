@@ -13,7 +13,7 @@ class HVSSH(SetLogger):
         self.ssh_public_key_path = self.ssh_private_key_path + '.pub'
         self.ssh_username = self.creds_handler.ssh.username
         self.ssh_passphrase = self.creds_handler.ssh.passphrase
-        self.jira = hypervisormanager.hvjira
+        self.jira = hypervisormanager.jira
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.private_key = paramiko.RSAKey.from_private_key_file(self.ssh_private_key_path, password=self.ssh_passphrase)
@@ -39,9 +39,7 @@ class HVSSH(SetLogger):
         try:
             root_client = paramiko.SSHClient()
             root_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            root_client.connect(self.hostname, username="root", key_filename=self.ssh_public_key_path, timeout=5)
-            # FIXME !!!
-            # Is it public key or private key what I need ???
+            root_client.connect(self.hostname, username="root", key_filename=self.ssh_private_key_path, timeout=5)
             root_client.exec_command("true")  # Simple command to confirm access
             root_client.close()
             return True

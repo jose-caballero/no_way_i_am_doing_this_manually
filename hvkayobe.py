@@ -7,7 +7,8 @@ class HVKayobe(SetLogger):
     def __init__(self, hypervisormanager):
         self._set_logger()
         self.creds_handler = hypervisormanager.creds_handler
-        self.jira = hypervisormanager.hvjira
+        self.jira = hypervisormanager.jira
+        self.hostname = hypervisormanager.request.hypervisor
 
     def run_mellanox(self):
         cmd = f"~/mellanox_playbook.sh {self.hostname}"
