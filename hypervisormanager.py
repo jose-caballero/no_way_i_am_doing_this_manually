@@ -5,7 +5,7 @@ from hvopenstack import HVOpenstack
 from hvssh import HVSSH
 from hvaquilon import HVAquilon
 from hvkayobe import HVKayobe
-from hvjira import HVJira, HVJiraMessage
+from hvjira import HVJira
 
 import logging
 

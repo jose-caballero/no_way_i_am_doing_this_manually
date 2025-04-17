@@ -17,9 +17,6 @@ class HVKayobe(SetLogger):
     def _run(self, cmd):
         """
         arguments for the remote command:
-             path to file with unencrypted SSH key 
-             hostname with the kayobe environment
-             username to ssh to that host
              command to execute
         """
         self.log.debug('starting run')

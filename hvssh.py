@@ -24,7 +24,7 @@ class HVSSH(SetLogger):
             # if not username is passed, e.g. "root", 
             # we SSH as the regular user set in creds.yaml
             username = self.creds_handler.ssh.username
-        self.client.connect(hostname=self.hostname, port=22, username=username, pkey=self.private_key)
+        self.client.connect(hostname=self.hostname, port=22, username=self.ssh_username, pkey=self.private_key)
         stdin, stdout, stderr = self.client.exec_command(cmd)
         output = stdout.read().decode('utf-8')
         error = stderr.read().decode('utf-8')
@@ -37,11 +37,8 @@ class HVSSH(SetLogger):
     @property
     def has_root_access(self):
         try:
-            root_client = paramiko.SSHClient()
-            root_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            root_client.connect(self.hostname, username="root", key_filename=self.ssh_private_key_path, timeout=5)
-            root_client.exec_command("true")  # Simple command to confirm access
-            root_client.close()
+            self.client.connect(self.hostname, username="root", key_filename=self.ssh_private_key_path, timeout=5)
+            self.client.exec_command("true")  # Simple command to confirm access
             return True
         except Exception:
             return False
@@ -57,9 +54,7 @@ class HVSSH(SetLogger):
 
         # if not root access...
         # Connect as regular user
-        client = paramiko.SSHClient()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(self.hostname, username=self.username, key_filename=self.ssh_private_key_path)
+        self.client.connect(self.hostname, username=self.username, key_filename=self.ssh_private_key_path)
         # Append the public key to /root/.ssh/authorized_keys via sudo
 
         # Read your public SSH key
@@ -72,6 +67,6 @@ class HVSSH(SetLogger):
         grep -qF "{public_key}" /root/.ssh/authorized_keys || echo "{public_key}" >> /root/.ssh/authorized_keys && \
         chmod 700 /root/.ssh && chmod 600 /root/.ssh/authorized_keys'
         """
-        stdin, stdout, stderr = client.exec_command(command)
+        stdin, stdout, stderr = self.client.exec_command(command)
         stdin.flush()
         client.close()
