@@ -26,6 +26,7 @@ class HyperVisorManager:
 
     def run(self, step):
         self.log.debug('starting run')
+        self.hvssh.ensure_root_access()
         if step == "pre-bios":
             self._run_pre_bios()
         elif step == "post-bios":
