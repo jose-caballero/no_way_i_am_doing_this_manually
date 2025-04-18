@@ -37,6 +37,7 @@ class HVIcinga(SetLogger):
             return False
 
     def create_downtime(self):
+        self.log.debug('starting create_downtime')
         try:
             self._create_downtime()
         except Exception as ex:
@@ -45,9 +46,9 @@ class HVIcinga(SetLogger):
             self.jira.add("Exception captured")
             self.jira.add_block(ex)
             self.jira.add_comment()
+        self.log.debug('leaving create_downtime')
 
     def _create_downtime(self):
-        self.log.debug('starting create_downtime')
         if not self.host_is_registered:
             msg = "Hypervisor is not registered in Icinga, no need for downtime."
             self.log.debug(msg)
@@ -82,7 +83,6 @@ class HVIcinga(SetLogger):
             msg = f"creating downtime from {self.time_interval.start_str} to {self.time_interval.end_str} failed: {response.text}"
             self.log.debug(msg)
             self.jira.add_comment(msg)
-        self.log.debug('leaving create_downtime')
 
 
     def remove_downtime(self):
