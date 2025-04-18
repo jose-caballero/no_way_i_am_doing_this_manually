@@ -30,6 +30,7 @@ class HVNetbox(SetLogger):
             self.jira.add("Exception captured")
             self.jira.add_block(ex)
             self.jira.add_comment()
+            raise ex
         self.log.debug("leavingchange")
 
     def _change(self, changes_d):

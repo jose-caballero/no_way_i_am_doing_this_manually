@@ -41,6 +41,7 @@ class HVOpenstack(SetLogger):
             self.jira.add("Exception captured")
             self.jira.add_block(ex)
             self.jira.add_comment()
+            raise ex
         self.log.debug('leaving disable_service')
 
     def _disable_service(self):

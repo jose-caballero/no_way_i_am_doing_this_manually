@@ -24,6 +24,7 @@ class HVAlertManager(SetLogger):
             self.jira.add("Exception captured")
             self.jira.add_block(ex)
             self.jira.add_comment()
+            raise ex
         self.log.debug('leaving create_silence')
 
     def _create_silence(self):

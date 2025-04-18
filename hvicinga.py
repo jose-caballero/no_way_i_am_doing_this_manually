@@ -46,6 +46,7 @@ class HVIcinga(SetLogger):
             self.jira.add("Exception captured")
             self.jira.add_block(ex)
             self.jira.add_comment()
+            raise ex
         self.log.debug('leaving create_downtime')
 
     def _create_downtime(self):

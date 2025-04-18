@@ -29,6 +29,7 @@ class HVSSH(SetLogger):
             self.jira.add("Exception captured")
             self.jira.add_block(ex)
             self.jira.add_comment()
+            raise ex
         self.log.debug('leaving run')
 
     def _run(self, cmd, username=None):
