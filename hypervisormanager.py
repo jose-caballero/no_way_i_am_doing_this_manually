@@ -25,34 +25,35 @@ class HyperVisorManager:
         self.hvkayobe = HVKayobe(self)
 
     def run(self, step):
+        self.log.debug('starting run')
+        self.hvssh.ensure_root_access()
+        if step == "pre-bios":
+            self._run_pre_bios()
+        elif step == "post-bios":
+            self._run_post_bios()
+        elif step == "finish":
+            self._run_finish()
+        self.log.debug('leaving run')
+
+
+    def _run_pre_bios(self):
         try:
-            self.log.debug('starting run')
-            self.hvssh.ensure_root_access()
-            if step == "pre-bios":
-                self._run_pre_bios()
-            elif step == "post-bios":
-                self._run_post_bios()
-            elif step == "finish":
-                self._run_finish()
-            self.log.debug('leaving run')
+            self.log.debug('starting _run_pre_bios')
+            self.jira.move_to_working_on_pre_bios()
+            self.hvicinga.create_downtime()
+            self.hvalertmanager.create_silence()
+            self.hvopenstack.disable_service()
+            self.hvnetbox.change({"status":"planned"})
+            self.hvkayobe.run_mellanox()
+            self.hvaquilon.run(f"remove-host.sh {self.request.hypervisor}")
+            self.hvaquilon.run(f"aq make --hostname {self.request.hypervisor} --personality inventory --archetype cloud --osname rocky --osversion 9x-x86_64")
+            self.hvaquilon.run(f"aq pxeswitch --hostname {self.request.hypervisor} --install")
+            self.log.debug('leaving _run_pre_bios')
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             self.log.debug(msg)
             self.jira.add_comment(msg)
             self.jira.move_to_blocked()
-
-    def _run_pre_bios(self):
-        self.log.debug('starting _run_pre_bios')
-        self.jira.move_to_working_on_pre_bios()
-        self.hvicinga.create_downtime()
-        self.hvalertmanager.create_silence()
-        self.hvopenstack.disable_service()
-        self.hvnetbox.change({"status":"planned"})
-        self.hvkayobe.run_mellanox()
-        self.hvaquilon.run(f"remove-host.sh {self.request.hypervisor}")
-        self.hvaquilon.run(f"aq make --hostname {self.request.hypervisor} --personality inventory --archetype cloud --osname rocky --osversion 9x-x86_64")
-        self.hvaquilon.run(f"aq pxeswitch --hostname {self.request.hypervisor} --install")
-        self.log.debug('leaving _run_pre_bios')
 
     def _run_post_bios(self):
         self.log.debug('starting _run_post_bios')
