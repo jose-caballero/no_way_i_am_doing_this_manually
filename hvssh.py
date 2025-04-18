@@ -18,8 +18,20 @@ class HVSSH(SetLogger):
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.private_key = paramiko.RSAKey.from_private_key_file(self.ssh_private_key_path, password=self.ssh_passphrase)
 
+
     def run(self, cmd, username=None):
         self.log.debug('starting run')
+        try:
+            self._run(cmd, username)
+        except Exception as ex:
+            msg = f'Exception captured: {ex}'
+            self.log.debug(msg)
+            self.jira.add("Exception captured")
+            self.jira.add_block(ex)
+            self.jira.add_comment()
+        self.log.debug('leaving run')
+
+    def _run(self, cmd, username=None):
         if not username:
             # if not username is passed, e.g. "root", 
             # we SSH as the regular user set in creds.yaml
@@ -30,7 +42,6 @@ class HVSSH(SetLogger):
         error = stderr.read().decode('utf-8')
         rc = stdout.channel.recv_exit_status()
         self.client.close()
-        self.log.debug('leaving run')
         return output, error, rc
 
     
