@@ -31,9 +31,19 @@ class HVOpenstack(SetLogger):
         self.log.debug(f'leaving is_enabled with value {out}')
         return out
 
-
     def disable_service(self):
         self.log.debug('starting disable_service')
+        try:
+            self._disable_service()
+        except Exception as ex:
+            msg = f'Exception captured: {ex}'
+            self.log.debug(msg)
+            self.jira.add("Exception captured")
+            self.jira.add_block(ex)
+            self.jira.add_comment()
+        self.log.debug('leaving disable_service')
+
+    def _disable_service(self):
         if not self.is_enabled:
             msg = "the hypervisor was already disabled from OpenStack. Nothing to do"
             self.log.debug(msg)
@@ -41,22 +51,15 @@ class HVOpenstack(SetLogger):
             return
         # if the host is enabled in OpenStack...
         disable_reason = f"RL9 Reinstall {self.time_interval.start_str} - JCB"
-        try:
-            response = self.conn.compute.disable_service(
-                host=self.hostname,
-                binary=self.binary_type,
-                reason=disable_reason
-            )
-            msg = f"Service '{self.binary_type}' on host '{self.hostname}' disabled successfully."
-            response = f"Response: {response}"
-            self.log.debug(msg)
-            self.log.debug(response)
-            self.jira.add(msg)
-            self.jira.add_block(response)
-            self.jira.add_comment()
-        except Exception as e:
-            self.log.debug(f"Failed to disable service '{self.binary_type}' on host '{self.hostname}': {e}")
-            raise e
-        self.log.debug('leaving disable_service')
-
-
+        response = self.conn.compute.disable_service(
+            host=self.hostname,
+            binary=self.binary_type,
+            reason=disable_reason
+        )
+        msg = f"Service '{self.binary_type}' on host '{self.hostname}' disabled successfully."
+        response = f"Response: {response}"
+        self.log.debug(msg)
+        self.log.debug(response)
+        self.jira.add(msg)
+        self.jira.add_block(response)
+        self.jira.add_comment()
