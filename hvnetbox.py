@@ -19,7 +19,20 @@ class HVNetbox(SetLogger):
         if not self.device:
             self.log.debug(f"No device found with name '{self.hostname}'")
 
+
     def change(self, changes_d):
+        self.log.debug("starting change")
+        try:
+            self._change(changes_d)
+        except Exception as ex:
+            msg = f'Exception captured: {ex}'
+            self.log.debug(msg)
+            self.jira.add("Exception captured")
+            self.jira.add_block(ex)
+            self.jira.add_comment()
+        self.log.debug("leavingchange")
+
+    def _change(self, changes_d):
         for k,v in changes_d.items():
             if k == "role":
                 self._change_role(v)
@@ -34,29 +47,21 @@ class HVNetbox(SetLogger):
             self.log.debug("Could not find the specified role in NetBox.")
             self.log.debug('leaving change_role')
             return
-        try:
-            # Assign the retrieved role object
-            self.device.device_role = role
-            self.device.role = role
-            self.device.save()
-            self.log.debug(f"Successfully updated role for device '{self.hostname}' to '{new_role}'")
-        except pynetbox.RequestError as e:
-            self.log.debug(f"Failed to update the device role: {e}")
-            raise e
+        # Assign the retrieved role object
+        self.device.device_role = role
+        self.device.role = role
+        self.device.save()
+        self.log.debug(f"Successfully updated role for device '{self.hostname}' to '{new_role}'")
         self.log.debug('leaving change_role')
         
     def _change_status(self, new_status):
-        try:
-            self.device.status = new_status
-            self.device.save()
-            msg = f"Successfully updated status for device '{self.hostname}' to '{new_status}'"
-            msg += "\n"
-            msg += self.url
-            self.log.debug(msg)
-            self.jira.add_comment(msg)
-        except pynetbox.RequestError as e:
-            self.log.debug(f"Failed to update the device status: {e}")
-            raise e
+        self.device.status = new_status
+        self.device.save()
+        msg = f"Successfully updated status for device '{self.hostname}' to '{new_status}'"
+        msg += "\n"
+        msg += self.url
+        self.log.debug(msg)
+        self.jira.add_comment(msg)
 
     @property
     def ipmi_address(self):
