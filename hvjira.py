@@ -32,14 +32,23 @@ class HVJira(SetLogger):
         self.conn.add_comment(self.issue_key, self.buffer, is_internal=True)
         self.buffer = "Message from automation library:\n"
 
-    def move_to_in_progress(self):
-        self._change_state("In Progress")
-
     def move_to_working_on_pre_bios(self):
         self._change_state("Working On Pre Bios")
 
-    def move_to_blocked(self):
-        self._change_state("Blocked")
+    def move_to_working_on_adoption(self):
+        self._change_state("Working On Adoption")
+
+    def move_to_ready_for_install(self):
+        self._change_state("Ready For Reinstall")
+
+    def move_to_ready_for_test(self):
+        self._change_state("Ready For Test")
+
+    def move_to_pre_bios_failed(self):
+        self._change_state("Pre Bios Failed")
+
+    def move_to_adoption_failed(self):
+        self._change_state("Adoption Failed")
 
     def _change_state(self, new_state):
         allowed_transitions = self.conn.transitions(self.issue_key)
