@@ -52,3 +52,6 @@ class HVKayobe(SetLogger):
         self.jira.add_block(err)
         self.jira.add_comment("return code:")
         self.jira.add_block(st)
+        # check if the output is OK
+        if "fatal" in out:
+            raise Exception("playbook failed")
