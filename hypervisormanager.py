@@ -48,12 +48,13 @@ class HyperVisorManager:
             self.hvaquilon.run(f"remove-host.sh {self.request.hypervisor}")
             self.hvaquilon.run(f"aq make --hostname {self.request.hypervisor} --personality inventory --archetype cloud --osname rocky --osversion 9x-x86_64")
             self.hvaquilon.run(f"aq pxeswitch --hostname {self.request.hypervisor} --install")
+            self.jira.move_to_ready_for_reinstall()
             self.log.debug('leaving _run_pre_bios')
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             self.log.debug(msg)
             self.jira.add_comment(msg)
-            self.jira.move_to_blocked()
+            self.jira.move_to_pre_bios_failed()
 
     def _run_post_bios(self):
         self.log.debug('starting _run_post_bios')

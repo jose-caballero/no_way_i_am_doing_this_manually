@@ -38,7 +38,7 @@ class HVJira(SetLogger):
     def move_to_working_on_adoption(self):
         self._change_state("Working On Adoption")
 
-    def move_to_ready_for_install(self):
+    def move_to_ready_for_reinstall(self):
         self._change_state("Ready For Reinstall")
 
     def move_to_ready_for_test(self):
