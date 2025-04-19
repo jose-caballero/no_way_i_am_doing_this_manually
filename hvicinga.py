@@ -37,9 +37,10 @@ class HVIcinga(SetLogger):
             return False
 
     def create_downtime(self):
-        self.log.debug('starting create_downtime')
         try:
+            self.log.debug('starting create_downtime')
             self._create_downtime()
+            self.log.debug('leaving create_downtime')
         except Exception as ex:
             msg = f'Exception captured: {ex}'
             self.log.debug(msg)
@@ -47,7 +48,6 @@ class HVIcinga(SetLogger):
             self.jira.add_block(ex)
             self.jira.add_comment()
             raise ex
-        self.log.debug('leaving create_downtime')
 
     def _create_downtime(self):
         if not self.host_is_registered:

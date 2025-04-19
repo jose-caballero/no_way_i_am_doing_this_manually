@@ -21,9 +21,10 @@ class HVNetbox(SetLogger):
 
 
     def change(self, changes_d):
-        self.log.debug("starting change")
         try:
+            self.log.debug("starting change")
             self._change(changes_d)
+            self.log.debug("leavingchange")
         except Exception as ex:
             msg = f'Exception captured: {ex}'
             self.log.debug(msg)
@@ -31,7 +32,6 @@ class HVNetbox(SetLogger):
             self.jira.add_block(ex)
             self.jira.add_comment()
             raise ex
-        self.log.debug("leavingchange")
 
     def _change(self, changes_d):
         for k,v in changes_d.items():

@@ -15,9 +15,10 @@ class HVKayobe(SetLogger):
         self.run(cmd)
 
     def run(self, cmd):
-        self.log.debug('starting run')
         try:
+            self.log.debug('starting run')
             self._run(cmd)
+            self.log.debug('leaving run')
         except Exception as ex:
             msg = f'Exception captured: {ex}'
             self.log.debug(msg)
@@ -25,7 +26,6 @@ class HVKayobe(SetLogger):
             self.jira.add_block(ex)
             self.jira.add_comment()
             raise ex
-        self.log.debug('leaving run')
 
     def _run(self, cmd):
         """

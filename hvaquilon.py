@@ -12,6 +12,19 @@ class HVAquilon(SetLogger):
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     def run(self, cmd):
+        try:
+            self.log.debug('starting run')
+            self._run(cmd)
+            self.log.debug('leaving run')
+        except Exception as ex:
+            msg = f'Exception captured: {ex}'
+            self.log.debug(msg)
+            self.jira.add("Exception captured")
+            self.jira.add_block(ex)
+            self.jira.add_comment()
+            raise ex
+
+    def _run(self, cmd):
         self.log.debug('starting run')
         self.client.connect(hostname="aquilon.gridpp.rl.ac.uk", username=self.creds_handler.aquilon.username, password=self.creds_handler.aquilon.password)
         aqcmd = "export AQHOST=aquilon.gridpp.rl.ac.uk; export AQSERVICE=aqd;"

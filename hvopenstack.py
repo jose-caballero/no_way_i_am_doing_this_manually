@@ -32,9 +32,10 @@ class HVOpenstack(SetLogger):
         return out
 
     def disable_service(self):
-        self.log.debug('starting disable_service')
         try:
+            self.log.debug('starting disable_service')
             self._disable_service()
+            self.log.debug('leaving disable_service')
         except Exception as ex:
             msg = f'Exception captured: {ex}'
             self.log.debug(msg)
@@ -42,7 +43,6 @@ class HVOpenstack(SetLogger):
             self.jira.add_block(ex)
             self.jira.add_comment()
             raise ex
-        self.log.debug('leaving disable_service')
 
     def _disable_service(self):
         if not self.is_enabled:

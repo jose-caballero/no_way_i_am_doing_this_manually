@@ -15,9 +15,10 @@ class HVAlertManager(SetLogger):
         self.jira = hypervisormanager.jira
 
     def create_silence(self):
-        self.log.debug("starting create_silence")
         try:
+            self.log.debug("starting create_silence")
             self._create_silence()
+            self.log.debug('leaving create_silence')
         except Exception as ex:
             msg = f'Exception captured: {ex}'
             self.log.debug(msg)
@@ -25,7 +26,6 @@ class HVAlertManager(SetLogger):
             self.jira.add_block(ex)
             self.jira.add_comment()
             raise ex
-        self.log.debug('leaving create_silence')
 
     def _create_silence(self):
         silence_data_hostname = {
