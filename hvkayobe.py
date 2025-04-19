@@ -12,14 +12,26 @@ class HVKayobe(SetLogger):
 
     def run_mellanox(self):
         cmd = f"~/mellanox_playbook.sh {self.hostname}"
-        return self._run(cmd)
+        self.run(cmd)
+
+    def run(self, cmd):
+        self.log.debug('starting run')
+        try:
+            self._run(cmd)
+        except Exception as ex:
+            msg = f'Exception captured: {ex}'
+            self.log.debug(msg)
+            self.jira.add("Exception captured")
+            self.jira.add_block(ex)
+            self.jira.add_comment()
+            raise ex
+        self.log.debug('leaving run')
 
     def _run(self, cmd):
         """
         arguments for the remote command:
              command to execute
         """
-        self.log.debug('starting run')
         cmd = (
             "eval $(ssh-agent) >/dev/null; "
             f"ssh-add {self.creds_handler.kayobe.nopassfile}; "
@@ -40,5 +52,3 @@ class HVKayobe(SetLogger):
         self.jira.add_block(err)
         self.jira.add_comment("return code:")
         self.jira.add_block(st)
-        self.log.debug('leaving run')
-        return out
