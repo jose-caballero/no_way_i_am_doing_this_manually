@@ -81,4 +81,4 @@ class HVSSH(SetLogger):
         """
         stdin, stdout, stderr = self.client.exec_command(command)
         stdin.flush()
-        client.close()
+        self.client.close()
