@@ -49,7 +49,7 @@ class HVSSH(SetLogger):
     @property
     def has_root_access(self):
         try:
-            self.client.connect(self.hostname, username="root", key_filename=self.ssh_private_key_path, timeout=5)
+            self.client.connect(self.hostname, username="root", pkey=self.private_key, timeout=5)
             self.client.exec_command("true")  # Simple command to confirm access
             return True
         except Exception:
@@ -66,7 +66,7 @@ class HVSSH(SetLogger):
 
         # if not root access...
         # Connect as regular user
-        self.client.connect(self.hostname, username=self.ssh_username, key_filename=self.ssh_private_key_path)
+        self.client.connect(self.hostname, username=self.ssh_username, pkey=self.private_key)
         # Append the public key to /root/.ssh/authorized_keys via sudo
 
         # Read your public SSH key
