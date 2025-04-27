@@ -43,7 +43,9 @@ class HyperVisorManager:
             self.hvicinga.create_downtime()
             self.hvalertmanager.create_silence()
             self.hvopenstack.disable_service()
-            if self.hvnetbox.status not in ["", ""]
+            if self.hvnetbox.status not in ["active", "offfline"]:
+                msg = "status of hypervisor {self.request.hypervisor} in Netbox is neither Active nor Offline. Aborting."
+                raise Exception(msg)
             self.hvnetbox.change({"status":"planned"})
             self.hvkayobe.run_mellanox()
             self.hvaquilon.run(f"remove-host.sh {self.request.hypervisor}")
