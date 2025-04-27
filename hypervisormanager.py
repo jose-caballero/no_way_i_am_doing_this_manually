@@ -43,6 +43,7 @@ class HyperVisorManager:
             self.hvicinga.create_downtime()
             self.hvalertmanager.create_silence()
             self.hvopenstack.disable_service()
+            if self.hvnetbox.status not in ["", ""]
             self.hvnetbox.change({"status":"planned"})
             self.hvkayobe.run_mellanox()
             self.hvaquilon.run(f"remove-host.sh {self.request.hypervisor}")

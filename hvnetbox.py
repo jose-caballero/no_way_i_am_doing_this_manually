@@ -22,7 +22,7 @@ class HVNetbox(SetLogger):
     @property
     def status(self):
         data = dict(self.device)
-        return data['status']['value']
+        return data['status']['value'].lower()
 
     def change(self, changes_d):
         try:
