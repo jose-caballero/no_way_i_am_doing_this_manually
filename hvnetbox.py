@@ -19,6 +19,10 @@ class HVNetbox(SetLogger):
         if not self.device:
             self.log.debug(f"No device found with name '{self.hostname}'")
 
+    @property
+    def status(self):
+        data = dict(self.device)
+        return data['status']['value']
 
     def change(self, changes_d):
         try:
