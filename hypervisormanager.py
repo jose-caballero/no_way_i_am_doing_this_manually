@@ -26,8 +26,9 @@ class HyperVisorManager:
 
     def run(self, step):
         self.log.debug('starting run')
-        self.hvssh.ensure_root_access()
-        if step == "pre-bios":
+        if step == "setup":
+            self._run_setup()
+        elif step == "pre-bios":
             self._run_pre_bios()
         elif step == "post-bios":
             self._run_post_bios()
@@ -35,6 +36,12 @@ class HyperVisorManager:
             self._run_finish()
         self.log.debug('leaving run')
 
+    def _run_setup(self):
+        try:
+            self.log.debug('starting _run_setup')
+            self.hvssh.ensure_root_access()
+        except Exception as ex:
+            msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
 
     def _run_pre_bios(self):
         try:

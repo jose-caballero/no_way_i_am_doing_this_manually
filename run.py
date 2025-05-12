@@ -21,8 +21,8 @@ def parse_arguments():
     parser.add_argument(
         '--step',
         required=True,
-        choices=['pre-bios', 'post-bios', 'finish'],
-        help='Specify the step to run: pre-bios, post-bios, or finish'
+        choices=['setup', 'pre-bios', 'post-bios', 'finish'],
+        help='Specify the step to run: setup, pre-bios, post-bios, or finish'
     )
     return parser.parse_args()
 
