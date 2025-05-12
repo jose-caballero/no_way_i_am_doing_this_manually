@@ -56,7 +56,7 @@ class HVKayobe(SetLogger):
         """
         cmd = (
             "eval $(ssh-agent) >/dev/null; "
-            f"ssh-add {self.creds_handler.kayobe.nopassfile}; "
+            f"ssh-add {self.creds_handler.kayobe.nopassfile} &>/dev/null; "
             f"ssh -A {self.creds_handler.kayobe.username}@{self.creds_handler.kayobe.hostname} '{cmd}'"
         )
         subproc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, universal_newlines=True)
