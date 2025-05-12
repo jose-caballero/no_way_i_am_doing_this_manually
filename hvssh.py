@@ -59,12 +59,16 @@ class HVSSH(SetLogger):
     def ensure_root_access(self):
 
         if self.has_root_access:
-            msg = f"user {self.ssh_username} has root acccess to hypervisor {self.hostname}"
+            msg = f"user {self.ssh_username} already has root acccess to hypervisor {self.hostname}"
             self.log.debug(msg)
             self.jira.add_comment(msg)
             return
 
         # if not root access...
+        msg = f"user {self.ssh_username} does not have yet root acccess to hypervisor {self.hostname}"
+        self.log.debug(msg)
+        self.jira.add_comment(msg)
+
         # Connect as regular user
         self.client.connect(self.hostname, username=self.ssh_username, pkey=self.private_key)
         # Append the public key to /root/.ssh/authorized_keys via sudo
@@ -82,3 +86,7 @@ class HVSSH(SetLogger):
         stdin, stdout, stderr = self.client.exec_command(command)
         stdin.flush()
         self.client.close()
+
+        msg = f"user {self.ssh_username} now has root acccess to hypervisor {self.hostname}"
+        self.log.debug(msg)
+        self.jira.add_comment(msg)
