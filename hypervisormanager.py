@@ -39,8 +39,8 @@ class HyperVisorManager:
     def _run_setup(self):
         try:
             self.log.debug('starting _run_setup')
-            #self.hvssh.ensure_root_access()
-            self.hvkayobe.setup_deployment_environment()
+            self.hvssh.ensure_root_access()
+            #self.hvkayobe.setup_deployment_environment()
             self.log.debug('leaving _run_setup')
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
