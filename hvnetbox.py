@@ -73,7 +73,7 @@ class HVNetbox(SetLogger):
         for i in interfaces:
             if i.name == "bmc0":
                 ip_assignments = self.conn.ipam.ip_addresses.filter(interface_id=i.id)
-                return next(ip_assignments).address
+                return next(ip_assignments).address.split('/')[0]
 
     @property
     def url(self):
