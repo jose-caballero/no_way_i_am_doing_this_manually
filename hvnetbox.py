@@ -46,14 +46,13 @@ class HVNetbox(SetLogger):
 
     def _change_role(self, new_role):
         self.log.debug('starting change_role')
-        new_role = new_role.lower()
         role = self.conn.dcim.device_roles.get(name=new_role)
         if not role:
             self.log.debug("Could not find the specified role in NetBox.")
             self.log.debug('leaving change_role')
             return
         # Assign the retrieved role object
-        self.device.device_role = role
+        ###self.device.device_role = role
         self.device.role = role
         self.device.save()
         self.log.debug(f"Successfully updated role for device '{self.hostname}' to '{new_role}'")
