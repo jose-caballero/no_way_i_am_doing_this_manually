@@ -82,7 +82,7 @@ class HVAlertManager(SetLogger):
         else:
             msg = f"Silence created successfully"
             self.log.debug(msg)
-
+            return response
 
 
     def remove_silence(self):
