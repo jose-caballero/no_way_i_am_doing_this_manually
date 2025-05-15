@@ -39,12 +39,18 @@ class HVSSH(SetLogger):
             username = self.creds_handler.ssh.username
         self.client.connect(hostname=self.hostname, port=22, username=self.ssh_username, pkey=self.private_key)
         stdin, stdout, stderr = self.client.exec_command(cmd)
-        output = stdout.read().decode('utf-8')
-        error = stderr.read().decode('utf-8')
+        output = stdout.read().decode('utf-8').strip()
+        error = stderr.read().decode('utf-8').strip()
         rc = stdout.channel.recv_exit_status()
         self.client.close()
         return output, error, rc
 
+
+    @property
+    def is_rocky_8(self):
+        out, _, _ = self._run("cat /etc/os-release | grep VERSION_ID | awk -F\= '{print $2}'")
+        _,version,_ = out.split('"')
+        return version.startswith('8')
     
     @property
     def has_root_access(self):
