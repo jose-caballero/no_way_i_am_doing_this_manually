@@ -53,7 +53,7 @@ class MigrationManager:
 
     def run(self, step):
         for request in self.request_l:
-            hv_manager = HyperVisorManager(self.credentials_handler, request, self.time_interval)
+            hv_manager = HyperVisorManager(self, self.credentials_handler, request, self.time_interval)
             hv_manager.run(step)
 
     def parallel_run(self, step):
