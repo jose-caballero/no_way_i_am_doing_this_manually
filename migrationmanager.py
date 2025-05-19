@@ -6,6 +6,7 @@ import logging
 import logging.handlers
 import time
 from datetime import datetime
+import threading
 
 
 class Request:
@@ -54,4 +55,14 @@ class MigrationManager:
         for request in self.request_l:
             hv_manager = HyperVisorManager(self.credentials_handler, request, self.time_interval)
             hv_manager.run(step)
+
+    def parallel_run(self, step):
+        threads = []
+        for request in self.request_l:
+            hv_manager = HyperVisorManager(self.credentials_handler, request, self.time_interval)
+            thread = threading.Thread(target=hv_manager.run, args=(step,))
+            threads.append(thread)
+            thread.start()
+        for thread in threads:
+            thread.join()
 
