@@ -59,7 +59,7 @@ class MigrationManager:
     def parallel_run(self, step):
         threads = []
         for request in self.request_l:
-            hv_manager = HyperVisorManager(self.credentials_handler, request, self.time_interval)
+            hv_manager = HyperVisorManager(self, self.credentials_handler, request, self.time_interval)
             thread = threading.Thread(target=hv_manager.run, args=(step,))
             threads.append(thread)
             thread.start()

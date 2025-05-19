@@ -10,8 +10,9 @@ from hvjira import HVJira
 import logging
 
 class HyperVisorManager:
-    def __init__(self, creds_handler, request, time_interval): 
+    def __init__(self, migration_manager, creds_handler, request, time_interval): 
         self.log = logging.getLogger(f'hypervisormanager:{request.hypervisor}')
+        self.migration_manager = migration_manager
         self.creds_handler = creds_handler
         self.request = request
         self.time_interval = time_interval
