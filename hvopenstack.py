@@ -21,6 +21,19 @@ class HVOpenstack(SetLogger):
         )
    
     @property
+    def servers(self):
+        """
+        return the list of VMs in this hypervisor
+        """
+        out = []
+        servers = list(self.conn.compute.servers(all_projects=True))
+        for server in servers:
+            if server.hypervisor_name == self.hosname
+            out.append(server)
+        return servers
+
+   
+    @property
     def is_enabled(self):
         self.log.debug('starting is_enabled')
         hypervisors = self.conn.compute.hypervisors()
@@ -64,3 +77,5 @@ class HVOpenstack(SetLogger):
         self.jira.add(msg)
         self.jira.add_block(response)
         self.jira.add_comment()
+
+
