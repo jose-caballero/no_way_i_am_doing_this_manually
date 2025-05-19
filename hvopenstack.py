@@ -5,6 +5,7 @@ from logger import SetLogger
 class HVOpenstack(SetLogger):
     def __init__(self, hypervisormanager):
         self._set_logger()
+        self.hypervisormanager = hypervisormanager
         self.creds_handler = hypervisormanager.creds_handler
         self.hostname = hypervisormanager.request.hypervisor
         self.time_interval = hypervisormanager.time_interval
