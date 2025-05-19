@@ -29,9 +29,9 @@ class HVOpenstack(SetLogger):
         out = []
         servers = list(self.conn.compute.servers(all_projects=True))
         for server in servers:
-            if server.hypervisor_name == self.hosname
-            out.append(server)
-        return servers
+            if server.hypervisor_name == self.hostname:
+                out.append(server)
+        return out 
 
    
     @property
