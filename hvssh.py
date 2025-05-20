@@ -71,6 +71,10 @@ class HVSSH(SetLogger):
         out, err, rc = self._run("lspci | grep -i nvidia", "root")
         return out
 
+    @property
+    def mellanox_info(self):
+        out, err, rc = self._run("lspci | grep -i mellanox", "root")
+        return out
 
     def ensure_root_access(self):
         """
