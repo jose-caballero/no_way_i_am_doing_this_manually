@@ -33,6 +33,45 @@ class HVSSH(SetLogger):
         except Exception:
             return False
 
+    @property
+    def is_empty(self):
+        """
+        check if the ouptut of command "virsh list --all" is empty. 
+        It looks like this
+
+        [root@hv624 ~]# virsh list --all
+        Id    Name                State
+        -----------------------------------
+        14    instance-00998525   running
+        16    instance-0099852b   running
+        17    instance-0099852e   running
+        33    instance-00998591   running
+        35    instance-00998597   running
+        36    instance-0099859d   running
+        37    instance-009985a6   running
+        40    instance-009985be   running
+        60    instance-009987f5   running
+        63    instance-009988e2   running
+        72    instance-009992d5   running
+        78    instance-00999320   running
+        82    instance-00999347   running
+        113   instance-00999947   running
+        116   instance-0099996e   running
+        """
+        out, err, rc = self._run("virsh list --all", "root")
+        return out == ""
+
+    @property 
+    def blocks_info(self):
+        out, err, rc = self._run("lsblk", "root")
+        return out
+
+    @property
+    def gpus_info(self):
+        out, err, rc = self._run("lspci | grep -i nvidia", "root")
+        return out
+
+
     def ensure_root_access(self):
         """
         copy ssh keys to root account on the hypervisor
@@ -74,7 +113,8 @@ class HVSSH(SetLogger):
         """
         Update qemu-kvm on the HV to apply some bug-fixes for draining VMs
         """
-        self.run('dnf update qemu-kvm')
+        self.run('dnf update qemu-kvm', 'root')
+
 
     # --------------------------------------------
     #   Generic execution methods
