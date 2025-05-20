@@ -29,6 +29,7 @@ class HVAquilon(SetLogger):
         self.client.connect(hostname="aquilon.gridpp.rl.ac.uk", username=self.creds_handler.aquilon.username, password=self.creds_handler.aquilon.password)
         aqcmd = "export AQHOST=aquilon.gridpp.rl.ac.uk; export AQSERVICE=aqd;"
         aqcmd += "export PATH=/opt/aquilon/bin/:$PATH;"
+        aqcmd += "export PATH=/var/quattor/bin/:$PATH;"
         aqcmd += cmd
         stdin, stdout, stderr = self.client.exec_command(aqcmd)
         output = stdout.read().decode('utf-8').strip()
