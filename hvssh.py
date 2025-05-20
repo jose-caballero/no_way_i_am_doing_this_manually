@@ -20,7 +20,7 @@ class HVSSH(SetLogger):
 
     @property
     def is_rocky_8(self):
-        out, _, _ = self._run("cat /etc/os-release | grep VERSION_ID | awk -F\= '{print $2}'")
+        out, err, rc = self.run("cat /etc/os-release | grep VERSION_ID | awk -F\= '{print $2}'")
         _,version,_ = out.split('"')
         return version.startswith('8')
 
@@ -58,27 +58,27 @@ class HVSSH(SetLogger):
         113   instance-00999947   running
         116   instance-0099996e   running
         """
-        out, err, rc = self._run("virsh list --all", "root")
+        out, err, rc = self.run("virsh list --all", "root")
         return out == ""
 
     @property 
     def blocks_info(self):
-        out, err, rc = self._run("lsblk", "root")
+        out, err, rc = self.run("lsblk", "root")
         return out
 
     @property
     def gpus_info(self):
-        out, err, rc = self._run("lspci | grep -i nvidia", "root")
+        out, err, rc = self.run("lspci | grep -i nvidia", "root")
         return out
 
     @property
     def mellanox_info(self):
-        out, err, rc = self._run("lspci | grep -i mellanox", "root")
+        out, err, rc = self.run("lspci | grep -i mellanox", "root")
         return out
 
     @property
     def is_efi(self):
-        out, err, rc = self._run("ls /sys/firmware/ | grep efi", "root")
+        out, err, rc = self.run("ls /sys/firmware/ | grep efi", "root")
         return out != ""
 
     def ensure_root_access(self):
@@ -132,8 +132,9 @@ class HVSSH(SetLogger):
     def run(self, cmd, username=None):
         try:
             self.log.debug('starting run')
-            self._run(cmd, username)
+            out, err, rc = self._run(cmd, username)
             self.log.debug('leaving run')
+            return out, err, rc
         except Exception as ex:
             msg = f'Exception captured: {ex}'
             self.log.debug(msg)
