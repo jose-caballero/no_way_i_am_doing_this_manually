@@ -10,31 +10,48 @@ class HVKayobe(SetLogger):
         self.jira = hypervisormanager.jira
         self.hostname = hypervisormanager.request.hypervisor
 
-    def setup_deployment_environment(self):
-        msg = "re running beokay on the Kayobe environment host to fetch latest packages and commits"
-        self.log.debug(msg)
-        self.jira.add_commen(msg)
-        self.run(
-            "python ./beokay.py create "
-            "--no-bootstrap "
-            f"--base-path ./{self.creds_handler.kayobe.prod_env_path} "
-            "--kayobe-repo git@gitlab.stfc.ac.uk:stfc-cloud/kayobe.git "
-            "--kayobe-branch scientific-openstack/yoga-stfc "
-            "--kayobe-config-repo git@gitlab.stfc.ac.uk:stfc-cloud/stfc-cloud-kayobe.git "
-            "--kayobe-config-branch stfc/yoga "
-            "--kayobe-config-env-name stfc-production "
-            "--vault-password-file ~/.productionvaultpassword"
-        )
-        self.run(
-            f"source ./{self.creds_handler.kayobe.prod_env_path}/env-vars.sh; "
-            "kayobe playbook run ansible/load-ssh-key.yml; "
-            "kayobe control host bootstrap"
-        )
+###    def setup_deployment_environment(self):
+###        msg = "re running beokay on the Kayobe environment host to fetch latest packages and commits"
+###        self.log.debug(msg)
+###        self.jira.add_commen(msg)
+###        self.run(
+###            "python ./beokay.py create "
+###            "--no-bootstrap "
+###            f"--base-path ./{self.creds_handler.kayobe.prod_env_path} "
+###            "--kayobe-repo git@gitlab.stfc.ac.uk:stfc-cloud/kayobe.git "
+###            "--kayobe-branch scientific-openstack/yoga-stfc "
+###            "--kayobe-config-repo git@gitlab.stfc.ac.uk:stfc-cloud/stfc-cloud-kayobe.git "
+###            "--kayobe-config-branch stfc/yoga "
+###            "--kayobe-config-env-name stfc-production "
+###            "--vault-password-file ~/.productionvaultpassword"
+###        )
+###        self.run(
+###            f"source ./{self.creds_handler.kayobe.prod_env_path}/env-vars.sh; "
+###            "kayobe playbook run ansible/load-ssh-key.yml; "
+###            "kayobe control host bootstrap"
+###        )
 
 
-    def run_mellanox(self):
+    def run_mellanox_playbook(self):
         cmd = f"~/mellanox_playbook.sh {self.hostname}"
         self.run(cmd)
+
+    def run_inventory_from_netbox(self):
+        cmd = f"~/inventory_from_netbox.sh {self.hostname}"
+        self.run(cmd)
+
+    def run_kayobe_overcloud_host_configure(self):
+        cmd = f"~/kayobe_overcloud_host_configure.sh {self.hostname}"
+        self.run(cmd)
+
+    def run_kayobe_overcloud_deploy_hypervisor(self):
+        cmd = f"~/kayobe_overcloud_deploy_hypervisor.sh {self.hostname}"
+        self.run(cmd)
+
+    def run_kayobe_overcloud_deploy_controller(self):
+        cmd = f"~/kayobe_overcloud_deploy_controller.sh {self.hostname}"
+        self.run(cmd)
+
 
     def run(self, cmd):
         try:
