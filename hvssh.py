@@ -18,40 +18,12 @@ class HVSSH(SetLogger):
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.private_key = paramiko.RSAKey.from_private_key_file(self.ssh_private_key_path, password=self.ssh_passphrase)
 
-
-    def run(self, cmd, username=None):
-        try:
-            self.log.debug('starting run')
-            self._run(cmd, username)
-            self.log.debug('leaving run')
-        except Exception as ex:
-            msg = f'Exception captured: {ex}'
-            self.log.debug(msg)
-            self.jira.add("Exception captured")
-            self.jira.add_block(ex)
-            self.jira.add_comment()
-            raise ex
-
-    def _run(self, cmd, username=None):
-        if not username:
-            # if not username is passed, e.g. "root", 
-            # we SSH as the regular user set in creds.yaml
-            username = self.creds_handler.ssh.username
-        self.client.connect(hostname=self.hostname, port=22, username=self.ssh_username, pkey=self.private_key)
-        stdin, stdout, stderr = self.client.exec_command(cmd)
-        output = stdout.read().decode('utf-8').strip()
-        error = stderr.read().decode('utf-8').strip()
-        rc = stdout.channel.recv_exit_status()
-        self.client.close()
-        return output, error, rc
-
-
     @property
     def is_rocky_8(self):
         out, _, _ = self._run("cat /etc/os-release | grep VERSION_ID | awk -F\= '{print $2}'")
         _,version,_ = out.split('"')
         return version.startswith('8')
-    
+
     @property
     def has_root_access(self):
         try:
@@ -61,9 +33,10 @@ class HVSSH(SetLogger):
         except Exception:
             return False
 
-
     def ensure_root_access(self):
-
+        """
+        copy ssh keys to root account on the hypervisor
+        """
         if self.has_root_access:
             msg = f"user {self.ssh_username} already has root acccess to hypervisor {self.hostname}"
             self.log.debug(msg)
@@ -96,3 +69,39 @@ class HVSSH(SetLogger):
         msg = f"user {self.ssh_username} now has root acccess to hypervisor {self.hostname}"
         self.log.debug(msg)
         self.jira.add_comment(msg)
+
+    def update_qemu_kvm(self):
+        """
+        Update qemu-kvm on the HV to apply some bug-fixes for draining VMs
+        """
+        self.run('dnf update qemu-kvm')
+
+    # --------------------------------------------
+    #   Generic execution methods
+    # --------------------------------------------
+
+    def run(self, cmd, username=None):
+        try:
+            self.log.debug('starting run')
+            self._run(cmd, username)
+            self.log.debug('leaving run')
+        except Exception as ex:
+            msg = f'Exception captured: {ex}'
+            self.log.debug(msg)
+            self.jira.add("Exception captured")
+            self.jira.add_block(ex)
+            self.jira.add_comment()
+            raise ex
+        
+    def _run(self, cmd, username=None):
+        if not username:
+            # if not username is passed, e.g. "root", 
+            # we SSH as the regular user set in creds.yaml
+            username = self.creds_handler.ssh.username
+        self.client.connect(hostname=self.hostname, port=22, username=self.ssh_username, pkey=self.private_key)
+        stdin, stdout, stderr = self.client.exec_command(cmd)
+        output = stdout.read().decode('utf-8').strip()
+        error = stderr.read().decode('utf-8').strip()
+        rc = stdout.channel.recv_exit_status()
+        self.client.close()
+        return output, error, rc
