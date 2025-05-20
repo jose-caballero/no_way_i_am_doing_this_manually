@@ -1,6 +1,54 @@
 import openstack
+from datetime import datetime
 
 from logger import SetLogger
+
+
+class Server:
+    def __init__(self, server, conn):
+        self.server = server
+        self.conn = conn
+
+    @property
+    def id(self):
+        return self.server.id
+
+    @property
+    def can_be_migrated(self):
+        if self.server.flavor.name.startswith("g-") or self.server.flavor.name.startswith("f-"):
+            return False
+        if self.server.status not in ["ACTIVE", "SHUTOFF"]:
+            return False
+        if self.server.flavor.vcpus > 60:
+            return False
+        return True
+
+    def snapshot(self):
+        """
+        Creates a snapshot image of a server
+        :return: Snapshot Image
+        """
+
+        current_time = datetime.now().strftime("%d-%m-%Y-%H%M")
+        image = conn.compute.create_server_image(
+            server=self.id,
+            name=f"stackstorm-{self.id}-{current_time}",
+            wait=True,
+            timeout=21600,  # 6 Hours
+        )
+        wait_for_image_status(conn, image, "active")
+        # Make VM's project image owner
+        conn.image.update_image(image, owner=self.server.project_id)
+        return image
+
+    def migrate(self):
+        self.conn.compute.live_migrate_server(
+            server=self.id, 
+            host=dest_host, 
+            block_migration=True
+        )
+
+
 
 class HVOpenstack(SetLogger):
     def __init__(self, hypervisormanager):
