@@ -76,6 +76,11 @@ class HVSSH(SetLogger):
         out, err, rc = self._run("lspci | grep -i mellanox", "root")
         return out
 
+    @property
+    def is_efi(self):
+        out, err, rc = self._run("ls /sys/firmware/ | grep efi", "root")
+        return out != ""
+
     def ensure_root_access(self):
         """
         copy ssh keys to root account on the hypervisor
