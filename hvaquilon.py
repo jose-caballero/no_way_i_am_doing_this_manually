@@ -8,8 +8,17 @@ class HVAquilon(SetLogger):
         self._set_logger()
         self.creds_handler = hypervisormanager.creds_handler
         self.jira = hypervisormanager.jira
+        self.hostname = hypervisormanager.request.hypervisor
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+
+    def remove_interfaces(self):
+        """
+        remove interfaces other than bmc0 and eth0
+        """
+        cmd = f"python ./remove_interfaces.py {self.hostname}"
+
 
     def run(self, cmd):
         try:
