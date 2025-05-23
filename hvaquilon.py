@@ -18,6 +18,7 @@ class HVAquilon(SetLogger):
         remove interfaces other than bmc0 and eth0
         """
         cmd = f"python ./remove_interfaces.py {self.hostname}"
+        self.run(cmd)
 
 
     def run(self, cmd):
