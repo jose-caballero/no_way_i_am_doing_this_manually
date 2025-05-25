@@ -1,17 +1,22 @@
 import sys
 sys.path.append("/var/quattor/templates/wup22514/lib/python/")
 
-
 from myaq.host import Host
-hv_name = sys.argv[1]
 
+
+
+hv_name = sys.argv[1]
 hv = Host(hv_name)
+
 machine = hv.machine
 
 interfaces = hv.interfaces
-print(f"Interfaces information for HV {hv.name}")
+print(f"Interfaces information for HV {hv.name}\n")
 for interface in interfaces:
-    print(interface)
+    print(interface.name)
+    print(interface.addr)
+    print(interface.ip)
+    print()
 
 for interface in interfaces:
     if interface.name not in ["bmc0", "eth0"]:
@@ -20,5 +25,3 @@ for interface in interfaces:
             machine.remove_interface_address(interface)
         print(f"deleting interface {interface.name} for HV {hv.name}")
         machine.remove_interface(interface)
-
-
