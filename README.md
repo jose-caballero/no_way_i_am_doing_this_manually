@@ -63,6 +63,6 @@ Or use `python3` depending on your environment.
 Example:
 
 ```bash
-python ./run.py --step pre-bios
-python ./run.py --step pre-bios --creds-file /path/to/my/creds.yaml
+python ./run.py --step pre-reinstall
+python ./run.py --step pre-reinstall --creds-file /path/to/my/creds.yaml
 ```

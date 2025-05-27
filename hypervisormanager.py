@@ -29,12 +29,12 @@ class HyperVisorManager:
         self.log.debug('starting run')
         if step == "setup":
             self._run_setup()
-        elif step == "pre-bios":
-            self._run_pre_bios()
-        elif step == "post-bios":
-            self._run_post_bios()
-        elif step == "finish":
-            self._run_finish()
+        elif step == "pre-reinstall":
+            self._run_pre_reinstall()
+        elif step == "post-reinstall":
+            self._run_post_reinstall()
+        elif step == "adoption":
+            self._run_adoption()
         self.log.debug('leaving run')
 
     def _run_setup(self):
@@ -45,10 +45,10 @@ class HyperVisorManager:
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
 
-    def _run_pre_bios(self):
+    def _run_pre_reinstall(self):
         try:
-            self.log.debug('starting _run_pre_bios')
-            self.jira.move_to_working_on_pre_bios()
+            self.log.debug('starting _run_pre_reinstall')
+            self.jira.move_to_working_on_pre_reinstall()
             if not self.hvssh.is_rocky_8:
                 msg = "the hypervisor {self.request.hypervisor} is not Rocky 8. Aborting"
                 raise Exception(msg)
@@ -64,16 +64,16 @@ class HyperVisorManager:
             self.hvaquilon.run(f"remove_interfaces.py {self.request.hypervisor}")
             self.hvaquilon.run(f"prepare_host.py {self.request.hypervisor}")
             self.jira.move_to_ready_for_reinstall()
-            self.log.debug('leaving _run_pre_bios')
+            self.log.debug('leaving _run_pre_reinstall')
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             self.log.debug(msg)
             self.jira.add_comment(msg)
-            self.jira.move_to_pre_bios_failed()
+            self.jira.move_to_pre_reinstall_failed()
 
-    def _run_post_bios(self):
+    def _run_post_reinstall(self):
         try:
-            self.log.debug('starting _run_post_bios')
+            self.log.debug('starting _run_post_reinstall')
             self.jira.move_to_working_on_post_reinstall()
             
             blocks_info = self.hvssh.blocks_info
@@ -92,15 +92,16 @@ class HyperVisorManager:
             self.log.debug(efi_msg)
             self.jira.add_comment(efi_msg)
 
-            #self.hvaquilon.run(f"aq make --hostname {self.request.hypervisor} --personality kayobe-prod")
             self.hvnetbox.change({"status":"active", "role":"Openstack Prod Kolla_Compute"})
-            self.log.debug('leaving _run_post_bios')
+            self.log.debug('leaving _run_post_reinstall')
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             self.log.debug(msg)
             self.jira.add_comment(msg)
 
 
+    def _run_adoption(self):
+        pass
 
 
 
