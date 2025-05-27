@@ -70,9 +70,14 @@ class HyperVisorManager:
 
     def _run_post_bios(self):
         self.log.debug('starting _run_post_bios')
+        self.jira.move_to_working_on_post_reinstall()
         #self.hvaquilon.run(f"aq make --hostname {self.request.hypervisor} --personality kayobe-prod")
         self.hvnetbox.change({"status":"active", "role":"Openstack Prod Kolla_Compute"})
         self.log.debug('leaving _run_post_bios')
+
+
+
+
 
 #    def _run_finish(self):
 #        self.log.debug('starting _run_finish')
