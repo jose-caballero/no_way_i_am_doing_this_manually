@@ -44,6 +44,9 @@ class HVJira(SetLogger):
     def move_to_ready_for_reinstall(self):
         self._change_state("Ready For Reinstall")
 
+    def move_to_ready_for_adoption(self):
+        self._change_state("Ready For Adoption")
+
     def move_to_ready_for_test(self):
         self._change_state("Ready For Test")
 

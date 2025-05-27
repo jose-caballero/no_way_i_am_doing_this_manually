@@ -93,6 +93,7 @@ class HyperVisorManager:
             self.jira.add_comment(efi_msg)
 
             self.hvnetbox.change({"status":"active", "role":"Openstack Prod Kolla_Compute"})
+            self.jira.move_to_ready_for_adoption()
             self.log.debug('leaving _run_post_reinstall')
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
@@ -101,7 +102,13 @@ class HyperVisorManager:
 
 
     def _run_adoption(self):
-        pass
+        try:
+            self.jira.move_to_working_on_adoption()
+        except Exception as ex:
+            msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
+            self.log.debug(msg)
+            self.jira.add_comment(msg)
+            self.jira.move_to_adoption_failed()
 
 
 
