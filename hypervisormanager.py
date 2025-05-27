@@ -72,28 +72,33 @@ class HyperVisorManager:
             self.jira.move_to_pre_bios_failed()
 
     def _run_post_bios(self):
-        self.log.debug('starting _run_post_bios')
-        self.jira.move_to_working_on_post_reinstall()
-        
-        blocks_info = self.hvssh.blocks_info
-        self.log.debug(blocks_info)
-        self.jira.add_comment("lsblk info:")
-        self.jira.add_block(blocks_info)
-        self.jira.add_comment()
+        try:
+            self.log.debug('starting _run_post_bios')
+            self.jira.move_to_working_on_post_reinstall()
+            
+            blocks_info = self.hvssh.blocks_info
+            self.log.debug(blocks_info)
+            self.jira.add_comment("lsblk info:")
+            self.jira.add_block(blocks_info)
+            self.jira.add_comment()
 
-        gpus_info = self.hvssh.gpus_info
-        self.log.debug(gpus_info)
-        self.jira.add_comment("lspci info:")
-        self.jira.add_block(gpus_info)
-        self.jira.add_comment()
+            gpus_info = self.hvssh.gpus_info
+            self.log.debug(gpus_info)
+            self.jira.add_comment("lspci info:")
+            self.jira.add_block(gpus_info)
+            self.jira.add_comment()
 
-        efi_msg = f"hv is UEFI? {self.hvssh.is_efi}"
-        self.log.debug(efi_msg)
-        self.jira.add_comment(efi_msg)
+            efi_msg = f"hv is UEFI? {self.hvssh.is_efi}"
+            self.log.debug(efi_msg)
+            self.jira.add_comment(efi_msg)
 
-        #self.hvaquilon.run(f"aq make --hostname {self.request.hypervisor} --personality kayobe-prod")
-        self.hvnetbox.change({"status":"active", "role":"Openstack Prod Kolla_Compute"})
-        self.log.debug('leaving _run_post_bios')
+            #self.hvaquilon.run(f"aq make --hostname {self.request.hypervisor} --personality kayobe-prod")
+            self.hvnetbox.change({"status":"active", "role":"Openstack Prod Kolla_Compute"})
+            self.log.debug('leaving _run_post_bios')
+        except Exception as ex:
+            msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
+            self.log.debug(msg)
+            self.jira.add_comment(msg)
 
 
 
