@@ -104,6 +104,11 @@ class HyperVisorManager:
     def _run_adoption(self):
         try:
             self.jira.move_to_working_on_adoption()
+            self.hvkayobe.run_inventory_from_netbox()
+            self.hvkayobe.run_kayobe_overcloud_host_configure()
+            self.hvkayobe.run_kayobe_overcloud_deploy_hypervisor()
+            self.hvkayobe.run_kayobe_overcloud_deploy_controller()
+
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             self.log.debug(msg)

@@ -36,6 +36,10 @@ class HVKayobe(SetLogger):
         cmd = f"~/mellanox_playbook.sh {self.hostname}"
         self.run(cmd)
 
+    def run_cleanup_tmp(self):
+        cmd = "~/cleanup_tmp.sh"
+        self.run(cmd)
+
     def run_inventory_from_netbox(self):
         cmd = f"~/inventory_from_netbox.sh {self.hostname}"
         self.run(cmd)
