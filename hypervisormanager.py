@@ -58,8 +58,8 @@ class HyperVisorManager:
             self.hvnetbox.change({"status":"planned"})
             self.hvkayobe.run_mellanox()
             self.hvaquilon.run(f"reimport-host.sh {self.request.hypervisor}")
-            self.hvaquilon.run(f"aq make --hostname {self.request.hypervisor} --personality inventory --archetype cloud --osname rocky --osversion 9x-x86_64")
-            self.hvaquilon.run(f"aq pxeswitch --hostname {self.request.hypervisor} --install")
+            self.hvaquilon.run(f"remove_interfaces.py {self.request.hypervisor}")
+            self.hvaquilon.run(f"prepare_host.py {self.request.hypervisor}")
             self.jira.move_to_ready_for_reinstall()
             self.log.debug('leaving _run_pre_bios')
         except Exception as ex:
