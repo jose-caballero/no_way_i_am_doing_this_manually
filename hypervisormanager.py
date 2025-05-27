@@ -52,9 +52,11 @@ class HyperVisorManager:
             if not self.hvssh.is_rocky_8:
                 msg = "the hypervisor {self.request.hypervisor} is not Rocky 8. Aborting"
                 raise Exception(msg)
-            self.hvicinga.create_downtime()
             self.hvalertmanager.create_silence()
-            self.hvopenstack.disable_service()
+
+            # FIXME
+            #self.hvopenstack.disable_service()
+
             if self.hvnetbox.status not in ["active", "offfline"]:
                 msg = "status of hypervisor {self.request.hypervisor} in Netbox is neither Active nor Offline. Aborting."
                 raise Exception(msg)
