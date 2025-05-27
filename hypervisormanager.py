@@ -49,6 +49,9 @@ class HyperVisorManager:
         try:
             self.log.debug('starting _run_pre_bios')
             self.jira.move_to_working_on_pre_bios()
+            if not self.hvssh.is_rocky_8:
+                msg = "the hypervisor {self.request.hypervisor} is not Rocky 8. Aborting"
+                raise Exception(msg)
             self.hvicinga.create_downtime()
             self.hvalertmanager.create_silence()
             self.hvopenstack.disable_service()
