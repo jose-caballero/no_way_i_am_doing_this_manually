@@ -72,6 +72,7 @@ class HVAquilon(SetLogger):
         self.jira.add_comment()
 
         self.log.debug('leaving _run')
-        return output, error, rc
+        if rc != 0:
+            raise Exception("aquilon script failed")
 
 
