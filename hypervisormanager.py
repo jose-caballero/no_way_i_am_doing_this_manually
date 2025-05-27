@@ -48,24 +48,21 @@ class HyperVisorManager:
 
     def _run_pre_bios(self):
         try:
-            #self.log.debug('starting _run_pre_bios')
-            #self.jira.move_to_working_on_pre_bios()
-            #self.hvicinga.create_downtime()
-            #self.hvalertmanager.create_silence()
-            #self.hvopenstack.disable_service()
-            ##print(f'{self.request.hypervisor} {self.hvopenstack.is_enabled}')
-            #if self.hvnetbox.status not in ["active", "offfline"]:
-            #    msg = "status of hypervisor {self.request.hypervisor} in Netbox is neither Active nor Offline. Aborting."
-            #    raise Exception(msg)
-            #self.hvnetbox.change({"status":"planned"})
-            #self.hvkayobe.run_mellanox()
-
+            self.log.debug('starting _run_pre_bios')
+            self.jira.move_to_working_on_pre_bios()
+            self.hvicinga.create_downtime()
+            self.hvalertmanager.create_silence()
+            self.hvopenstack.disable_service()
+            if self.hvnetbox.status not in ["active", "offfline"]:
+                msg = "status of hypervisor {self.request.hypervisor} in Netbox is neither Active nor Offline. Aborting."
+                raise Exception(msg)
+            self.hvnetbox.change({"status":"planned"})
+            self.hvkayobe.run_mellanox()
             self.hvaquilon.run(f"reimport-host.sh {self.request.hypervisor}")
-
-            #self.hvaquilon.run(f"aq make --hostname {self.request.hypervisor} --personality inventory --archetype cloud --osname rocky --osversion 9x-x86_64")
-            #self.hvaquilon.run(f"aq pxeswitch --hostname {self.request.hypervisor} --install")
-            #self.jira.move_to_ready_for_reinstall()
-            #self.log.debug('leaving _run_pre_bios')
+            self.hvaquilon.run(f"aq make --hostname {self.request.hypervisor} --personality inventory --archetype cloud --osname rocky --osversion 9x-x86_64")
+            self.hvaquilon.run(f"aq pxeswitch --hostname {self.request.hypervisor} --install")
+            self.jira.move_to_ready_for_reinstall()
+            self.log.debug('leaving _run_pre_bios')
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             self.log.debug(msg)
