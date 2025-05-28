@@ -63,13 +63,14 @@ class HyperVisorManager:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             self.log.debug(msg)
             self.jira.add_comment(msg)
-            self.jira.move_to_pre_reinstall_failed()
+            #self.jira.move_to_pre_reinstall_failed()
 
 
     def _run_pre_reinstall(self):
         try:
             self.log.debug('starting _run_pre_reinstall')
             self.jira.move_to_working_on_pre_reinstall()
+
             self.hvalertmanager.create_silence()
             self.hvnetbox.change({"status":"planned"})
             self.hvkayobe.run_mellanox()
