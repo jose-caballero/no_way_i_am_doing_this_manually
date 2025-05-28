@@ -52,6 +52,7 @@ class HyperVisorManager:
             if not self.hvssh.is_rocky_8:
                 msg = "the hypervisor {self.request.hypervisor} is not Rocky 8. Aborting"
                 raise Exception(msg)
+            self.hvssh.update_qemu_kvm()
             self.hvalertmanager.create_silence()
 
             # FIXME
