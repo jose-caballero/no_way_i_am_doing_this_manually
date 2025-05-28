@@ -70,7 +70,9 @@ class HyperVisorManager:
         try:
             self.log.debug('starting _run_pre_reinstall')
             self.jira.move_to_working_on_pre_reinstall()
-
+            if not self.hvssh.is_emtpy:
+                msg = "hypervisor still not empty"
+                raise Exception(msg)
             self.hvalertmanager.create_silence()
             self.hvnetbox.change({"status":"planned"})
             self.hvkayobe.run_mellanox()
