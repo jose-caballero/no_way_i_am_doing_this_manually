@@ -37,7 +37,7 @@ class HVSSH(SetLogger):
     def is_empty(self):
         """
         check if the ouptut of command "virsh list --all" is empty. 
-        It looks like this
+        Normally, it looks like this
 
         [root@hv624 ~]# virsh list --all
         Id    Name                State
@@ -57,9 +57,16 @@ class HVSSH(SetLogger):
         82    instance-00999347   running
         113   instance-00999947   running
         116   instance-0099996e   running
+
+        It looks like this when empty
+
+        [root@hv624 ~]# virsh list --all
+        Id    Name                State
+        -----------------------------------
         """
         out, err, rc = self.run("virsh list --all", "root")
-        return out == ""
+        out_l = out.split('\n')
+        return len(out_l) == 2
 
     @property 
     def blocks_info(self):
