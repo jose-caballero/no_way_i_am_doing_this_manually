@@ -21,8 +21,8 @@ def parse_arguments():
     parser.add_argument(
         '--step',
         required=True,
-        choices=['setup', 'pre-reinstall', 'post-reinstall', 'adoption'],
-        help='Specify the step to run: setup, pre-reinstall, post-reinstall, or adoption'
+        choices=['setup', 'pre-drain', 'pre-reinstall', 'post-reinstall', 'adoption'],
+        help='Specify the step to run: setup, pre-drain, pre-reinstall, post-reinstall, or adoption'
     )
     return parser.parse_args()
 

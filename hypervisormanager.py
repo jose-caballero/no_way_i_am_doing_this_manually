@@ -29,6 +29,8 @@ class HyperVisorManager:
         self.log.debug('starting run')
         if step == "setup":
             self._run_setup()
+        elif step == "pre-drain":
+            self._run_pre_drain()
         elif step == "pre-reinstall":
             self._run_pre_reinstall()
         elif step == "post-reinstall":
@@ -44,23 +46,31 @@ class HyperVisorManager:
             self.log.debug('leaving _run_setup')
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
+    
+
+    def _run_pre_drain(self):
+        try:
+            self.log.debug('starting _run_pre_drain')
+            if not self.hvssh.is_rocky_8:
+                msg = "the hypervisor {self.request.hypervisor} is not Rocky 8. Aborting"
+                raise Exception(msg)
+            self.hvssh.update_qemu_kvm()
+            if self.hvnetbox.status not in ["active", "offfline"]:
+                msg = "status of hypervisor {self.request.hypervisor} in Netbox is neither Active nor Offline. Aborting."
+                raise Exception(msg)
+            self.log.debug('leaving _run_pre_drain')
+        except Exception as ex:
+            msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
+            self.log.debug(msg)
+            self.jira.add_comment(msg)
+            self.jira.move_to_pre_reinstall_failed()
+
 
     def _run_pre_reinstall(self):
         try:
             self.log.debug('starting _run_pre_reinstall')
             self.jira.move_to_working_on_pre_reinstall()
-            if not self.hvssh.is_rocky_8:
-                msg = "the hypervisor {self.request.hypervisor} is not Rocky 8. Aborting"
-                raise Exception(msg)
-            self.hvssh.update_qemu_kvm()
             self.hvalertmanager.create_silence()
-
-            # FIXME
-            #self.hvopenstack.disable_service()
-
-            if self.hvnetbox.status not in ["active", "offfline"]:
-                msg = "status of hypervisor {self.request.hypervisor} in Netbox is neither Active nor Offline. Aborting."
-                raise Exception(msg)
             self.hvnetbox.change({"status":"planned"})
             self.hvkayobe.run_mellanox()
             self.hvaquilon.run(f"reimport-host.sh {self.request.hypervisor}")
