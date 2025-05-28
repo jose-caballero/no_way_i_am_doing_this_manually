@@ -74,6 +74,7 @@ class HyperVisorManager:
                 msg = "hypervisor still not empty"
                 raise Exception(msg)
             self.hvssh.blocks_info()
+            self.hvssh.gpus_info()
             self.hvalertmanager.create_silence()
             self.hvnetbox.change({"status":"planned"})
             self.hvkayobe.run_mellanox()
@@ -95,11 +96,8 @@ class HyperVisorManager:
             
             self.hvssh.blocks_info()
 
-            gpus_info = self.hvssh.gpus_info
-            self.log.debug(gpus_info)
-            self.jira.add_comment("lspci info:")
-            self.jira.add_block(gpus_info)
-            self.jira.add_comment()
+            self.hvssh.gpus_info()
+
 
             efi_msg = f"hv is UEFI? {self.hvssh.is_efi}"
             self.log.debug(efi_msg)
