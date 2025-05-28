@@ -73,10 +73,12 @@ class HVSSH(SetLogger):
         out_l = out.split('\n')
         return len(out_l) == 2
 
-    @property 
     def blocks_info(self):
         out, err, rc = self.run("lsblk", "root")
-        return out
+        self.log.debug(out)
+        self.jira.add_comment("lsblk info:")
+        self.jira.add_block(out)
+        self.jira.add_comment()
 
     @property
     def gpus_info(self):

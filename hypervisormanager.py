@@ -73,6 +73,7 @@ class HyperVisorManager:
             if not self.hvssh.is_emtpy:
                 msg = "hypervisor still not empty"
                 raise Exception(msg)
+            self.hvssh.blocks_info()
             self.hvalertmanager.create_silence()
             self.hvnetbox.change({"status":"planned"})
             self.hvkayobe.run_mellanox()
@@ -92,11 +93,7 @@ class HyperVisorManager:
             self.log.debug('starting _run_post_reinstall')
             self.jira.move_to_working_on_post_reinstall()
             
-            blocks_info = self.hvssh.blocks_info
-            self.log.debug(blocks_info)
-            self.jira.add_comment("lsblk info:")
-            self.jira.add_block(blocks_info)
-            self.jira.add_comment()
+            self.hvssh.blocks_info()
 
             gpus_info = self.hvssh.gpus_info
             self.log.debug(gpus_info)
