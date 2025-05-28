@@ -65,6 +65,11 @@ class HVSSH(SetLogger):
         -----------------------------------
         """
         out, err, rc = self.run("virsh list --all", "root")
+        self.log.debug("checking if HV is empty")
+        self.log.debug(out)
+        self.jira.add("checking if HV is empty")
+        self.jira.add_block(out)
+        self.jira.add_comment()
         out_l = out.split('\n')
         return len(out_l) == 2
 
