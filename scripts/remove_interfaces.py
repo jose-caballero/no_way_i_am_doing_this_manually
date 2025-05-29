@@ -22,6 +22,14 @@ for interface in interfaces:
     if interface.name not in ["bmc0", "eth0"]:
         if interface.ip != "":
             print(f"deleting interface address {interface.ip} for interface {interface.name} for HV {hv.name}")
-            machine.remove_interface_address(interface)
+            results = machine.remove_interface_address(interface)
+            print(f"command: {results.cmd}")
+            print(f"stdout: {results.out}")
+            print(f"stderr: {results.err}")
+            print(f"return code: {results.rc}")
         print(f"deleting interface {interface.name} for HV {hv.name}")
-        machine.remove_interface(interface)
+        results = machine.remove_interface(interface)
+        print(f"command: {results.cmd}")
+        print(f"stdout: {results.out}")
+        print(f"stderr: {results.err}")
+        print(f"return code: {results.rc}")
