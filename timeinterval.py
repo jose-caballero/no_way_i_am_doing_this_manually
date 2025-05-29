@@ -13,8 +13,8 @@ class TimeInterval:
     
     @property
     def end_str(self):
-        one_year_future = self.utc_now + timedelta(days=4*7)
-        future_str = one_year_future.strftime("%Y-%m-%dT%H:%M:%SZ")
+        four_weeks_future = self.utc_now + timedelta(days=4*7)
+        future_str = four_weeks_future.strftime("%Y-%m-%dT%H:%M:%SZ")
         return future_str
 
     @property
