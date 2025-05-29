@@ -82,14 +82,18 @@ class HVSSH(SetLogger):
 
     def gpus_info(self):
         out, err, rc = self.run("lspci | grep -i nvidia", "root")
-        self.log.debug(gpus_info)
+        self.log.debug(out)
         self.jira.add_comment("lspci info:")
-        self.jira.add_block(gpus_info)
+        self.jira.add_block(out)
         self.jira.add_comment()
 
     @property
     def mellanox_info(self):
         out, err, rc = self.run("lspci | grep -i mellanox", "root")
+        self.log.debug(out)
+        self.jira.add_comment("mellanox info:")
+        self.jira.add_block(out)
+        self.jira.add_comment()
         return out
 
     @property

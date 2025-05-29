@@ -29,8 +29,9 @@ class HVJira(SetLogger):
     def add_comment(self, text=""):
         if text:
             self.add(text)
-        self.conn.add_comment(self.issue_key, self.buffer, is_internal=True)
-        self.buffer = "Message from automation library:\n"
+        else:
+            self.conn.add_comment(self.issue_key, self.buffer, is_internal=True)
+            self.buffer = "Message from automation library:\n"
 
     def move_to_working_on_pre_bios(self):
         self._change_state("Working On Pre Bios")
