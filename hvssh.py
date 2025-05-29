@@ -68,22 +68,27 @@ class HVSSH(SetLogger):
         self.log.debug("checking if HV is empty")
         self.log.debug(out)
         self.jira.add("checking if HV is empty")
+        self.jira.add("executing command 'virsh list --all'")
         self.jira.add_block(out)
-        self.jira.send_buffer()
         out_l = out.split('\n')
-        return len(out_l) == 2
+        empty = (len(out_l) == 2)
+        self.jira.add(f"is HV empty? {empty}")
+        self.jira.send_buffer()
+        return emtpy
 
     def blocks_info(self):
         out, err, rc = self.run("lsblk", "root")
         self.log.debug(out)
-        self.jira.add("lsblk info:")
+        self.jira.add("checking the block devices on the HV")
+        self.jira.add("executing command 'lsblk'")
         self.jira.add_block(out)
         self.jira.send_buffer()
 
     def gpus_info(self):
         out, err, rc = self.run("lspci | grep -i nvidia", "root")
         self.log.debug(out)
-        self.jira.add("lspci info:")
+        self.jira.add("checking the nvidia cards on the HV")
+        self.jira.add("executing command 'lspci'")
         self.jira.add_block(out)
         self.jira.send_buffer()
 
@@ -91,7 +96,8 @@ class HVSSH(SetLogger):
     def mellanox_info(self):
         out, err, rc = self.run("lspci | grep -i mellanox", "root")
         self.log.debug(out)
-        self.jira.add("mellanox info:")
+        self.jira.add("checking the presence of mellanox cards on the HV")
+        self.jira.add("executing command 'lspci | grep -i mellanox'")
         self.jira.add_block(out)
         self.jira.send_buffer()
         return out
