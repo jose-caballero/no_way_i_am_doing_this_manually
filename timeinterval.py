@@ -17,13 +17,6 @@ class TimeInterval:
         future_str = four_weeks_future.strftime("%Y-%m-%dT%H:%M:%SZ")
         return future_str
 
-    @property
-    def start_seconds(self):
-        return int(self.utc_now.timestamp())
-
-    @property
-    def end_seconds(self):
-        return int(self.utc_now.timestamp()) + ( (3600*24) * 4 * 7 )
 
 
 
