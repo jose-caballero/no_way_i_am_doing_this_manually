@@ -148,7 +148,11 @@ class HVSSH(SetLogger):
         """
         Update qemu-kvm on the HV to apply some bug-fixes for draining VMs
         """
-        self.run('dnf update qemu-kvm', 'root')
+        out, err, rc = self.run('dnf update qemu-kvm', 'root')
+        self.jira.add("updating qemu-kvm")
+        self.jira.add("executing command: 'dnf update qemu-kvm'")
+        self.jira.add_block(out)
+        self.jira.send_buffer()
 
 
     # --------------------------------------------
