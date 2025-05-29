@@ -67,26 +67,26 @@ class HyperVisorManager:
     def _run_pre_reinstall(self):
         try:
             self.log.debug('starting _run_pre_reinstall')
-            #self.jira.move_to_working_on_pre_bios()
-            #if not self.hvssh.is_empty:
-            #    msg = "hypervisor still not empty"
-            #    raise Exception(msg)
-            #self.hvssh.blocks_info()
-            #self.hvssh.gpus_info()
-            #self.hvalertmanager.create_silence()
-            #self.hvnetbox.change({"status":"planned"})
-            #if self.hvssh.mellanox_info != "":
-            #    self.hvkayobe.run_mellanox_playbook()
-            #self.hvaquilon.run(f"./reimport-host.sh {self.request.hypervisor}")
-            #self.hvaquilon.run(f"python3 ./remove_interfaces.py {self.request.hypervisor}")
-            #self.hvaquilon.run(f"python3 ./prepare_host.py {self.request.hypervisor}")
+            self.jira.move_to_working_on_pre_bios()
+            if not self.hvssh.is_empty:
+                msg = "hypervisor still not empty"
+                raise Exception(msg)
+            self.hvssh.blocks_info()
+            self.hvssh.gpus_info()
+            self.hvalertmanager.create_silence()
+            self.hvnetbox.change({"status":"planned"})
+            if self.hvssh.mellanox_info != "":
+                self.hvkayobe.run_mellanox_playbook()
+            self.hvaquilon.run(f"./reimport-host.sh {self.request.hypervisor}")
+            self.hvaquilon.run(f"python3 ./remove_interfaces.py {self.request.hypervisor}")
+            self.hvaquilon.run(f"python3 ./prepare_host.py {self.request.hypervisor}")
             self.jira.move_to_ready_for_reinstall()
             self.log.debug('leaving _run_pre_reinstall')
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             self.log.debug(msg)
             self.jira.add(msg)
-            #self.jira.move_to_pre_bios_failed()
+            self.jira.move_to_pre_bios_failed()
 
     def _run_post_reinstall(self):
         try:
