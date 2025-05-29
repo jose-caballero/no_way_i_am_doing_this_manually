@@ -31,7 +31,7 @@ class HVAquilon(SetLogger):
             self.log.debug(msg)
             self.jira.add("Exception captured")
             self.jira.add_block(ex)
-            self.jira.add_comment()
+            self.jira.send_buffer()
             raise ex
 
     def _run(self, cmd):
@@ -59,7 +59,7 @@ class HVAquilon(SetLogger):
         ###self.jira.add_block(error)
         ###self.jira.add("return code:")
         ###self.jira.add_block(rc)
-        ###self.jira.add_comment()
+        ###self.jira.send_buffer()
         ###self.log.debug('leaving run')
 
         self.log.debug(f'cmd = {aqcmd}')
@@ -69,7 +69,7 @@ class HVAquilon(SetLogger):
         self.jira.add_block(output)
         self.jira.add("return code:")
         self.jira.add_block(rc)
-        self.jira.add_comment()
+        self.jira.send_buffer()
 
         self.log.debug('leaving _run')
         if rc != 0:

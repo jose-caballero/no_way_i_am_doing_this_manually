@@ -67,33 +67,33 @@ class HVSSH(SetLogger):
         out, err, rc = self.run("virsh list --all", "root")
         self.log.debug("checking if HV is empty")
         self.log.debug(out)
-        self.jira.add_comment("checking if HV is empty")
+        self.jira.add("checking if HV is empty")
         self.jira.add_block(out)
-        self.jira.add_comment()
+        self.jira.send_buffer()
         out_l = out.split('\n')
         return len(out_l) == 2
 
     def blocks_info(self):
         out, err, rc = self.run("lsblk", "root")
         self.log.debug(out)
-        self.jira.add_comment("lsblk info:")
+        self.jira.add("lsblk info:")
         self.jira.add_block(out)
-        self.jira.add_comment()
+        self.jira.send_buffer()
 
     def gpus_info(self):
         out, err, rc = self.run("lspci | grep -i nvidia", "root")
         self.log.debug(out)
-        self.jira.add_comment("lspci info:")
+        self.jira.add("lspci info:")
         self.jira.add_block(out)
-        self.jira.add_comment()
+        self.jira.send_buffer()
 
     @property
     def mellanox_info(self):
         out, err, rc = self.run("lspci | grep -i mellanox", "root")
         self.log.debug(out)
-        self.jira.add_comment("mellanox info:")
+        self.jira.add("mellanox info:")
         self.jira.add_block(out)
-        self.jira.add_comment()
+        self.jira.send_buffer()
         return out
 
     @property
@@ -108,13 +108,13 @@ class HVSSH(SetLogger):
         if self.has_root_access:
             msg = f"user {self.ssh_username} already has root acccess to hypervisor {self.hostname}"
             self.log.debug(msg)
-            self.jira.add_comment(msg)
+            self.jira.add(msg)
             return
 
         # if not root access...
         msg = f"user {self.ssh_username} does not have yet root acccess to hypervisor {self.hostname}"
         self.log.debug(msg)
-        self.jira.add_comment(msg)
+        self.jira.add(msg)
 
         # Connect as regular user
         self.client.connect(self.hostname, username=self.ssh_username, pkey=self.private_key)
@@ -136,7 +136,7 @@ class HVSSH(SetLogger):
 
         msg = f"user {self.ssh_username} now has root acccess to hypervisor {self.hostname}"
         self.log.debug(msg)
-        self.jira.add_comment(msg)
+        self.jira.add(msg)
 
     def update_qemu_kvm(self):
         """
@@ -160,7 +160,7 @@ class HVSSH(SetLogger):
             self.log.debug(msg)
             self.jira.add("Exception captured")
             self.jira.add_block(ex)
-            self.jira.add_comment()
+            self.jira.send_buffer()
             raise ex
         
     def _run(self, cmd, username=None):

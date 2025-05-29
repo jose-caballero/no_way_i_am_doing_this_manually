@@ -62,7 +62,7 @@ class HyperVisorManager:
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             self.log.debug(msg)
-            self.jira.add_comment(msg)
+            self.jira.add(msg)
             #self.jira.move_to_pre_reinstall_failed()
 
 
@@ -87,7 +87,7 @@ class HyperVisorManager:
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             self.log.debug(msg)
-            self.jira.add_comment(msg)
+            self.jira.add(msg)
             #self.jira.move_to_pre_bios_failed()
 
     def _run_post_reinstall(self):
@@ -102,7 +102,7 @@ class HyperVisorManager:
 
             efi_msg = f"hv is UEFI? {self.hvssh.is_efi}"
             self.log.debug(efi_msg)
-            self.jira.add_comment(efi_msg)
+            self.jira.add(efi_msg)
 
             self.hvnetbox.change({"status":"active", "role":"Openstack Prod Kolla_Compute"})
             self.jira.move_to_ready_for_adoption()
@@ -110,7 +110,7 @@ class HyperVisorManager:
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             self.log.debug(msg)
-            self.jira.add_comment(msg)
+            self.jira.add(msg)
 
 
     def _run_adoption(self):
@@ -124,7 +124,7 @@ class HyperVisorManager:
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             self.log.debug(msg)
-            self.jira.add_comment(msg)
+            self.jira.add(msg)
             self.jira.move_to_adoption_failed()
 
 
@@ -142,7 +142,7 @@ class HyperVisorManager:
 #        hv_icinga.remove_downtime()
 #        msg = "downtime removed from Icinga"
 #        self.log.debug(msg)
-#        self.jira.add_comment(msg)
+#        self.jira.add(msg)
 #        self.log.debug('leaving _finish_icinga')
 #
 #    def _finish_alertmanager(self):
@@ -151,6 +151,6 @@ class HyperVisorManager:
 #        hv_alertmanager.remove_silence()
 #        msg = "silence removed from AlertManager"
 #        self.log.debug(msg)
-#        self.jira.add_comment(msg)
+#        self.jira.add(msg)
 #        self.log.debug('leaving _finish_alertmanager')
 

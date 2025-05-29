@@ -24,7 +24,7 @@ class HVAlertManager(SetLogger):
             self.log.debug(msg)
             self.jira.add("Exception captured")
             self.jira.add_block(ex)
-            self.jira.add_comment()
+            self.jira.send_buffer()
             raise ex
 
     def _create_silence(self):
@@ -59,7 +59,7 @@ class HVAlertManager(SetLogger):
         msg += "\n"
         msg += out_msg
         self.log.debug(msg)
-        self.jira.add_comment(msg)
+        self.jira.add(msg)
 
 
     def _create_silence_matcher(self, silence_data):
@@ -77,7 +77,7 @@ class HVAlertManager(SetLogger):
             text = f"Response text: {response.text}"
             self.log.debug(text)
             self.jira.add_block(response.text)
-            self.jira.add_comment()
+            self.jira.send_buffer()
             raise Exception(response.text)
         else:
             msg = f"Silence created successfully"

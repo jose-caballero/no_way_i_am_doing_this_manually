@@ -34,7 +34,7 @@ class HVNetbox(SetLogger):
             self.log.debug(msg)
             self.jira.add("Exception captured")
             self.jira.add_block(ex)
-            self.jira.add_comment()
+            self.jira.send_buffer()
             raise ex
 
     def _change(self, changes_d):
@@ -65,7 +65,7 @@ class HVNetbox(SetLogger):
         msg += "\n"
         msg += self.url
         self.log.debug(msg)
-        self.jira.add_comment(msg)
+        self.jira.add(msg)
 
     @property
     def ipmi_address(self):

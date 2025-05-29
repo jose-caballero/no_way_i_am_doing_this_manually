@@ -103,14 +103,14 @@ class HVOpenstack(SetLogger):
             self.log.debug(msg)
             self.jira.add("Exception captured")
             self.jira.add_block(ex)
-            self.jira.add_comment()
+            self.jira.send_buffer()
             raise ex
 
     def _disable_service(self):
         if not self.is_enabled:
             msg = "the hypervisor was already disabled from OpenStack. Nothing to do"
             self.log.debug(msg)
-            self.jira.add_comment(msg)
+            self.jira.add(msg)
             return
         # if the host is enabled in OpenStack...
         disable_reason = f"RL9 Reinstall {self.time_interval.start_str} - JCB"
@@ -125,6 +125,6 @@ class HVOpenstack(SetLogger):
         self.log.debug(response)
         self.jira.add(msg)
         self.jira.add_block(response)
-        self.jira.add_comment()
+        self.jira.send_buffer()
 
 

@@ -67,7 +67,7 @@ class HVKayobe(SetLogger):
             self.log.debug(msg)
             self.jira.add("Exception captured")
             self.jira.add_block(ex)
-            self.jira.add_comment()
+            self.jira.send_buffer()
             raise ex
 
     def _run(self, cmd):
@@ -87,14 +87,15 @@ class HVKayobe(SetLogger):
         self.log.debug(f'output = {out}')
         self.log.debug(f'err = {err}')
         self.log.debug(f'rc = {st}')
-        self.jira.add_comment("command:")
+        self.jira.add("command:")
         self.jira.add_block(cmd)
-        self.jira.add_comment("output:")
+        self.jira.add("output:")
         self.jira.add_block(out)
-        self.jira.add_comment("error:")
+        self.jira.add("error:")
         self.jira.add_block(err)
-        self.jira.add_comment("return code:")
+        self.jira.add("return code:")
         self.jira.add_block(st)
+        self.jira.send_buffer()
         # check if the output is OK
         if "fatal" in out:
             raise Exception("playbook failed")
