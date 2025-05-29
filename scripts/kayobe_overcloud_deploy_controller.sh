@@ -3,7 +3,7 @@
 HYPERVISOR=$1
 
 current_datetime=$(date +"%Y_%m_%d_%H_%M")
-LOGFILE="logs_overcloud_deploy_controller_${HYPERVISOR}_${current_datetime}"
+LOGFILE="${HOME}/logs/logs_overcloud_deploy_controller_${HYPERVISOR}_${current_datetime}"
 
 source ~/kayobe-prod/env-vars.sh
 
