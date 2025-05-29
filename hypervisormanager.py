@@ -1,4 +1,3 @@
-from hvicinga import HVIcinga
 from hvalertmanager import HVAlertManager
 from hvnetbox import HVNetbox
 from hvopenstack import HVOpenstack
@@ -17,7 +16,6 @@ class HyperVisorManager:
         self.request = request
         self.time_interval = time_interval
         self.jira = HVJira(self)
-        self.hvicinga = HVIcinga(self)
         self.hvalertmanager = HVAlertManager(self)
         self.hvnetbox = HVNetbox(self)
         self.hvopenstack = HVOpenstack(self)
