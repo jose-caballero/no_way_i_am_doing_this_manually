@@ -24,10 +24,18 @@ def parse_arguments():
         choices=['setup', 'pre-drain', 'pre-reinstall', 'post-reinstall', 'adoption'],
         help='Specify the step to run: setup, pre-drain, pre-reinstall, post-reinstall, or adoption'
     )
+    parser.add_argument(
+        '--parallel',
+        action='store_true',
+        default=False,
+        help='Run the migration step in parallel mode (default: False)'
+    )
     return parser.parse_args()
 
 if __name__ == '__main__':
     args = parse_arguments()
     manager = MigrationManager(args.creds_file, args.hypervisors_file)
-    manager.run(args.step)
-    #manager.parallel_run(args.step)
+    if args.parallel:
+        manager.parallel_run(args.step)
+    else:
+        manager.run(args.step)
