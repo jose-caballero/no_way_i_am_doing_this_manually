@@ -20,7 +20,7 @@ class HVSSH(SetLogger):
 
     @property
     def is_rocky_8(self):
-        out, err, rc = self.run("cat /etc/os-release | grep VERSION_ID | awk -F\= '{print $2}'")
+        out, err, rc = self.run("cat /etc/os-release | grep VERSION_ID | awk -F\= '{print $2}'", "root")
         _,version,_ = out.split('"')
         return version.startswith('8')
 
@@ -181,10 +181,15 @@ class HVSSH(SetLogger):
             # if not username is passed, e.g. "root", 
             # we SSH as the regular user set in creds.yaml
             username = self.creds_handler.ssh.username
-        self.client.connect(hostname=self.hostname, port=22, username=self.ssh_username, pkey=self.private_key)
+        self.client.connect(hostname=self.hostname, port=22, username=username, pkey=self.private_key)
         stdin, stdout, stderr = self.client.exec_command(cmd)
         output = stdout.read().decode('utf-8').strip()
         error = stderr.read().decode('utf-8').strip()
         rc = stdout.channel.recv_exit_status()
+        self.log.debug(f"cmd = {cmd}")
+        self.log.debug(f"user = {username}")
+        self.log.debug(f"output = {output}")
+        self.log.debug(f"error = {error}")
+        self.log.debug(f"rc = {rc}")
         self.client.close()
         return output, error, rc

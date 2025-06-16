@@ -48,25 +48,27 @@ class HyperVisorManager:
 
     def _run_pre_drain(self):
         try:
-            self.log.debug('starting _run_pre_drain')
-            if self.hvssh.is_rocky_8:
-                msg = f"the hypervisor {self.request.hypervisor} is Rocky 8. Ready to start."
-                self.log.debug(msg)
-                self.jira.add(msg)
-                self.jira.send_buffer()
-            else:
-                msg = f"the hypervisor {self.request.hypervisor} is not Rocky 8. Aborting"
-                raise Exception(msg)
+            ####self.log.debug('starting _run_pre_drain')
+            ####if self.hvssh.is_rocky_8:
+            ####    msg = f"the hypervisor {self.request.hypervisor} is Rocky 8. Ready to start."
+            ####    self.log.debug(msg)
+            ####    self.jira.add(msg)
+            ####    self.jira.send_buffer()
+            ####else:
+            ####    msg = f"the hypervisor {self.request.hypervisor} is not Rocky 8. Aborting"
+            ####    raise Exception(msg)
+
             self.hvssh.update_qemu_kvm()
-            if self.hvnetbox.status in ["active", "offfline"]:
-                msg = f"status of hypervisor {self.request.hypervisor} in Netbox is {self.hvnetbox.status}, Ready to start."
-                self.log.debug(msg)
-                self.jira.add(msg)
-                self.jira.send_buffer()
-            else:
-                msg = f"status of hypervisor {self.request.hypervisor} in Netbox is neither Active nor Offline. Aborting."
-                raise Exception(msg)
-            self.log.debug('leaving _run_pre_drain')
+
+            ####if self.hvnetbox.status in ["active", "offfline"]:
+            ####    msg = f"status of hypervisor {self.request.hypervisor} in Netbox is {self.hvnetbox.status}, Ready to start."
+            ####    self.log.debug(msg)
+            ####    self.jira.add(msg)
+            ####    self.jira.send_buffer()
+            ####else:
+            ####    msg = f"status of hypervisor {self.request.hypervisor} in Netbox is neither Active nor Offline. Aborting."
+            ####    raise Exception(msg)
+            ####self.log.debug('leaving _run_pre_drain')
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             self.log.debug(msg)
