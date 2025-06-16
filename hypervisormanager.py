@@ -50,21 +50,21 @@ class HyperVisorManager:
         try:
             self.log.debug('starting _run_pre_drain')
             if self.hvssh.is_rocky_8:
-                msg = "the hypervisor {self.request.hypervisor} is Rocky 8. Ready to start."
+                msg = f"the hypervisor {self.request.hypervisor} is Rocky 8. Ready to start."
                 self.log.debug(msg)
                 self.jira.add(msg)
                 self.jira.send_buffer()
             else:
-                msg = "the hypervisor {self.request.hypervisor} is not Rocky 8. Aborting"
+                msg = f"the hypervisor {self.request.hypervisor} is not Rocky 8. Aborting"
                 raise Exception(msg)
             self.hvssh.update_qemu_kvm()
             if self.hvnetbox.status in ["active", "offfline"]:
-                msg = "status of hypervisor {self.request.hypervisor} in Netbox is {self.hvnetbox.status}, Ready to start."
+                msg = f"status of hypervisor {self.request.hypervisor} in Netbox is {self.hvnetbox.status}, Ready to start."
                 self.log.debug(msg)
                 self.jira.add(msg)
                 self.jira.send_buffer()
             else:
-                msg = "status of hypervisor {self.request.hypervisor} in Netbox is neither Active nor Offline. Aborting."
+                msg = f"status of hypervisor {self.request.hypervisor} in Netbox is neither Active nor Offline. Aborting."
                 raise Exception(msg)
             self.log.debug('leaving _run_pre_drain')
         except Exception as ex:

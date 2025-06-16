@@ -153,7 +153,7 @@ class HVSSH(SetLogger):
         """
         out, err, rc = self.run('dnf update qemu-kvm', 'root')
         self.jira.add("updating qemu-kvm")
-        self.jira.add("executing command: 'dnf update qemu-kvm'")
+        self.jira.add("executing command: 'dnf -y update qemu-kvm'")
         self.jira.add_block(out)
         self.jira.send_buffer()
 
