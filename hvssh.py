@@ -115,12 +115,14 @@ class HVSSH(SetLogger):
             msg = f"user {self.ssh_username} already has root acccess to hypervisor {self.hostname}"
             self.log.debug(msg)
             self.jira.add(msg)
+            self.jira.send_buffer()
             return
 
         # if not root access...
         msg = f"user {self.ssh_username} does not have yet root acccess to hypervisor {self.hostname}"
         self.log.debug(msg)
         self.jira.add(msg)
+        self.jira.send_buffer()
 
         # Connect as regular user
         self.client.connect(self.hostname, username=self.ssh_username, pkey=self.private_key)
@@ -143,6 +145,7 @@ class HVSSH(SetLogger):
         msg = f"user {self.ssh_username} now has root acccess to hypervisor {self.hostname}"
         self.log.debug(msg)
         self.jira.add(msg)
+        self.jira.send_buffer()
 
     def update_qemu_kvm(self):
         """
