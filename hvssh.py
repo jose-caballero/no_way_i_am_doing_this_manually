@@ -74,7 +74,7 @@ class HVSSH(SetLogger):
         empty = (len(out_l) == 2)
         self.jira.add(f"is HV empty? {empty}")
         self.jira.send_buffer()
-        return emtpy
+        return empty
 
     def blocks_info(self):
         out, err, rc = self.run("lsblk", "root")
