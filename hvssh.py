@@ -132,12 +132,16 @@ class HVSSH(SetLogger):
         with open(self.ssh_public_key_path, "r") as pubkey_file:
             public_key = pubkey_file.read().strip()
 
+#        command = f"""
+#        sudo -S su -c 'mkdir -p /root/.ssh && \
+#        touch /root/.ssh/authorized_keys && \
+#        grep -qF "{public_key}" /root/.ssh/authorized_keys || echo "{public_key}" >> /root/.ssh/authorized_keys && \
+#        chmod 700 /root/.ssh && chmod 600 /root/.ssh/authorized_keys'
+#        """
         command = f"""
-        sudo -S su -c 'mkdir -p /root/.ssh && \
-        touch /root/.ssh/authorized_keys && \
-        grep -qF "{public_key}" /root/.ssh/authorized_keys || echo "{public_key}" >> /root/.ssh/authorized_keys && \
-        chmod 700 /root/.ssh && chmod 600 /root/.ssh/authorized_keys'
+        sudo -S su -c 'grep -qF "{public_key}" /root/.ssh/authorized_keys || echo "{public_key}" >> /root/.ssh/authorized_keys'
         """
+
         stdin, stdout, stderr = self.client.exec_command(command)
         stdin.flush()
         self.client.close()
