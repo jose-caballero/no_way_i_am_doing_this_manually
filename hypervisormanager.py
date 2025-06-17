@@ -79,13 +79,13 @@ class HyperVisorManager:
         try:
             #self.log.debug('starting _run_pre_reinstall')
             #self.jira.move_to_working_on_pre_bios()
-            if not self.hvssh.is_empty:
-                msg = "hypervisor still not empty"
-                raise Exception(msg)
+            #if not self.hvssh.is_empty:
+            #    msg = "hypervisor still not empty"
+            #    raise Exception(msg)
             #self.hvssh.blocks_info()
             #self.hvssh.gpus_info()
-            #self.hvalertmanager.create_silence()
-            #self.hvnetbox.change({"status":"planned"})
+            self.hvalertmanager.create_silence()
+            self.hvnetbox.change({"status":"planned"})
             #if self.hvssh.mellanox_info != "":
             #    self.hvkayobe.run_mellanox_playbook()
             #self.hvaquilon.run(f"./reimport-host.sh {self.request.hypervisor}")

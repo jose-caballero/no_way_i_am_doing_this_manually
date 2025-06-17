@@ -66,6 +66,7 @@ class HVNetbox(SetLogger):
         msg += self.url
         self.log.debug(msg)
         self.jira.add(msg)
+        self.jira.send_buffer()
 
     @property
     def ipmi_address(self):

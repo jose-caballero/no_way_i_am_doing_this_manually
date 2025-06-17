@@ -60,6 +60,7 @@ class HVAlertManager(SetLogger):
         msg += out_msg
         self.log.debug(msg)
         self.jira.add(msg)
+        self.jira.send_buffer()
 
 
     def _create_silence_matcher(self, silence_data):
