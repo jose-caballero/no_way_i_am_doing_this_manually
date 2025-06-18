@@ -68,8 +68,6 @@ class HVSSH(SetLogger):
         self.log.debug("checking if HV is empty")
         self.log.debug(out)
         self.jira.add("checking if HV is empty")
-        self.jira.add("executing command 'virsh list --all'")
-        self.jira.add_block(out)
         out_l = out.split('\n')
         empty = (len(out_l) == 2)
         self.jira.add(f"is HV empty? {empty}")
@@ -77,33 +75,22 @@ class HVSSH(SetLogger):
         return empty
 
     def blocks_info(self):
-        out, err, rc = self.run("lsblk", "root")
-        self.log.debug(out)
         self.jira.add("checking the block devices on the HV")
-        self.jira.add("executing command 'lsblk'")
-        self.jira.add_block(out)
-        self.jira.send_buffer()
+        out, err, rc = self.run("lsblk", "root")
 
     def gpus_info(self):
-        out, err, rc = self.run("lspci | grep -i nvidia", "root")
-        self.log.debug(out)
         self.jira.add("checking the nvidia cards on the HV")
-        self.jira.add("executing command 'lspci'")
-        self.jira.add_block(out)
-        self.jira.send_buffer()
+        out, err, rc = self.run("lspci | grep -i nvidia", "root")
 
     @property
     def mellanox_info(self):
-        out, err, rc = self.run("lspci | grep -i mellanox", "root")
-        self.log.debug(out)
         self.jira.add("checking the presence of mellanox cards on the HV")
-        self.jira.add("executing command 'lspci | grep -i mellanox'")
-        self.jira.add_block(out)
-        self.jira.send_buffer()
+        out, err, rc = self.run("lspci | grep -i mellanox", "root")
         return out
 
     @property
     def is_efi(self):
+        self.jira.add("checking if the HV is EFI")
         out, err, rc = self.run("ls /sys/firmware/ | grep efi", "root")
         return out != ""
 
@@ -155,12 +142,15 @@ class HVSSH(SetLogger):
         """
         Update qemu-kvm on the HV to apply some bug-fixes for draining VMs
         """
-        out, err, rc = self.run('dnf -y update qemu-kvm', 'root')
-        self.jira.add("updating qemu-kvm")
-        self.jira.add("executing command: 'dnf -y update qemu-kvm'")
-        self.jira.add_block(out)
-        self.jira.send_buffer()
+        self.jira.add("updating qemu")
+        self.run('dnf -y update qemu-kvm', 'root')
 
+    def mkfs(self):
+        """
+        to format NVMe driver
+        """
+        self.jira.add("Performing hardware specific fixes")
+        self.run('mkfs.xfs /dev/nmve0n1', 'root')
 
     # --------------------------------------------
     #   Generic execution methods
@@ -190,10 +180,21 @@ class HVSSH(SetLogger):
         output = stdout.read().decode('utf-8').strip()
         error = stderr.read().decode('utf-8').strip()
         rc = stdout.channel.recv_exit_status()
+
         self.log.debug(f"cmd = {cmd}")
-        self.log.debug(f"user = {username}")
         self.log.debug(f"output = {output}")
         self.log.debug(f"error = {error}")
         self.log.debug(f"rc = {rc}")
+
+        self.jira.add("command:")
+        self.jira.add_block(cmd)
+        self.jira.add("output:")
+        self.jira.add_block(output)
+        self.jira.add("error:")
+        self.jira.add_block(error)
+        self.jira.add("rc:")
+        self.jira.add_block(rc)
+        self.jira.send_buffer()
+
         self.client.close()
         return output, error, rc
