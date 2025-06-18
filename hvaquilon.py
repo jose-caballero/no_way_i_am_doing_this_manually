@@ -24,8 +24,9 @@ class HVAquilon(SetLogger):
     def run(self, cmd):
         try:
             self.log.debug('starting run')
-            self._run(cmd)
+            out = self._run(cmd)
             self.log.debug('leaving run')
+            return out
         except Exception as ex:
             msg = f'Exception captured: {ex}'
             self.log.debug(msg)
@@ -74,5 +75,6 @@ class HVAquilon(SetLogger):
         self.log.debug('leaving _run')
         if rc != 0:
             raise Exception("aquilon script failed")
+        return output
 
 
