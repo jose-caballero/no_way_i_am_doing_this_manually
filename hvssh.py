@@ -145,12 +145,14 @@ class HVSSH(SetLogger):
         self.jira.add("updating qemu")
         self.run('dnf -y update qemu-kvm', 'root')
 
-    def mkfs(self):
-        """
-        to format NVMe driver
-        """
-        self.jira.add("Performing hardware specific fixes")
+    def hardware_fix_2022_lenovo(self):
+        self.jira.add("Performing hardware specific fixes for 2022 Lenovo HyperVisors")
         self.run('mkfs.xfs /dev/nmve0n1', 'root')
+        self.run('echo "/dev/nvme0n1 /var/lib/nova/instances xfs rw,relatime,attr2,inode64,logbufs=8,logbsize=32k,noquota" >> /etc/fstab', 'root')
+        self.run('mkdir -p /var/lib/nova/instances', 'root')
+        self.run('mount -a', 'root')
+        self.run('lsblk', 'root')
+        self.run('systemctl daemon-reload', 'root')
 
     # --------------------------------------------
     #   Generic execution methods
