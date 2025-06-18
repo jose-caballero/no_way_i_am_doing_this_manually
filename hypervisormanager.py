@@ -44,7 +44,7 @@ class HyperVisorManager:
             self.log.debug('leaving _run_setup')
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
-    
+            print(msg)    
 
     def _run_pre_drain(self):
         try:
@@ -69,6 +69,7 @@ class HyperVisorManager:
             self.log.debug('leaving _run_pre_drain')
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
+            print(msg)    
             self.log.debug(msg)
             self.jira.add(msg)
             self.jira.send_buffer()
@@ -103,6 +104,7 @@ class HyperVisorManager:
             self.log.debug('leaving _run_pre_reinstall')
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
+            print(msg)    
             self.log.debug(msg)
             self.jira.add(msg)
             self.jira.send_buffer()
@@ -123,6 +125,7 @@ class HyperVisorManager:
             self.log.debug('leaving _run_post_reinstall')
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
+            print(msg)    
             self.log.debug(msg)
             self.jira.add(msg)
             self.jira.send_buffer()
@@ -138,6 +141,7 @@ class HyperVisorManager:
 
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
+            print(msg)    
             self.log.debug(msg)
             self.jira.add(msg)
             self.jira.send_buffer()
