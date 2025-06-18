@@ -33,6 +33,8 @@ class HVKayobe(SetLogger):
 
 
     def run_mellanox_playbook(self):
+        self.jira.add("Running the Mellanox playbook on the Kayobe host")
+        self.jira.send_buffer()
         cmd = f"~/mellanox_playbook.sh {self.hostname}"
         self.run(cmd)
 
