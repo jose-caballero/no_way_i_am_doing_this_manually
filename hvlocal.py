@@ -1,6 +1,6 @@
 import subprocess
-
 from logger import SetLogger
+
 
 class HVLocal(SetLogger):
     def __init__(self, hypervisormanager):
@@ -9,20 +9,35 @@ class HVLocal(SetLogger):
         self.hostname = hypervisormanager.request.hypervisor
         self.jira = hypervisormanager.jira
 
-    def check_hv_empty(self):
+    @property
+    def hv_has_no_servers(self):
         cmd = f"openstack --os-cloud admin server list --host {self.hostname} --all-projects"
-        out, err, rc = self._execute(cmd)
         self.jira.add("checking the HV is empty")
-        self.jira.add("executing command:")
-        self.jira.add_block(cmd)
-        self.jira.add("output:")
-        self.jira.add_block(out)
-        self.jira.send_buffer()
-        if out != "":
-            raise Exception("Hypervisor is not empty!!")
+        out, err, rc = self._execute(cmd)
+        return (out == "")
+
+    def disable_hv(self):
+        cmd = f'openstack compute service set --disable {self.hostname} nova-compute --disable-reason "Migration to Rocky 9 - JCB"'
+        self.jira.add("disabling HV")
+        self._execute(cmd)
+
+    def enable_hv(self):
+        cmd = f'openstack compute service set --enable {self.hostname} nova-compute'
+        self.jira.add("disabling HV")
+        self._execute(cmd)
+
 
     def _execute(self, cmd):
         subproc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, universal_newlines=True)
         (out, err) = subproc.communicate()
         rc = subproc.returncode
+        self.jira.add("executing command:")
+        self.jira.add_block(cmd)
+        self.jira.add("output:")
+        self.jira.add_block(out)
+        self.jira.add("error:")
+        self.jira.add_block(err)
+        self.jira.add("rc:")
+        self.jira.add_block(rc)
+        self.jira.send_buffer()
         return out.strip(), err.strip(), rc
