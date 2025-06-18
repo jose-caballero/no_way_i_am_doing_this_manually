@@ -72,8 +72,7 @@ class HyperVisorManager:
             self.log.debug(msg)
             self.jira.add(msg)
             self.jira.send_buffer()
-            #self.jira.move_to_pre_reinstall_failed()
-
+            self.jira.move_to_pre_reinstall_failed()
 
     def _run_pre_reinstall(self):
         try:
@@ -89,13 +88,11 @@ class HyperVisorManager:
             if self.hvssh.mellanox_info != "":
                 self.hvkayobe.run_mellanox_playbook()
             self.hvaquilon.run(f"./reimport-host.sh {self.request.hypervisor}")
-            #self.hvaquilon.run(f"python3 ./remove_interfaces.py {self.request.hypervisor}")
-            
-            #self.hvaquilon.run(f"aq manage --sandbox ieb35538/point_hvs_to_live_for_rl9_6 --hostname {self.request.hypervisor} --force")
-
-            #self.hvaquilon.run(f"python3 ./prepare_host.py {self.request.hypervisor}")
-            #self.jira.move_to_ready_for_reinstall()
-            #self.log.debug('leaving _run_pre_reinstall')
+            self.hvaquilon.run(f"python3 ./remove_interfaces.py {self.request.hypervisor}")
+            self.hvaquilon.run(f"aq manage --sandbox ieb35538/point_hvs_to_live_for_rl9_6 --hostname {self.request.hypervisor} --force")
+            self.hvaquilon.run(f"python3 ./prepare_host.py {self.request.hypervisor}")
+            self.jira.move_to_ready_for_reinstall()
+            self.log.debug('leaving _run_pre_reinstall')
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             self.log.debug(msg)
@@ -107,17 +104,12 @@ class HyperVisorManager:
         try:
             self.log.debug('starting _run_post_reinstall')
             self.jira.move_to_working_on_post_reinstall()
-            
             self.hvssh.blocks_info()
-
             self.hvssh.gpus_info()
-
-
             efi_msg = f"hv is UEFI? {self.hvssh.is_efi}"
             self.log.debug(efi_msg)
             self.jira.add(efi_msg)
             self.jira.send_buffer()
-
             self.hvnetbox.change({"status":"active", "role":"Openstack Prod Kolla_Compute"})
             self.jira.move_to_ready_for_adoption()
             self.log.debug('leaving _run_post_reinstall')
