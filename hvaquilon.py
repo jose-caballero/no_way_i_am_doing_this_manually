@@ -13,6 +13,12 @@ class HVAquilon(SetLogger):
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
 
+    @property
+    def model(self):
+        cmd = f'myaq-get-model {self.hostname}'
+        out = self.run(cmd)
+        return out
+
     def remove_interfaces(self):
         """
         remove interfaces other than bmc0 and eth0
