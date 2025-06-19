@@ -163,7 +163,12 @@ class HVSSH(SetLogger):
         self.run('echo "/dev/nvme0n1 /var/lib/nova/instances xfs rw,relatime,attr2,inode64,logbufs=8,logbsize=32k,noquota" >> /etc/fstab', 'root')
         self.run('mkdir -p /var/lib/nova/instances', 'root')
         self.run('mount -a', 'root')
-        self.run('lsblk', 'root')
+        out, err, rc = self.run('lsblk', 'root')
+        if "/var/lib/nova/instances" not in out:
+            self.jira.add("New mount did not work as expected. Aborting")
+            self.jira.add_block(out)
+            self.jira.send_buffer()
+            raise Exception("New mount did not work as expected. Aborting")
         self.run('systemctl daemon-reload', 'root')
 
     # --------------------------------------------
