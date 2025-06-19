@@ -129,10 +129,8 @@ class HyperVisorManager:
             #self.hvssh.gpus_info()
             #self.hvssh.verify_is_efi()
             #self.hvssh.hardware_specific()
-
-            self.hvnetbox.change({"status":"active", "role":"Openstack Prod Kolla_Compute"})
-
-            #self.jira.move_to_ready_for_adoption()
+            #self.hvnetbox.change({"status":"active", "role":"Openstack Prod Kolla_Compute"})
+            self.jira.move_to_ready_for_adoption()
             #self.log.debug('leaving _run_post_reinstall')
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
@@ -157,6 +155,7 @@ class HyperVisorManager:
             self.jira.add(msg)
             self.jira.send_buffer()
             self.jira.move_to_adoption_failed()
+
 
 
     def _run_noops(self):

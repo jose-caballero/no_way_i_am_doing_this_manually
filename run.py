@@ -35,6 +35,7 @@ def parse_arguments():
 if __name__ == '__main__':
     args = parse_arguments()
     manager = MigrationManager(args.creds_file, args.hypervisors_file)
+
     if args.parallel:
         manager.parallel_run(args.step)
     else:
