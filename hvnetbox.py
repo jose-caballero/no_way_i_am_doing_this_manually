@@ -55,7 +55,7 @@ class HVNetbox(SetLogger):
         ###self.device.device_role = role
         self.device.role = role
         self.device.save()
-        msg = "Successfully updated role for device '{self.hostname}' to '{new_role}'"
+        msg = f"Successfully updated role for device '{self.hostname}' to '{new_role}'"
         msg += "\n"
         msg += self.url
         self.log.debug(msg)
