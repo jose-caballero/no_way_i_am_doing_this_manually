@@ -14,6 +14,7 @@ class HVSSH(SetLogger):
         self.ssh_username = self.creds_handler.ssh.username
         self.ssh_passphrase = self.creds_handler.ssh.passphrase
         self.jira = hypervisormanager.jira
+        self.hvaquilon = hypervisormanager.hvaquilon
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.private_key = paramiko.RSAKey.from_private_key_file(self.ssh_private_key_path, password=self.ssh_passphrase)
@@ -157,7 +158,13 @@ class HVSSH(SetLogger):
         self.jira.add("updating qemu")
         self.run('dnf -y update qemu-kvm', 'root')
 
-    def hardware_fix_2022_lenovo(self):
+
+    def hardware_specific(self):
+        model = self.hvaquilon.model 
+        if model == "hv-2022-lenovo":
+            self._hardware_fix_2022_lenovo()
+
+    def _hardware_fix_2022_lenovo(self):
         self.jira.add("Performing hardware specific fixes for 2022 Lenovo HyperVisors")
         self.run('mkfs.xfs /dev/nmve0n1', 'root')
         self.run('echo "/dev/nvme0n1 /var/lib/nova/instances xfs rw,relatime,attr2,inode64,logbufs=8,logbsize=32k,noquota" >> /etc/fstab', 'root')
