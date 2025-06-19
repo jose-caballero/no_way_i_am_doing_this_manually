@@ -55,10 +55,16 @@ class HVNetbox(SetLogger):
         ###self.device.device_role = role
         self.device.role = role
         self.device.save()
-        self.log.debug(f"Successfully updated role for device '{self.hostname}' to '{new_role}'")
+        msg = "Successfully updated role for device '{self.hostname}' to '{new_role}'"
+        msg += "\n"
+        msg += self.url
+        self.log.debug(msg)
+        self.jira.add(msg)
+        self.jira.send_buffer()
         self.log.debug('leaving change_role')
         
     def _change_status(self, new_status):
+        self.log.debug('starting change_status')
         self.device.status = new_status
         self.device.save()
         msg = f"Successfully updated status for device '{self.hostname}' to '{new_status}'"
@@ -67,6 +73,7 @@ class HVNetbox(SetLogger):
         self.log.debug(msg)
         self.jira.add(msg)
         self.jira.send_buffer()
+        self.log.debug('leaving change_status')
 
     @property
     def ipmi_address(self):

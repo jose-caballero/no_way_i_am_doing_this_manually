@@ -95,11 +95,11 @@ class HVSSH(SetLogger):
         out, err, rc = self.run("lspci | grep -i mellanox", "root")
         return out
 
-    @property
-    def is_efi(self):
-        self.jira.add("checking if the HV is EFI")
-        out, err, rc = self.run("ls /sys/firmware/ | grep efi", "root")
-        return out != ""
+    #@property
+    #def is_efi(self):
+    #    self.jira.add("checking if the HV is EFI")
+    #    out, err, rc = self.run("ls /sys/firmware/ | grep efi", "root")
+    #    return out != ""
     
     def verify_is_efi(self):
         self.jira.add("checking if the HV is EFI")
