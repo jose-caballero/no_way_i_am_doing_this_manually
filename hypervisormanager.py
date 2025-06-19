@@ -5,6 +5,7 @@ from hvssh import HVSSH
 from hvaquilon import HVAquilon
 from hvkayobe import HVKayobe
 from hvjira import HVJira
+from hvlocal import HVLocal
 
 import logging
 
@@ -22,6 +23,7 @@ class HyperVisorManager:
         self.hvssh = HVSSH(self)
         self.hvaquilon = HVAquilon(self)
         self.hvkayobe = HVKayobe(self)
+        self.hvlocal = HVLocal(self)
 
     def run(self, step):
         self.log.debug('starting run')
@@ -79,6 +81,9 @@ class HyperVisorManager:
         try:
             self.log.debug('starting _run_pre_reinstall')
             self.jira.move_to_working_on_pre_bios()
+            if not self.hvlocal.hv_has_no_servers:
+                msg = "hypervisor still not empty"
+                raise Exception(msg)
             if not self.hvssh.is_empty:
                 msg = "hypervisor still not empty"
                 raise Exception(msg)
