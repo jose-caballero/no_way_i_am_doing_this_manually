@@ -93,6 +93,18 @@ class HVSSH(SetLogger):
         self.jira.add("checking if the HV is EFI")
         out, err, rc = self.run("ls /sys/firmware/ | grep efi", "root")
         return out != ""
+    
+    def verify_is_efi(self):
+        self.jira.add("checking if the HV is EFI")
+        out, err, rc = self.run("ls /sys/firmware/ | grep efi", "root")
+        if out != "":
+            self.jira.add("the hypervisor is EFI enabled:")
+            self.jira.send_buffer()
+        else:
+            self.jira.add("the hypervisor is not EFI enabled:")
+            self.jira.send_buffer()
+            raise Exception("the hypervisor is not EFI enabled")
+
 
     def ensure_root_access(self):
         """

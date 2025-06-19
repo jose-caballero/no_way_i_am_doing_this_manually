@@ -37,6 +37,8 @@ class HyperVisorManager:
             self._run_post_reinstall()
         elif step == "adoption":
             self._run_adoption()
+        elif step == "noops":
+            self._run_noops()
         self.log.debug('leaving run')
 
     def _run_setup(self):
@@ -121,10 +123,7 @@ class HyperVisorManager:
             self.jira.move_to_working_on_post_reinstall()
             self.hvssh.blocks_info()
             self.hvssh.gpus_info()
-            efi_msg = f"hv is UEFI? {self.hvssh.is_efi}"
-            self.log.debug(efi_msg)
-            self.jira.add(efi_msg)
-            self.jira.send_buffer()
+            self.hvssh.verify_is_efi()
             self.hvnetbox.change({"status":"active", "role":"Openstack Prod Kolla_Compute"})
             self.jira.move_to_ready_for_adoption()
             self.log.debug('leaving _run_post_reinstall')
@@ -152,6 +151,12 @@ class HyperVisorManager:
             self.jira.send_buffer()
             self.jira.move_to_adoption_failed()
 
+
+    def _run_noops(self):
+        """
+        do nothing, just to test all objects are created properly
+        """
+        pass
 
 
 #    def _run_finish(self):
