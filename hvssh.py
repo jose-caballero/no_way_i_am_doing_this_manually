@@ -26,6 +26,12 @@ class HVSSH(SetLogger):
         return version.startswith('8')
 
     @property
+    def is_rocky_9(self):
+        out, err, rc = self.run("cat /etc/os-release | grep VERSION_ID | awk -F\= '{print $2}'", "root")
+        _,version,_ = out.split('"')
+        return version.startswith('9')
+
+    @property
     def has_root_access(self):
         try:
             self.client.connect(self.hostname, username="root", pkey=self.private_key, timeout=5)

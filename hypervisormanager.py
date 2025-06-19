@@ -119,15 +119,21 @@ class HyperVisorManager:
 
     def _run_post_reinstall(self):
         try:
-            self.log.debug('starting _run_post_reinstall')
-            self.jira.move_to_working_on_post_reinstall()
+            #self.log.debug('starting _run_post_reinstall')
+            #self.jira.move_to_working_on_post_reinstall()
+
+            if not self.hvssh.is_rocky_9:
+                self.jira.add("HV is NOT on Rocky 9 as we expected")
+                self.jira.send_buffer()
+                raise Exception("HV is NOT on Rocky 9 as we expected")
             self.hvssh.blocks_info()
             self.hvssh.gpus_info()
             self.hvssh.verify_is_efi()
-            self.hvssh.hardware_specific()
-            self.hvnetbox.change({"status":"active", "role":"Openstack Prod Kolla_Compute"})
-            self.jira.move_to_ready_for_adoption()
-            self.log.debug('leaving _run_post_reinstall')
+
+            #self.hvssh.hardware_specific()
+            #self.hvnetbox.change({"status":"active", "role":"Openstack Prod Kolla_Compute"})
+            #self.jira.move_to_ready_for_adoption()
+            #self.log.debug('leaving _run_post_reinstall')
         except Exception as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             print(msg)    
