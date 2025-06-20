@@ -128,7 +128,7 @@ class HyperVisorManager:
             self.hvssh.blocks_info()
             self.hvssh.gpus_info()
             self.hvssh.verify_is_efi()
-            self.hvssh.hardware_specific()
+            #self.hvssh.hardware_specific()
             self.hvnetbox.change({"status":"active", "role":"Openstack Prod Kolla_Compute"})
             self.jira.move_to_ready_for_adoption()
             self.log.debug('leaving _run_post_reinstall')
