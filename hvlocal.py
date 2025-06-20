@@ -17,12 +17,12 @@ class HVLocal(SetLogger):
         return (out == "")
 
     def disable_hv(self):
-        cmd = f'openstack compute service set --disable --disable-reason "Migration to Rocky 9 - JCB" {self.hostname} nova-compute'
+        cmd = f'openstack --os-cloud admin compute service set --disable --disable-reason "Migration to Rocky 9 - JCB" {self.hostname} nova-compute'
         self.jira.add("disabling HV")
         self._execute(cmd)
 
     def enable_hv(self):
-        cmd = f'openstack compute service set --enable {self.hostname} nova-compute'
+        cmd = f'openstack --os-cloud admin compute service set --enable {self.hostname} nova-compute'
         self.jira.add("disabling HV")
         self._execute(cmd)
 
