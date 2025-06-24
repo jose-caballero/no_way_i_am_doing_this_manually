@@ -1,6 +1,8 @@
-"""
-JIRA Issue Creator Script
-Creates JIRA issues from a list of words and updates the file with issue IDs.
+"""JIRA Issue Creator Script
+
+Creates JIRA issues from a list of hypervisors and updates the file with the
+generated issue IDs.  If an issue already exists with the same summary the
+existing issue key is used instead of creating a new ticket.
 """
 
 import os
@@ -54,6 +56,18 @@ def create_jira_issues_from_file(filename, creds):
             continue
             
         try:
+            # Check if an issue already exists with the same summary
+            jql = f'project = {project_key} AND summary ~ "{word}"'
+            existing = conn.search_issues(jql, maxResults=1)
+            if existing:
+                issue_key = existing[0].key
+                print(f"Found existing issue {issue_key} for '{word}'")
+                updated_lines.append(f"{word} {issue_key}")
+                continue
+        except Exception as e:
+            print(f"Error searching existing issue for '{word}': {e}")
+
+        try:
             # Create JIRA issue
             issue_dict = {
                 'project': project_key,
@@ -61,13 +75,13 @@ def create_jira_issues_from_file(filename, creds):
                 'description': f'Issue created for: {word}',
                 'issuetype': {'name': issue_type},
             }
-            
+
             new_issue = conn.create_issue(fields=issue_dict)
             issue_key = new_issue.key
-            
+
             print(f"Created issue {issue_key} for '{word}'")
             updated_lines.append(f"{word} {issue_key}")
-            
+
         except Exception as e:
             print(f"Error creating issue for '{word}': {e}")
             # Keep the original word without issue ID if creation fails
