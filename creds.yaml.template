@@ -1,24 +1,4 @@
 # ================================================== 
-# Icinga service account, and password, 
-# allowed to perform queries
-# Values can be found on the Icinga management host
-# or ask Jose Caballero
-# ================================================== 
-icinga_query:
-  username: 
-  password: 
-
-# ================================================== 
-# Icinga service account, and password, 
-# allowed to create and remove downtimes
-# Values can be found on the Icinga management host
-# or ask Jose Caballero
-# ================================================== 
-icinga_downtime:
-  username: 
-  password: 
-
-# ================================================== 
 # Your username and password allowed to
 # perform actions against OpenStack
 # You can most probably find those values in your

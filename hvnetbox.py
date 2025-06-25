@@ -1,11 +1,10 @@
 import pynetbox
-import json
+from hvexception import HVException
 
-from logger import SetLogger
 
-class HVNetbox(SetLogger):
+
+class HVNetbox:
     def __init__(self, hypervisormanager):
-        self._set_logger()
         self.creds_handler = hypervisormanager.creds_handler
         self.hostname = hypervisormanager.request.hypervisor 
         self.jira = hypervisormanager.jira
@@ -16,22 +15,32 @@ class HVNetbox(SetLogger):
         )
         # Retrieve the device by name (returns None if not found)
         self.device = self.conn.dcim.devices.get(name=self.hostname)
-        if not self.device:
-            self.log.debug(f"No device found with name '{self.hostname}'")
 
-    @property
-    def status(self):
+
+    def hv_in_netbox(self):
+        if not self.device:
+            self.jira.add("there is no info in NetBox for this hypervisor")
+            self.jira.send_buffer()
+            raise HVException("there is no info in NetBox for this hypervisor")
+
+    def check_status_pre_drain(self):
         data = dict(self.device)
-        return data['status']['value'].lower()
+        status = data['status']['value'].lower()
+        if status in ["active", "offline"]:
+            msg = f"status of hypervisor {self.hostname} in Netbox is {status}, Ready to start."
+            self.jira.add(msg)
+            self.jira.send_buffer()
+            return status
+        msg = f"status of hypervisor {self.hostname} in Netbox is neither Active nor Offline. Aborting."
+        self.jira.add(msg)
+        self.jira.send_buffer()
+        raise HVException(msg)
 
     def change(self, changes_d):
         try:
-            self.log.debug("starting change")
             self._change(changes_d)
-            self.log.debug("leavingchange")
         except Exception as ex:
             msg = f'Exception captured: {ex}'
-            self.log.debug(msg)
             self.jira.add("Exception captured")
             self.jira.add_block(ex)
             self.jira.send_buffer()
@@ -45,11 +54,8 @@ class HVNetbox(SetLogger):
                 self._change_status(v)
 
     def _change_role(self, new_role):
-        self.log.debug('starting change_role')
         role = self.conn.dcim.device_roles.get(name=new_role)
         if not role:
-            self.log.debug("Could not find the specified role in NetBox.")
-            self.log.debug('leaving change_role')
             return
         # Assign the retrieved role object
         ###self.device.device_role = role
@@ -58,22 +64,17 @@ class HVNetbox(SetLogger):
         msg = f"Successfully updated role for device '{self.hostname}' to '{new_role}'"
         msg += "\n"
         msg += self.url
-        self.log.debug(msg)
         self.jira.add(msg)
         self.jira.send_buffer()
-        self.log.debug('leaving change_role')
         
     def _change_status(self, new_status):
-        self.log.debug('starting change_status')
         self.device.status = new_status
         self.device.save()
         msg = f"Successfully updated status for device '{self.hostname}' to '{new_status}'"
         msg += "\n"
         msg += self.url
-        self.log.debug(msg)
         self.jira.add(msg)
         self.jira.send_buffer()
-        self.log.debug('leaving change_status')
 
     @property
     def ipmi_address(self):

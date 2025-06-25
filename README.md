@@ -66,3 +66,15 @@ Example:
 python ./run.py --step pre-reinstall
 python ./run.py --step pre-reinstall --creds-file /path/to/my/creds.yaml
 ```
+
+### `run.py` arguments
+
+Below is a list of the available command line flags for `run.py`:
+
+- `--hypervisors-file` - path to the file containing the list of hypervisors.
+  Defaults to `hypervisors.txt`.
+- `--creds-file` - path to the credentials file. Defaults to `creds.yaml`.
+- `--step` - **required** step to run. Valid options are `setup`,
+  `pre-drain`, `pre-reinstall`, `post-reinstall`, `adoption` and `noops`.
+- `--parallel` - run the selected step in parallel mode. By default execution is
+  serial and this flag must be provided to enable parallel runs.

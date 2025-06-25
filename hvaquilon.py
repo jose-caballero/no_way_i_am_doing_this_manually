@@ -1,48 +1,67 @@
 import paramiko
+from hvexception import HVException
+from hvlocal import Results
 
-from logger import SetLogger
-
-
-class HVAquilon(SetLogger):
+class HVAquilon:
     def __init__(self, hypervisormanager):
-        self._set_logger()
         self.creds_handler = hypervisormanager.creds_handler
         self.jira = hypervisormanager.jira
         self.hostname = hypervisormanager.request.hypervisor
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-
     @property
     def model(self):
         cmd = f'myaq-get-model {self.hostname}'
-        out = self.run(cmd)
-        return out
+        results = self.run(cmd)
+        return results.stdout
 
     def remove_interfaces(self):
         """
         remove interfaces other than bmc0 and eth0
         """
+        self.jira.add("Removing unnecessary interfaces from the host on Aquilon")
         cmd = f"python3 ./remove_interfaces.py {self.hostname}"
-        self.run(cmd)
+        results = self.run(cmd)
+        self.jira.add(results.report_to_jira)
+        self.jira.send_buffer()
+
+
+    def reimport(self):
+        self.jira.add("Executing script to re-import the host on Aquilon")
+        cmd = f"./reimport-host.sh {self.hostname}"
+        results = self.run(cmd)
+        self.jira.add(results.report_to_jira)
+        self.jira.send_buffer()
+        
+
+    def manage_to_sandbox(self):
+        self.jira.add("Manage the host to David's Sandbox on Aquilon")
+        cmd = f"aq manage --sandbox ieb35538/point_hvs_to_live_for_rl9_6 --hostname {self.hostname} --force"
+        results = self.run(cmd)
+        self.jira.add(results.report_to_jira)
+        self.jira.send_buffer()
+
+    def prepare_host(self):
+        self.jira.add("Recompiling and pxe switching the HV on Aquilon")
+        cmd = f"python3 ./prepare_host.py {self.hostname}"
+        results = self.run(cmd)
+        self.jira.add(results.report_to_jira)
+        self.jira.send_buffer()
 
 
     def run(self, cmd):
-        try:
-            self.log.debug('starting run')
-            out = self._run(cmd)
-            self.log.debug('leaving run')
-            return out
-        except Exception as ex:
-            msg = f'Exception captured: {ex}'
-            self.log.debug(msg)
-            self.jira.add("Exception captured")
-            self.jira.add_block(ex)
+        results = self._run(cmd)
+        if results.rc != 0:
+            self.jira.add("Aquilon command failed")
+            self.jira.add("Info from execution")
+            self.jira.add(results.report_to_jira)
+            self.jira.add("raising Exception")
             self.jira.send_buffer()
-            raise ex
+            raise HVException("aquilon command failed")
+        return results
 
     def _run(self, cmd):
-        self.log.debug('starting _run')
         self.client.connect(hostname="aquilon.gridpp.rl.ac.uk", username=self.creds_handler.aquilon.username, password=self.creds_handler.aquilon.password)
         aqcmd = "export AQHOST=aquilon.gridpp.rl.ac.uk; export AQSERVICE=aqd;"
         aqcmd += "export PATH=/opt/aquilon/bin/:$PATH;"
@@ -53,34 +72,8 @@ class HVAquilon(SetLogger):
         error = stderr.read().decode('utf-8').strip()
         rc = stdout.channel.recv_exit_status()
         self.client.close()
+        results = Results(cmd, output, error, rc)
+        return results
 
-        ###self.log.debug(f'cmd = {aqcmd}')
-        ###self.log.debug(f'output = {output}')
-        ###self.log.debug(f'error = {error}')
-        ###self.log.debug(f'rc = {rc}')
-        ###self.jira.add("command:")
-        ###self.jira.add_block(aqcmd)
-        ###self.jira.add("output:")
-        ###self.jira.add_block(output)
-        ###self.jira.add("error:")
-        ###self.jira.add_block(error)
-        ###self.jira.add("return code:")
-        ###self.jira.add_block(rc)
-        ###self.jira.send_buffer()
-        ###self.log.debug('leaving run')
-
-        self.log.debug(f'cmd = {aqcmd}')
-        self.log.debug(f'output = {output}')
-        self.log.debug(f'rc = {rc}')
-        self.jira.add("output:")
-        self.jira.add_block(output)
-        self.jira.add("return code:")
-        self.jira.add_block(rc)
-        self.jira.send_buffer()
-
-        self.log.debug('leaving _run')
-        if rc != 0:
-            raise Exception("aquilon script failed")
-        return output
 
 

@@ -1,10 +1,6 @@
 import jira
-from logger import SetLogger
-
-
-class HVJira(SetLogger):
+class HVJira:
     def __init__(self, hypervisormanager):
-        self._set_logger()
         self.creds_handler = hypervisormanager.creds_handler
         self.issue_key = hypervisormanager.request.jira_issue_key
         self.endpoint = "https://stfc.atlassian.net/"
@@ -12,7 +8,6 @@ class HVJira(SetLogger):
         self.token = self.creds_handler.jira.api_token
         self.conn = jira.client.JIRA(server=self.endpoint, basic_auth=(self.username, self.token))
         self.buffer = "Message from automation library:\n"
-        self.log.debug("HVJira object created successfully")
 
     def add(self, text):
         self.buffer += "\n"
@@ -60,7 +55,6 @@ class HVJira(SetLogger):
             # If we find the transition whose "to" state matches, perform the transition and return
             if transition["to"]["name"] == new_state:
                 self.conn.transition_issue(self.issue_key, transition["id"])
-                self.log.debug(f'jira issue {self.issue_key} moved to state {new_state}')
                 break
 
 

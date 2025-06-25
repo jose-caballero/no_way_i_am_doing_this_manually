@@ -1,12 +1,10 @@
 import paramiko
 import os
-from getpass import getpass
+from hvexception import HVException
+from hvlocal import Results
 
-from logger import SetLogger
-
-class HVSSH(SetLogger):
+class HVSSH:
     def __init__(self, hypervisormanager):
-        self._set_logger()
         self.creds_handler = hypervisormanager.creds_handler
         self.hostname = hypervisormanager.request.hypervisor
         self.ssh_private_key_path = self.creds_handler.ssh.key_path
@@ -19,17 +17,36 @@ class HVSSH(SetLogger):
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.private_key = paramiko.RSAKey.from_private_key_file(self.ssh_private_key_path, password=self.ssh_passphrase)
 
-    @property
     def is_rocky_8(self):
-        out, err, rc = self.run("cat /etc/os-release | grep VERSION_ID | awk -F\= '{print $2}'", "root")
-        _,version,_ = out.split('"')
-        return version.startswith('8')
+        self.jira.add("Checking the OS is Rocky 8")
+        results = self.run("cat /etc/os-release | grep VERSION_ID | awk -F= '{print $2}'", "root")
+        self.jira.add(results.report_to_jira)
+        version = results.stdout[1:-1] # only the number embedded inside double quotes
+        if version.startswith('8'):
+            msg = f"the hypervisor {self.hostname} is Rocky 8. Ready to start."
+            self.jira.add(msg)
+            self.jira.send_buffer()
+        else:
+            msg = f"the hypervisor {self.hostname} is not Rocky 8. Aborting"
+            self.jira.add(msg)
+            self.jira.send_buffer()
+            raise HVException(msg)
 
-    @property
     def is_rocky_9(self):
-        out, err, rc = self.run("cat /etc/os-release | grep VERSION_ID | awk -F\= '{print $2}'", "root")
-        _,version,_ = out.split('"')
-        return version.startswith('9')
+        self.jira.add("Checking the OS is Rocky 9")
+        results = self.run("cat /etc/os-release | grep VERSION_ID | awk -F= '{print $2}'", "root")
+        self.jira.add(results.report_to_jira)
+        version = results.stdout[1:-1] # only the number embedded inside double quotes
+        if version.startswith('9'):
+            msg = f"the hypervisor {self.hostname} is Rocky 9. Ready to start."
+            self.jira.add(msg)
+            self.jira.send_buffer()
+        else:
+            msg = f"the hypervisor {self.hostname} is not Rocky 9. Aborting"
+            self.jira.add(msg)
+            self.jira.send_buffer()
+            raise HVException(msg)
+
 
     @property
     def has_root_access(self):
@@ -40,7 +57,6 @@ class HVSSH(SetLogger):
         except Exception:
             return False
 
-    @property
     def is_empty(self):
         """
         check if the ouptut of command "virsh list --all" is empty. 
@@ -71,89 +87,74 @@ class HVSSH(SetLogger):
         Id    Name                State
         -----------------------------------
         """
-        out, err, rc = self.run("virsh list --all", "root")
-        self.log.debug("checking if HV is empty")
-        self.log.debug(out)
         self.jira.add("checking if HV is empty")
-        out_l = out.split('\n')
+        results = self.run("virsh list --all", "root")
+        self.jira.add(results.report_to_jira)
+        out_l = results.stdout.split('\n')
         empty = (len(out_l) == 2)
         self.jira.add(f"is HV empty? {empty}")
-        self.jira.send_buffer()
-        return empty
+        if empty:
+            self.jira.send_buffer()
+        if not empty:
+            self.jira.add("Hypervisor still not empty. Raising an Exception")
+            self.jira.send_buffer()
+            raise HVException("hypervisor still not empty")
 
     def blocks_info(self):
         self.jira.add("checking the block devices on the HV")
-        out, err, rc = self.run("lsblk", "root")
+        results = self.run("lsblk", "root")
+        self.jira.add(results.report_to_jira)
+        self.jira.send_buffer()
 
     def gpus_info(self):
         self.jira.add("checking the nvidia cards on the HV")
-        out, err, rc = self.run("lspci | grep -i nvidia", "root")
+        results = self.run("lspci | grep -i nvidia", "root")
+        self.jira.add(results.report_to_jira)
+        self.jira.send_buffer()
 
-    @property
     def mellanox_info(self):
         self.jira.add("checking the presence of mellanox cards on the HV")
-        out, err, rc = self.run("lspci | grep -i mellanox", "root")
-        return out
-
-    #@property
-    #def is_efi(self):
-    #    self.jira.add("checking if the HV is EFI")
-    #    out, err, rc = self.run("ls /sys/firmware/ | grep efi", "root")
-    #    return out != ""
+        results = self.run("lspci | grep -i mellanox", "root")
+        self.jira.add(results.report_to_jira)
+        self.jira.send_buffer()
+        return results.stdout
     
     def verify_is_efi(self):
         self.jira.add("checking if the HV is EFI")
-        out, err, rc = self.run("ls /sys/firmware/ | grep efi", "root")
-        if out != "":
-            self.jira.add("the hypervisor is EFI enabled:")
+        results = self.run("ls /sys/firmware/ | grep efi", "root")
+        self.jira.add(results.report_to_jira)
+        if results.stdout != "":
+            self.jira.add("the hypervisor is EFI enabled")
             self.jira.send_buffer()
         else:
-            self.jira.add("the hypervisor is not EFI enabled:")
+            self.jira.add("the hypervisor is not EFI enabled. Raising an Exception")
             self.jira.send_buffer()
-            raise Exception("the hypervisor is not EFI enabled")
+            raise HVException("the hypervisor is not EFI enabled")
 
 
     def ensure_root_access(self):
         """
         copy ssh keys to root account on the hypervisor
         """
+        self.jira.add("ensuring SSH as root to the hypervisor")
         if self.has_root_access:
-            msg = f"user {self.ssh_username} already has root acccess to hypervisor {self.hostname}"
-            self.log.debug(msg)
+            msg = f"user {self.ssh_username} already has root access to hypervisor {self.hostname}"
             self.jira.add(msg)
             self.jira.send_buffer()
             return
-
         # if not root access...
-        msg = f"user {self.ssh_username} does not have yet root acccess to hypervisor {self.hostname}"
-        self.log.debug(msg)
+        msg = f"user {self.ssh_username} does not have yet root access to hypervisor {self.hostname}"
         self.jira.add(msg)
-        self.jira.send_buffer()
-
-        # Connect as regular user
-        self.client.connect(self.hostname, username=self.ssh_username, pkey=self.private_key)
-        # Append the public key to /root/.ssh/authorized_keys via sudo
 
         # Read your public SSH key
         with open(self.ssh_public_key_path, "r") as pubkey_file:
             public_key = pubkey_file.read().strip()
-
-#        command = f"""
-#        sudo -S su -c 'mkdir -p /root/.ssh && \
-#        touch /root/.ssh/authorized_keys && \
-#        grep -qF "{public_key}" /root/.ssh/authorized_keys || echo "{public_key}" >> /root/.ssh/authorized_keys && \
-#        chmod 700 /root/.ssh && chmod 600 /root/.ssh/authorized_keys'
-#        """
         command = f"""
         sudo -S su -c 'grep -qF "{public_key}" /root/.ssh/authorized_keys || echo "{public_key}" >> /root/.ssh/authorized_keys'
         """
-
-        stdin, stdout, stderr = self.client.exec_command(command)
-        stdin.flush()
-        self.client.close()
-
-        msg = f"user {self.ssh_username} now has root acccess to hypervisor {self.hostname}"
-        self.log.debug(msg)
+        results = self.run(command)
+        self.jira.add(results.report_to_jira)
+        msg = f"user {self.ssh_username} now has root access to hypervisor {self.hostname}"
         self.jira.add(msg)
         self.jira.send_buffer()
 
@@ -162,7 +163,9 @@ class HVSSH(SetLogger):
         Update qemu-kvm on the HV to apply some bug-fixes for draining VMs
         """
         self.jira.add("updating qemu")
-        self.run('dnf -y update qemu-kvm', 'root')
+        results = self.run('dnf -y update qemu-kvm', 'root')
+        self.jira.add(results.report_to_jira)
+        self.jira.send_buffer()
 
 
     def hardware_specific(self):
@@ -172,16 +175,16 @@ class HVSSH(SetLogger):
 
     def _hardware_fix_2022_lenovo(self):
         self.jira.add("Performing hardware specific fixes for 2022 Lenovo HyperVisors")
-        self.run('mkfs.xfs /dev/nmve0n1', 'root')
+        self.run('mkfs.xfs /dev/nvme0n1', 'root')
         self.run('echo "/dev/nvme0n1 /var/lib/nova/instances xfs rw,relatime,attr2,inode64,logbufs=8,logbsize=32k,noquota" >> /etc/fstab', 'root')
         self.run('mkdir -p /var/lib/nova/instances', 'root')
         self.run('mount -a', 'root')
-        out, err, rc = self.run('lsblk', 'root')
-        if "/var/lib/nova/instances" not in out:
+        results = self.run('lsblk', 'root')
+        if "/var/lib/nova/instances" not in results.stdout:
             self.jira.add("New mount did not work as expected. Aborting")
-            self.jira.add_block(out)
+            self.jira.add_block(results.stdout)
             self.jira.send_buffer()
-            raise Exception("New mount did not work as expected. Aborting")
+            raise HVException("New mount did not work as expected. Aborting")
         self.run('systemctl daemon-reload', 'root')
 
     # --------------------------------------------
@@ -189,19 +192,16 @@ class HVSSH(SetLogger):
     # --------------------------------------------
 
     def run(self, cmd, username=None):
-        try:
-            self.log.debug('starting run')
-            out, err, rc = self._run(cmd, username)
-            self.log.debug('leaving run')
-            return out, err, rc
-        except Exception as ex:
-            msg = f'Exception captured: {ex}'
-            self.log.debug(msg)
-            self.jira.add("Exception captured")
-            self.jira.add_block(ex)
+        results = self._run(cmd, username)
+        if results.rc != 0:
+            self.jira.add("Remote command failed")
+            self.jira.add("Info from execution")
+            self.jira.add(results.report_to_jira)
+            self.jira.add("raising Exception")
             self.jira.send_buffer()
-            raise ex
-        
+            raise HVException("Remote command failed")
+        return results
+
     def _run(self, cmd, username=None):
         if not username:
             # if not username is passed, e.g. "root", 
@@ -212,21 +212,6 @@ class HVSSH(SetLogger):
         output = stdout.read().decode('utf-8').strip()
         error = stderr.read().decode('utf-8').strip()
         rc = stdout.channel.recv_exit_status()
-
-        self.log.debug(f"cmd = {cmd}")
-        self.log.debug(f"output = {output}")
-        self.log.debug(f"error = {error}")
-        self.log.debug(f"rc = {rc}")
-
-        self.jira.add("command:")
-        self.jira.add_block(cmd)
-        self.jira.add("output:")
-        self.jira.add_block(output)
-        self.jira.add("error:")
-        self.jira.add_block(error)
-        self.jira.add("rc:")
-        self.jira.add_block(rc)
-        self.jira.send_buffer()
-
         self.client.close()
-        return output, error, rc
+        results = Results(cmd, output, error, rc)
+        return results

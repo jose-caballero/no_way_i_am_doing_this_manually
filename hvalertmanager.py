@@ -1,13 +1,12 @@
 import json
 import requests
 import sys
+from hvexception import HVException
 
-from logger import SetLogger
 
 
-class HVAlertManager(SetLogger):
+class HVAlertManager:
     def __init__(self, hypervisormanager):
-        self._set_logger()
         self.creds_handler = hypervisormanager.creds_handler
         self.hostname = hypervisormanager.request.hypervisor
         self.alertmanager_url = "https://openstack.stfc.ac.uk:9093"
@@ -16,12 +15,9 @@ class HVAlertManager(SetLogger):
 
     def create_silence(self):
         try:
-            self.log.debug("starting create_silence")
             self._create_silence()
-            self.log.debug('leaving create_silence')
         except Exception as ex:
             msg = f'Exception captured: {ex}'
-            self.log.debug(msg)
             self.jira.add("Exception captured")
             self.jira.add_block(ex)
             self.jira.send_buffer()
@@ -58,7 +54,6 @@ class HVAlertManager(SetLogger):
         msg = f"silence created in AlertManager successfully, from {self.time_interval.start_str} to {self.time_interval.end_str}"
         msg += "\n"
         msg += out_msg
-        self.log.debug(msg)
         self.jira.add(msg)
         self.jira.send_buffer()
 
@@ -73,16 +68,13 @@ class HVAlertManager(SetLogger):
     
         if response.status_code != 200:
             msg = f"Failed to create silence. Response status code: {response.status_code}"
-            self.log.debug(msg)
             self.jira.add(msg)
             text = f"Response text: {response.text}"
-            self.log.debug(text)
             self.jira.add_block(response.text)
             self.jira.send_buffer()
-            raise Exception(response.text)
+            raise HVException(response.text)
         else:
             msg = f"Silence created successfully"
-            self.log.debug(msg)
             return response
 
 
