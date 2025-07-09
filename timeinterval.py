@@ -4,15 +4,24 @@ from datetime import datetime, timezone, timedelta
 class TimeInterval:
 
     def __init__(self):
+        """
+        Initialise with the current UTC time
+        """
         self.utc_now = datetime.now(timezone.utc)
 
     @property
     def start_str(self):
+        """
+        Return the ISO formatted start timestamp.
+        """
         utc_now_str = self.utc_now.strftime("%Y-%m-%dT%H:%M:%SZ")
         return utc_now_str
     
     @property
     def end_str(self):
+        """
+        Return an ISO timestamp around four weeks in the future
+        """
         four_weeks_future = self.utc_now + timedelta(days=4*7)
         # make sure the end time is Tuesday, Wednesday or Thursday
         day_of_week = four_weeks_future.isoweekday()

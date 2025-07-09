@@ -5,6 +5,14 @@ from hvlocal import Results
 
 class HVSSH:
     def __init__(self, hypervisormanager):
+        """
+        Helper for executing commands on the HyperVisor via SSH
+
+        Parameters
+        ----------
+        hypervisormanager : HyperVisorManager
+            Manager providing credentials, hostname and Jira helper.
+        """
         self.creds_handler = hypervisormanager.creds_handler
         self.hostname = hypervisormanager.request.hypervisor
         self.ssh_private_key_path = self.creds_handler.ssh.key_path
@@ -18,6 +26,10 @@ class HVSSH:
         self.private_key = paramiko.RSAKey.from_private_key_file(self.ssh_private_key_path, password=self.ssh_passphrase)
 
     def is_rocky_8(self):
+        """
+        Check that the HyperVisor is running Rocky 8
+        Raise an Exception if that is not the case
+        """
         self.jira.add("Checking the OS is Rocky 8")
         results = self.run("cat /etc/os-release | grep VERSION_ID | awk -F= '{print $2}'", "root")
         self.jira.add(results.report_to_jira)
@@ -33,6 +45,10 @@ class HVSSH:
             raise HVException(msg)
 
     def is_rocky_9(self):
+        """
+        Check that the HyperVisor is running Rocky 9
+        Raise an Exception if that is not the case
+        """
         self.jira.add("Checking the OS is Rocky 9")
         results = self.run("cat /etc/os-release | grep VERSION_ID | awk -F= '{print $2}'", "root")
         self.jira.add(results.report_to_jira)
@@ -50,6 +66,9 @@ class HVSSH:
 
     @property
     def has_root_access(self):
+        """
+        check if the current local account has root access to the HyperVisor
+        """
         try:
             self.client.connect(self.hostname, username="root", pkey=self.private_key, timeout=5)
             self.client.exec_command("true")  # Simple command to confirm access
@@ -86,6 +105,15 @@ class HVSSH:
         [root@hv624 ~]# virsh list --all
         Id    Name                State
         -----------------------------------
+
+        Returns
+        -------
+        bool
+            ``True`` if the hypervisor has no guests.
+        Raises
+        ------
+        HVException
+            If guests are present on the host.
         """
         self.jira.add("checking if HV is empty")
         results = self.run("virsh list --all", "root")
@@ -101,18 +129,27 @@ class HVSSH:
             raise HVException("hypervisor still not empty")
 
     def blocks_info(self):
+        """
+        Log information about block devices on the HyperVisor
+        """
         self.jira.add("checking the block devices on the HV")
         results = self.run("lsblk", "root")
         self.jira.add(results.report_to_jira)
         self.jira.send_buffer()
 
     def gpus_info(self):
+        """
+        Log information about the detected NVIDIA GPUs on the HyperVisor
+        """
         self.jira.add("checking the nvidia cards on the HV")
         results = self.run("lspci | grep -i nvidia", "root")
         self.jira.add(results.report_to_jira)
         self.jira.send_buffer()
 
     def mellanox_info(self):
+        """
+        return output from lspci for Mellanox devices
+        """
         self.jira.add("checking the presence of mellanox cards on the HV")
         results = self.run("lspci | grep -i mellanox", "root")
         self.jira.add(results.report_to_jira)
@@ -120,6 +157,10 @@ class HVSSH:
         return results.stdout
     
     def verify_is_efi(self):
+        """
+        Check whether the machine uses EFI firmware
+        Raise an Exception when that is not the case
+        """
         self.jira.add("checking if the HV is EFI")
         results = self.run("ls /sys/firmware/ | grep efi", "root")
         self.jira.add(results.report_to_jira)

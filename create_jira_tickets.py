@@ -15,6 +15,19 @@ from credentialshandler import CredentialsHandler
 
 
 def create_jira_issues_from_file(filename, creds):
+    """
+    Create Jira issues for each hypervisor listed in ``filename``.
+    Parameters
+    ----------
+    filename : str
+        Path to the file containing hypervisor names.
+    creds : CredentialsHandler
+        Object containing Jira credentials.
+    Returns
+    -------
+    bool
+        ``True`` if all issues were processed successfully, ``False`` otherwise.
+    """
    
     issue_type = "HyperVisor"
     project_key = "MH"
@@ -105,6 +118,9 @@ def create_jira_issues_from_file(filename, creds):
 # ============================================================================== 
 
 def parse_arguments():
+    """
+    Parse command line arguments for the script
+    """
     parser = argparse.ArgumentParser(
         description="Script to create the JIRA tickets"
     )

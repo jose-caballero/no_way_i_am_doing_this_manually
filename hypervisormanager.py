@@ -9,6 +9,11 @@ from hvexception import HVException
 
 class HyperVisorManager:
     def __init__(self, migration_manager, creds_handler, request, time_interval):
+        """
+        High level orchestration for HyperVisor migration steps
+        Coordinate the various services used to migrate a HyperVisor
+        Initialise and create helpers for the target HyperVisor
+        """
         self.migration_manager = migration_manager
         self.creds_handler = creds_handler
         self.request = request
@@ -22,6 +27,9 @@ class HyperVisorManager:
         self.hvkayobe = HVKayobe(self)
 
     def run(self, step):
+        """
+        Dispatch execution to the appropriate step handler
+        """
         if step == "setup":
             self._run_setup()
         elif step == "pre-drain":

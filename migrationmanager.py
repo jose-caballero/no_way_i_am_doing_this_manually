@@ -13,6 +13,10 @@ class Request:
 
 class MigrationManager:
     def __init__(self, creds_file, hypervisors_file):
+        """
+        Read HyperVisor lists and coordinate their processing
+        Load credentials and parse the list of HyperVisors
+        """
         self.creds_file = creds_file
         self.credentials_handler = CredentialsHandler(self.creds_file)
         self.hypervisors_file = hypervisors_file
@@ -36,11 +40,17 @@ class MigrationManager:
         return results
 
     def run(self, step):
+        """
+        process each HyperVisor in series for a given step
+        """
         for request in self.request_l:
             hv_manager = HyperVisorManager(self, self.credentials_handler, request, self.time_interval)
             hv_manager.run(step)
 
     def parallel_run(self, step):
+        """
+        process all HyperVisors in parallel for a given step
+        """
         threads = []
         for request in self.request_l:
             hv_manager = HyperVisorManager(self, self.credentials_handler, request, self.time_interval)

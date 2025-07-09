@@ -4,21 +4,40 @@ from hvlocal import run
 
 class HVKayobe:
     def __init__(self, hypervisormanager):
+        """
+        class to interact with the Kayobe Management host
+        to deploy playbooks
+
+        Parameters
+        ----------
+        hypervisormanager : HyperVisorManager
+            Manager instance providing credentials and Jira reporting.
+        """
         self.creds_handler = hypervisormanager.creds_handler
         self.jira = hypervisormanager.jira
         self.hostname = hypervisormanager.request.hypervisor
 
     def run_mellanox_playbook(self):
+        """
+        Execute a bash script on the Kayobe host to run the mellanox playbook
+        """
         self.jira.add("Running the Mellanox playbook on the Kayobe host")
         self.jira.send_buffer()
         cmd = f"~/mellanox_playbook.sh {self.hostname}"
         self.run(cmd)
 
     def run_cleanup_tmp(self):
+        """
+        remove the files under /tmp/
+        """
         cmd = "~/cleanup_tmp.sh"
         self.run(cmd)
 
     def run_inventory_from_netbox(self):
+        """
+        Execute a wrapper bash script on the Kayobe host to synchronise
+        inventory information from netbox
+        """
         self.jira.add("updating inventory from netbox on Kayobe host")
         cmd = f"~/inventory_from_netbox.sh {self.hostname}"
         results = self.run(cmd)
@@ -31,6 +50,10 @@ class HVKayobe:
             self.jira.send_buffer()
 
     def run_kayobe_overcloud_host_configure(self):
+        """
+        Execute a wrapper bash script on the Kayobe host to 
+        run the overcloud host configure playbooks
+        """
         self.jira.add("executing kayobe overcloud host configure on Kayobe host")
         cmd = f"~/kayobe_overcloud_host_configure.sh {self.hostname}"
         results = self.run(cmd)
@@ -43,6 +66,10 @@ class HVKayobe:
             self.jira.send_buffer()
 
     def run_kayobe_overcloud_deploy_hypervisor(self):
+        """
+        Execute a wrapper bash script on the Kayobe host to 
+        run the overcloud deploy hypervisor playbooks
+        """
         self.jira.add("executing kayobe overcloud deploy hypervisor on Kayobe host")
         cmd = f"~/kayobe_overcloud_deploy_hypervisor.sh {self.hostname}"
         results = self.run(cmd)
@@ -55,6 +82,10 @@ class HVKayobe:
             self.jira.send_buffer()
 
     def run_kayobe_overcloud_deploy_controller(self):
+        """
+        Execute a wrapper bash script on the Kayobe host to 
+        run the overcloud deploy controller playbooks
+        """
         self.jira.add("executing kayobe overcloud deploy controller on Kayobe host")
         cmd = f"~/kayobe_overcloud_deploy_controller.sh {self.hostname}"
         results = self.run(cmd)
@@ -68,6 +99,10 @@ class HVKayobe:
 
 
     def run(self, cmd):
+        """
+        execute any arbitrary command on the Kayobe host
+        and handle errors
+        """
         try:
             self._run(cmd)
         except Exception as ex:
@@ -79,8 +114,17 @@ class HVKayobe:
 
     def _run(self, cmd):
         """
-        arguments for the remote command:
-             command to execute
+        Run a command on the Kayobe host via SSH.
+        Ensure the SSH key are being propogated to the host.
+
+        Parameters
+        ----------
+        cmd : str
+            Command line to execute remotely.
+        Returns
+        -------
+        Results
+            Execution results from :func:`hvlocal.run`.
         """
         cmd = (
             "eval $(ssh-agent) >/dev/null; "

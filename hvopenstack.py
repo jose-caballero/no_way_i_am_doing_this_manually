@@ -5,6 +5,13 @@ from hvlocal import run
 
 class HVOpenstack:
     def __init__(self, hypervisormanager):
+        """
+        Connect to OpenStack using credentials from ``hypervisormanager``.
+        Parameters
+        ----------
+        hypervisormanager : HyperVisorManager
+            Manager providing credentials, hostname and Jira helper.
+        """
         self.hypervisormanager = hypervisormanager
         self.creds_handler = hypervisormanager.creds_handler
         self.hostname = hypervisormanager.request.hypervisor
@@ -22,6 +29,9 @@ class HVOpenstack:
         )
 
     def hv_has_no_servers(self):
+        """
+        Ensure that no servers are running on the HyperVisor
+        """
         cmd = f"openstack --os-cloud admin server list --host {self.hostname} --all-projects"
         self.jira.add("checking the HV is empty")
         results = run(cmd)
@@ -33,6 +43,9 @@ class HVOpenstack:
             raise HVException("hypervisor still not empty")
     
     def disable_hv(self):
+        """
+        Disable the HyperVisor service in OpenStack
+        """
         cmd = f'openstack --os-cloud admin compute service set --disable --disable-reason "Migration to Rocky 9 - JCB" {self.hostname} nova-compute'
         self.jira.add("disabling HV")
         results = run(cmd)
@@ -40,6 +53,9 @@ class HVOpenstack:
         self.jira.send_buffer()
     
     def enable_hv(self):
+        """
+        Re-enable the HyperVisor service in OpenStack
+        """
         cmd = f'openstack --os-cloud admin compute service set --enable {self.hostname} nova-compute'
         self.jira.add("enabling HV")
         results = run(cmd)

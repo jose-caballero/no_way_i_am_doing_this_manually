@@ -72,7 +72,9 @@ class CredentialsHandler:
     kayobe: Kayobe = field(default=None)
 
     def __init__(self, yaml_path: str):
-        # Open and parse the YAML file
+        """
+        Load credentials from the given YAML file
+        """
         with open(yaml_path, 'r') as f:
             data = yaml.safe_load(f)
 

@@ -7,6 +7,12 @@ from hvexception import HVException
 
 class HVAlertManager:
     def __init__(self, hypervisormanager):
+        """
+        class to create and manage AlertManager silences for a HyperVisor
+        initialises with credentials from hypervisormanager object
+
+        param hypervisormanager: HyperVisorManager
+        """
         self.creds_handler = hypervisormanager.creds_handler
         self.hostname = hypervisormanager.request.hypervisor
         self.alertmanager_url = "https://openstack.stfc.ac.uk:9093"
@@ -14,6 +20,9 @@ class HVAlertManager:
         self.jira = hypervisormanager.jira
 
     def create_silence(self):
+        """
+        Wrapper to create a silence and handle errors
+        """
         try:
             self._create_silence()
         except Exception as ex:
@@ -24,6 +33,9 @@ class HVAlertManager:
             raise ex
 
     def _create_silence(self):
+        """
+        Create silences for both ``hostname`` and ``instance`` labels.
+        """
         silence_data_hostname = {
             "matchers": [
                 {"name": "hostname",
@@ -59,6 +71,9 @@ class HVAlertManager:
 
 
     def _create_silence_matcher(self, silence_data):
+        """
+        send a POST request to create a single Silence
+        """
         silences_endpoint = f"{self.alertmanager_url}/api/v2/silences"
         # Make a POST request to the Alertmanager API with basic auth
         headers = {"Content-Type": "application/json"}
