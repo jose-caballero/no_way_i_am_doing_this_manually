@@ -52,53 +52,39 @@ class HVJira:
         self.conn.add_comment(self.issue_key, self.buffer, is_internal=True)
         self.buffer = "Message from automation library:\n"
 
+    # =========================================================================
+    #       transitions
+    # =========================================================================
+
     def move_to_working_on_pre_bios(self):
-        """
-        Transition the issue to the ``Working On Pre Bios`` state
-        """
         self._change_state("Working On Pre Bios")
 
-    def move_to_working_on_adoption(self):
-        """
-        Transition the issue to the ``Working On Adoption`` state
-        """
-        self._change_state("Working On Adoption")
-
-    def move_to_working_on_post_reinstall(self):
-        """
-        Transition the issue to the ``Working On Post Reinstall`` state
-        """
-        self._change_state("Working On Post Reinstall")
-
-    def move_to_ready_for_reinstall(self):
-        """
-        Transition the issue to the ``Ready For Reinstall`` state
-        """
-        self._change_state("Ready For Reinstall")
-
-    def move_to_ready_for_adoption(self):
-        """
-        Transition the issue to the ``Ready For Adoption`` state
-        """
-        self._change_state("Ready For Adoption")
-
-    def move_to_ready_for_test(self):
-        """
-        Transition the issue to the ``Ready For Test`` state
-        """
-        self._change_state("Ready For Test")
-
     def move_to_pre_bios_failed(self):
-        """
-        Transition the issue to the ``Pre Bios Failed`` state
-        """
         self._change_state("Pre Bios Failed")
 
-    def move_to_adoption_failed(self):
-        """
-        Transition the issue to the ``Adoption Failed`` state
-        """
-        self._change_state("Adoption Failed")
+    def move_to_ready_for_reinstall(self):
+        self._change_state("Ready For Reinstall")
+
+    # NOTE: this transition may never be triggered by the automation
+    def move_to_working_on_reinstall(self):
+        self._change_state("Working On Reinstall")
+
+    def move_to_working_on_post_reinstall(self):
+        self._change_state("Working On Post Reinstall")
+
+    def move_to_ready_for_adoption(self):
+        self._change_state("Ready For Adoption")
+
+    # NOTE: this transition may never be triggered by the automation
+    def move_to_working_on_adoption(self):
+        self._change_state("Working On Adoption")
+
+    def move_to_ready_for_test(self):
+        self._change_state("Ready For Test")
+
+    #def move_to_adoption_failed(self):
+    #    self._change_state("Adoption Failed")
+
 
     def _change_state(self, new_state):
         """
