@@ -56,6 +56,8 @@ class HyperVisorManager:
             self.hvssh.update_qemu_kvm()
             self.hvnetbox.hv_in_netbox()
             self.hvnetbox.check_status_pre_drain()
+            self.hvopenstack.disable_hv()
+            self.hvopenstack.show_hv()
         except HVException as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             print(msg)

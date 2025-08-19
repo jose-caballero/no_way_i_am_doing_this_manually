@@ -62,4 +62,13 @@ class HVOpenstack:
         self.jira.add(results.report_to_jira)
         self.jira.send_buffer()
 
+    def show_hv(self):
+        """
+        get the full status of the HyperVisor
+        """
+        cmd = f'openstack --os-cloud admin-dev hypervisor show {self.hostname}'
+        self.jira.add("full status of the HV")
+        results = run(cmd)
+        self.jira.add(results.report_to_jira)
+        self.jira.send_buffer()
 
