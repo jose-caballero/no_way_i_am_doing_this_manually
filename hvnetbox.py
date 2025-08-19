@@ -51,10 +51,12 @@ class HVNetbox:
         if status in ["active", "offline"]:
             msg = f"status of hypervisor {self.hostname} in Netbox is {status}, Ready to start."
             self.jira.add(msg)
+            self.jira.add(self.url)
             self.jira.send_buffer()
             return status
         msg = f"status of hypervisor {self.hostname} in Netbox is neither Active nor Offline. Aborting."
         self.jira.add(msg)
+        self.jira.add(self.url)
         self.jira.send_buffer()
         raise HVException(msg)
 
