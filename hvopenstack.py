@@ -28,20 +28,14 @@ class HVOpenstack:
             verify=True
         )
 
+
     def ensure_hv_has_no_servers(self):
         """
         Ensure that no servers are running on the HyperVisor
         """
-        cmd = f"openstack --os-cloud admin server list --host {self.hostname} --all-projects"
-        self.jira.add("checking the HV is empty")
-        results = run(cmd)
-        self.jira.add(results.report_to_jira)
-        empty = (results.stdout == "")
-        self.jira.add(f"HV has no servers? {empty}")
-        self.jira.send_buffer()
-        if not empty:
+        if self.list_servers:
             raise HVException("hypervisor still not empty")
-    
+
     def disable_hv(self):
         """
         Disable the HyperVisor service in OpenStack
@@ -71,4 +65,19 @@ class HVOpenstack:
         results = run(cmd)
         self.jira.add(results.report_to_jira)
         self.jira.send_buffer()
+
+
+    def list_servers(self):
+        """
+        if the HV is not empty, list the servers
+        """
+        cmd = f"openstack --os-cloud admin-dev server list --host {self.hostname} --all-projects"
+        self.jira.add("listing servers in HV")
+        results = run(cmd)
+        self.jira.add(results.report_to_jira)
+        self.jira.send_buffer()
+        # returns True if the HV has servers
+        #         False if the HV is empty
+        return (results.stdout != "")
+
 
