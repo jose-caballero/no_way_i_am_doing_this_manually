@@ -28,7 +28,7 @@ class HVOpenstack:
             verify=True
         )
 
-    def hv_has_no_servers(self):
+    def ensure_hv_has_no_servers(self):
         """
         Ensure that no servers are running on the HyperVisor
         """

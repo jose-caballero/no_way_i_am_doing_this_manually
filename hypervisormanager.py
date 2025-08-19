@@ -68,7 +68,7 @@ class HyperVisorManager:
     def _run_pre_reinstall(self):
         try:
             self.jira.move_to_working_on_pre_bios()
-            self.hvopenstack.hv_has_no_servers()
+            self.hvopenstack.ensure_hv_has_no_servers()
             self.hvssh.is_empty()
             self.hvssh.blocks_info()
             self.hvssh.gpus_info()
