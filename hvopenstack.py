@@ -60,7 +60,7 @@ class HVOpenstack:
         """
         get the full status of the HyperVisor
         """
-        cmd = f'openstack --os-cloud admin-dev hypervisor show {self.hostname}'
+        cmd = f'openstack --os-cloud admin hypervisor show {self.hostname}'
         self.jira.add("full status of the HV")
         results = run(cmd)
         self.jira.add(results.report_to_jira)
@@ -70,8 +70,18 @@ class HVOpenstack:
     def list_servers(self):
         """
         if the HV is not empty, list the servers
+
+        NOTE: alternative using query library
+
+                q = ServerQuery()
+                q.select("id")
+                q.where(preset="equal", prop="hypervisor_name", value=self.hostname
+                q.run("admin", as_admin=True, all_projects=True)
+                out = q.to_string()
+                self.jira.add_block(out)
+                self.jira.send_buffer()
         """
-        cmd = f"openstack --os-cloud admin-dev server list --host {self.hostname} --all-projects"
+        cmd = f"openstack --os-cloud admin server list --host {self.hostname} --all-projects"
         self.jira.add("listing servers in HV")
         results = run(cmd)
         self.jira.add(results.report_to_jira)
