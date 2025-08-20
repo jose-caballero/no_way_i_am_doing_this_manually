@@ -19,6 +19,7 @@ class IcingaDowntimeCredentialsHandler:
 class OpenstackCredentialsHandler:
     username: str
     password: str
+    cloud: str
 
 
 @dataclass

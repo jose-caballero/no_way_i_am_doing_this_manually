@@ -20,7 +20,7 @@ class HVOpenstack:
         self.binary_type = "nova-compute"
         self.conn = openstack.connection.Connection(
             auth_url = "https://openstack.stfc.ac.uk:5000/v3", 
-            project_name = "admin",  
+            project_name = self.creds_handler.openstack.cloud,  
             username = self.creds_handler.openstack.username, 
             password = self.creds_handler.openstack.password, 
             user_domain_name = "default",
@@ -40,7 +40,7 @@ class HVOpenstack:
         """
         Disable the HyperVisor service in OpenStack
         """
-        cmd = f'openstack --os-cloud admin compute service set --disable --disable-reason "Migration to Rocky 9 - JCB" {self.hostname} nova-compute'
+        cmd = f'openstack --os-cloud {self.creds_handler.openstack.cloud} compute service set --disable --disable-reason "Migration to Rocky 9 - JCB" {self.hostname} nova-compute'
         self.jira.add("disabling HV")
         results = run(cmd)
         self.jira.add(results.report_to_jira)
@@ -50,7 +50,7 @@ class HVOpenstack:
         """
         Re-enable the HyperVisor service in OpenStack
         """
-        cmd = f'openstack --os-cloud admin compute service set --enable {self.hostname} nova-compute'
+        cmd = f'openstack --os-cloud {self.creds_handler.openstack.cloud} compute service set --enable {self.hostname} nova-compute'
         self.jira.add("enabling HV")
         results = run(cmd)
         self.jira.add(results.report_to_jira)
@@ -81,7 +81,7 @@ class HVOpenstack:
                 self.jira.add_block(out)
                 self.jira.send_buffer()
         """
-        cmd = f"openstack --os-cloud admin server list --host {self.hostname} --all-projects"
+        cmd = f"openstack --os-cloud {self.creds_handler.openstack.cloud} server list --host {self.hostname} --all-projects"
         self.jira.add("listing servers in HV")
         results = run(cmd)
         self.jira.add(results.report_to_jira)
