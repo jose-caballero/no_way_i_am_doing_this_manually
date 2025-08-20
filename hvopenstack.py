@@ -33,7 +33,7 @@ class HVOpenstack:
         """
         Ensure that no servers are running on the HyperVisor
         """
-        if self.list_servers:
+        if self.list_servers != []:
             raise HVException("hypervisor still not empty")
 
     def disable_hv(self):
@@ -86,8 +86,23 @@ class HVOpenstack:
         results = run(cmd)
         self.jira.add(results.report_to_jira)
         self.jira.send_buffer()
-        # returns True if the HV has servers
-        #         False if the HV is empty
-        return (results.stdout != "")
 
+        # when not empty, output is like this
+        #  +--------------------------------------+-----------------+--------+--------------------------+-------+----------+----------------------------------+
+        #  | ID                                   | Name            | Status | Networks                 | Image | Flavor   | Project ID                       |
+        #  +--------------------------------------+-----------------+--------+--------------------------+-------+----------+----------------------------------+
+        #  | 1d8b1126-38e4-4758-9f6c-8d71f185f5a6 | ajh-test-001    | ACTIVE | internal-net=10.10.3.175 |       | c3.small | c9aee696c4b54f12a645af2c951327dc |
+        #  | 89a64bb3-5f44-4571-816a-7966ee9044ea | jake-hypervisor | ACTIVE | Internal=172.16.115.131  |       | c3.large | c9aee696c4b54f12a645af2c951327dc |
+        #  +--------------------------------------+-----------------+--------+--------------------------+-------+----------+----------------------------------+
+
+        servers = []
+        out = results.stdout
+        if out:
+            lines = out.split('\n')
+            for line in lines[3:-1]:
+                fields = line.split('|')
+                server_id = fields[1].strip()
+                server_status = fields[3].strip()
+                servers.append((server_id, server_status))
+        return servers
 
