@@ -134,6 +134,10 @@ def parse_arguments():
         default='creds.yaml',
         help='Path to the credentials file (default: creds.yaml)'
     )
+    parser.add_argument(
+        '--username',
+        help='user to assign the tickets to'
+    )
     return parser.parse_args()
 
 if __name__ == '__main__':
