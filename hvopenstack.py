@@ -102,7 +102,7 @@ class HVOpenstack:
         """
         Ensure that no servers are running on the HyperVisor
         """
-        if self.list_servers != []:
+        if self.list_servers() != []:
             raise HVException("hypervisor still not empty")
     
     def disable_hv(self):
