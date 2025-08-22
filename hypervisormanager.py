@@ -34,6 +34,8 @@ class HyperVisorManager:
             self._run_setup()
         elif step == "pre-drain":
             self._run_pre_drain()
+        elif step == "drain":
+            self._run_drain()
         elif step == "pre-reinstall":
             self._run_pre_reinstall()
         elif step == "post-reinstall":
@@ -56,8 +58,18 @@ class HyperVisorManager:
             self.hvssh.update_qemu_kvm()
             self.hvnetbox.hv_in_netbox()
             self.hvnetbox.check_status_pre_drain()
+        except HVException as ex:
+            msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
+            print(msg)
+            self.jira.add(msg)
+            self.jira.send_buffer()
+            self.jira.move_to_pre_reinstall_failed()
+
+    def _run_drain(self):
+        try:
             self.hvopenstack.disable_hv()
             self.hvopenstack.show_hv()
+            self.hvopenstack.migrate_servers()
         except HVException as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             print(msg)

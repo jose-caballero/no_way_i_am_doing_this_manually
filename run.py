@@ -21,8 +21,8 @@ def parse_arguments():
     parser.add_argument(
         '--step',
         required=True,
-        choices=['setup', 'pre-drain', 'pre-reinstall', 'post-reinstall', 'adoption', 'noops'],
-        help='Specify the step to run: setup, pre-drain, pre-reinstall, post-reinstall, or adoption'
+        choices=['setup', 'pre-drain', 'drain', 'pre-reinstall', 'post-reinstall', 'adoption', 'noops'],
+        help='Specify the step to run: setup, pre-drain, drain, pre-reinstall, post-reinstall, or adoption'
     )
     parser.add_argument(
         '--parallel',
