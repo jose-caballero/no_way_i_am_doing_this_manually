@@ -115,7 +115,7 @@ class HVSSH:
         HVException
             If guests are present on the host.
         """
-        self.jira.add("checking if HV is empty")
+        self.jira.add("checking if HV is empty from within the host")
         results = self.run("virsh list --all", "root")
         self.jira.add(results.report_to_jira)
         out_l = results.stdout.split('\n')
