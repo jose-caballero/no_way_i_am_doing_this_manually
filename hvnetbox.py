@@ -95,7 +95,7 @@ class HVNetbox:
         ###self.device.device_role = role
         self.device.role = role
         self.device.save()
-        msg = f"Successfully updated role for device '{self.hostname}' to '{new_role}'"
+        msg = f"Successfully updated role for device '{self.hostname}' to '{new_role}' in Netbox:"
         msg += "\n"
         msg += self.url
         self.jira.add(msg)
@@ -107,7 +107,7 @@ class HVNetbox:
         """
         self.device.status = new_status
         self.device.save()
-        msg = f"Successfully updated status for device '{self.hostname}' to '{new_status}'"
+        msg = f"Successfully updated status for device '{self.hostname}' to '{new_status}' in Netbox:"
         msg += "\n"
         msg += self.url
         self.jira.add(msg)
