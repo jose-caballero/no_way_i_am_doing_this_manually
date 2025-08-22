@@ -67,9 +67,11 @@ class HyperVisorManager:
 
     def _run_drain(self):
         try:
+            self.jira.move_to_draining()
             self.hvopenstack.disable_hv()
             self.hvopenstack.show_hv()
             self.hvopenstack.migrate_servers()
+            self.jira.move_to_drained()
         except HVException as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"
             print(msg)

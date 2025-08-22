@@ -62,6 +62,12 @@ class HVJira:
     def move_to_pre_bios_failed(self):
         self._change_state("Pre Bios Failed")
 
+    def move_to_draining(self):
+        self._change_state("Draining")
+
+    def move_to_drained(self):
+        self._change_state("Drained")
+
     def move_to_ready_for_reinstall(self):
         self._change_state("Ready For Reinstall")
 
