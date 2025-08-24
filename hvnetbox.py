@@ -72,7 +72,7 @@ class HVNetbox:
             self.jira.add("Exception captured")
             self.jira.add_block(ex)
             self.jira.send_buffer()
-            raise ex
+            raise HVException(msg)
 
     def _change(self, changes_d):
         """

@@ -40,7 +40,7 @@ class Server:
         if results.rc != 0:
             self.jira.add(f"it seems the server {self.server_id} cannot be migrated. Aborting")
             self.jira.send_buffer()
-            raise Exception(f'migrating server {self.server_id} has failed.')
+            raise HVException(f'migrating server {self.server_id} has failed.')
 
         self.jira.add("now we wait for it to finish....")
         self.jira.send_buffer()
@@ -53,7 +53,7 @@ class Server:
                 self.jira.add(f'migrating server {self.server_id} has failed.')
                 self.jira.add("raising an exception to abort")
                 self.jira.send_buffer()
-                raise Exception(f'migrating server {self.server_id} has failed.')
+                raise HVException(f'migrating server {self.server_id} has failed.')
 
             if self.hypervisor != self.hypervisormanager.request.hypervisor and current_status in ["ACTIVE", "SHUTOFF"]:
                 self.jira.add(f'migrating server {self.server_id} finished OK')
@@ -69,7 +69,7 @@ class Server:
             self.jira.add(f'after waiting for a long time, the server {self.server_id} has not been migrated yet.')
             self.jira.add("raising an exception to abort")
             self.jira.send_buffer()
-            raise Exception(f'migrating server {self.server_id} has failed.')
+            raise HVException(f'migrating server {self.server_id} has failed.')
 
 
 

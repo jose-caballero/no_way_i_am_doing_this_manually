@@ -1,4 +1,4 @@
-import json
+amport json
 import requests
 import sys
 from hvexception import HVException
@@ -30,7 +30,7 @@ class HVAlertManager:
             self.jira.add("Exception captured")
             self.jira.add_block(ex)
             self.jira.send_buffer()
-            raise ex
+            raise HVException(msg)
 
     def _create_silence(self):
         """

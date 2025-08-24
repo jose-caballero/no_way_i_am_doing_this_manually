@@ -110,6 +110,8 @@ class HVKayobe:
             self.jira.add("Exception captured")
             self.jira.add_block(ex)
             self.jira.send_buffer()
+            # FIXME
+            # should we raise here an HVException???
             raise ex
 
     def _run(self, cmd):
