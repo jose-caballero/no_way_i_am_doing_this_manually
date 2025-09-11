@@ -128,11 +128,13 @@ class HVKayobe:
         Results
             Execution results from :func:`hvlocal.run`.
         """
-        cmd = (
+        full_cmd = (
             "eval $(ssh-agent) >/dev/null; "
             f"ssh-add {self.creds_handler.kayobe.nopassfile} &>/dev/null; "
             f"ssh -A {self.creds_handler.kayobe.username}@{self.creds_handler.kayobe.hostname} '{cmd}'"
         )
-        results = run(cmd)
-        return results
+        results = run(full_cmd)
+        results.cmd = cmd # we remove local information from the cmd line, for security purposes
+        self.jira.add(results.report_to_jira)
+        self.jira.send_buffer()
 
