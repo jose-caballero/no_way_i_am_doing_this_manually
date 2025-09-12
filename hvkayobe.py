@@ -105,13 +105,15 @@ class HVKayobe:
         """
         try:
             self._run(cmd)
+        except HVException as ex:
+            self.jira.add("The remote kayobe failed. Aborting.")
+            self.jira.send_buffer()
+            raise ex
         except Exception as ex:
             msg = f'Exception captured: {ex}'
             self.jira.add("Exception captured")
             self.jira.add_block(ex)
             self.jira.send_buffer()
-            # FIXME
-            # should we raise here an HVException???
             raise ex
 
     def _run(self, cmd):
@@ -137,4 +139,6 @@ class HVKayobe:
         results.cmd = cmd # we remove local information from the cmd line, for security purposes
         self.jira.add(results.report_to_jira)
         self.jira.send_buffer()
+        if results.rc != 0:
+            raise HVException("kayobe command failed")
 
