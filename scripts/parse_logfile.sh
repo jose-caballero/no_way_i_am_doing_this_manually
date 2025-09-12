@@ -1,5 +1,26 @@
 #!/bin/bash
 
+# ============================================================================== 
+#
+# this script just parses the logfile from another script and grabs
+# the most relevant paragraphs.
+#
+# First, it puts into a variable all paragraphs containing the string "fatal:"
+# and prints out the content of this variable. 
+# These are the paragraphs where Ansible reports a TASK failing. 
+# The reason we use a variable instead of just printing directly the lines
+# is because we need to make a decision later on about what return code this 
+# script should return based on the presence or not of such paragraphs with 
+# the string "fatal:".
+#
+# Second, it puts into another variable the summary report in the paragraph
+# that starts with string "PLAY RECAP".
+#
+# Finally, we check if the variable where we stored the failure paragraphs is
+# empty or not, and we return either 0 or 1 based on that.
+#
+# ============================================================================== 
+
 LOGFILE=$1
 
 echo ""
