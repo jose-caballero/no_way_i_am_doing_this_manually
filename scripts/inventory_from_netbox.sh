@@ -9,24 +9,5 @@ source ~/kayobe-prod/env-vars.sh
 
 kayobe playbook run ansible/build-inventory-from-netbox.yml &> $LOGFILE
 
-echo "Relevant lines from the playbook output:"
-#cat $LOGFILE | awk -v RS= -v ORS="\n\n" '/fatal:/ || /PLAY RECAP/'
-FAILED_CONTENT=$(cat $LOGFILE | awk -v RS= -v ORS="\n\n" '/fatal:/')
-echo "$FAILED_CONTENT"
-
-echo ""
-RECAP_CONTENT=$(cat $LOGFILE | awk -v RS= -v ORS="\n\n" '/PLAY RECAP/')
-echo "$RECAP_CONTENT"
-
-if [[ -n $FAILED_CONTENT ]]; then
-        exit 1
-else
-        exit 0
-fi
-
-#
-#  Explanation of the awk command:
-#
-#   - RS=                           treats paragraphs (blocks separated by blank lines) as records.
-#   - ORS="\n\n"                    ensures output paragraphs stay separated.
-#   - '/fatal:/ || /PLAY RECAP/'    prints any paragraph including strings "fatal:" or "PLAY RECAP"
+${HOME}/hv_migration_scripts/parse_logfile.sh $LOGFILE
+exit $?
