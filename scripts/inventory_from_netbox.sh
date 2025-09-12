@@ -8,7 +8,21 @@ LOGFILE="${HOME}/logs/logs_inventory_netbox_${HYPERVISOR}_${current_datetime}"
 source ~/kayobe-prod/env-vars.sh
 
 kayobe playbook run ansible/build-inventory-from-netbox.yml &> $LOGFILE
-cat $LOGFILE | awk -v RS= -v ORS="\n\n" '/fatal:/ || /PLAY RECAP/'
+
+echo "Relevant lines from the playbook output:"
+#cat $LOGFILE | awk -v RS= -v ORS="\n\n" '/fatal:/ || /PLAY RECAP/'
+FAILED_CONTENT=$(cat $LOGFILE | awk -v RS= -v ORS="\n\n" '/fatal:/')
+echo "$FAILED_CONTENT"
+
+echo ""
+RECAP_CONTENT=$(cat $LOGFILE | awk -v RS= -v ORS="\n\n" '/PLAY RECAP/')
+echo "$RECAP_CONTENT"
+
+if [[ -n $FAILED_CONTENT ]]; then
+        exit 1
+else
+        exit 0
+fi
 
 #
 #  Explanation of the awk command:
