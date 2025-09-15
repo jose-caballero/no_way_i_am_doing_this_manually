@@ -10,8 +10,8 @@ hv = Host(hv_name)
 
 machine = hv.machine
 
-interfaces = hv.interfaces
 print(f"Interfaces information for HV {hv.name}\n")
+interfaces = hv.interfaces
 for interface in interfaces:
     print(interface.name)
     print(interface.addr)
@@ -33,3 +33,12 @@ for interface in interfaces:
         print(f"stdout: {results.out}")
         print(f"stderr: {results.err}")
         print(f"return code: {results.rc}")
+
+print(f"Updated list of interfaces for  HV {hv.name}\n")
+interfaces = hv.interfaces
+for interface in interfaces:
+    print(interface.name)
+    print(interface.addr)
+    print(interface.ip)
+    print()
+
