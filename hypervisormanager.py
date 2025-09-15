@@ -90,8 +90,8 @@ class HyperVisorManager:
             self.hvnetbox.change({"status":"planned"})
             if self.hvssh.mellanox_info() != "":
                 self.hvkayobe.run_mellanox_playbook()
-            self.hvaquilon.remove_interfaces()
             self.hvaquilon.reimport()
+            self.hvaquilon.remove_interfaces()
             self.hvaquilon.manage_to_sandbox()
             self.hvaquilon.prepare_host()
             self.jira.move_to_ready_for_reinstall()
