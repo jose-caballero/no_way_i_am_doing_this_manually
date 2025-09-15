@@ -53,7 +53,7 @@ class HVAquilon:
         managed the HyperVisor into the development Sandbox
         """
         self.jira.add("Manage the host to David's Sandbox on Aquilon")
-        cmd = f"aq manage --sandbox ieb35538/point_hvs_to_live_for_rl9_6 --hostname {self.hostname} --force"
+        cmd = f"python3 ./manage_hv_to_sandbox.py {self.hostname}"
         results = self.run(cmd)
         self.jira.add(results.report_to_jira)
         self.jira.send_buffer()
