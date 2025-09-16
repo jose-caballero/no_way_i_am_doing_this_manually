@@ -58,6 +58,24 @@ class HVAquilon:
         self.jira.add(results.report_to_jira)
         self.jira.send_buffer()
 
+
+    def remove_sata_disk(self):
+        """
+        in the case of A100 HVs, we need to remove any SATA disk
+        that may be registered in aquilon
+        """
+        self.jira.add("Checking if any SATA disk needs to be removed from aquilon")
+        if "a100" in self.hostname:
+            self.jira.add("HV hostname includes string a100, proceeding")
+            cmd = f'python3 ./remove_sata_disk.py {self.hostname}'
+            results = self.run(cmd)
+            self.jira.add(results.report_to_jira)
+            self.jira.send_buffer()
+        else:
+            self.jira.add("HV hostname does not include string a100, nothing to do")
+            self.jira.send_buffer()
+
+
     def prepare_host(self):
         """
         executes a python script on the Aquilon to perform all 

@@ -93,6 +93,7 @@ class HyperVisorManager:
             self.hvaquilon.reimport()
             self.hvaquilon.remove_interfaces()
             self.hvaquilon.manage_to_sandbox()
+            self.hvaquilon.remove_sata_disk()
             self.hvaquilon.prepare_host()
             self.jira.move_to_ready_for_reinstall()
         except HVException as ex:
