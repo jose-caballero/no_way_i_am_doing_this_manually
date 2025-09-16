@@ -76,13 +76,23 @@ class HVAquilon:
             self.jira.send_buffer()
 
 
-    def prepare_host(self):
+    def make_host(self):
         """
-        executes a python script on the Aquilon to perform all 
-        necessary steps to get the HyperVisor ready for re-install
+        recompile the host in aquilon
         """
-        self.jira.add("Recompiling and pxe switching the HV on Aquilon")
-        cmd = f"python3 ./prepare_host.py {self.hostname}"
+        self.jira.add("Recompiling the HV on Aquilon")
+        cmd = f"python3 ./make_host.py {self.hostname}"
+        results = self.run(cmd)
+        self.jira.add(results.report_to_jira)
+        self.jira.send_buffer()
+
+
+    def pxeswitch_host(self):
+        """
+        pxe switch the host in aquilon
+        """
+        self.jira.add("PXE-switching the HV on Aquilon")
+        cmd = f"python3 ./pxeswitch_host.py {self.hostname}"
         results = self.run(cmd)
         self.jira.add(results.report_to_jira)
         self.jira.send_buffer()
