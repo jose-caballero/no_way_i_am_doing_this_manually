@@ -96,6 +96,7 @@ class HyperVisorManager:
             self.hvaquilon.remove_sata_disk()
             self.hvaquilon.make_host()
             self.hvaquilon.pxeswitch_host()
+            self.hvnetbox.report_ipmi_address()
             self.jira.move_to_ready_for_reinstall()
         except HVException as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.request.hypervisor}"

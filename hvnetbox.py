@@ -131,6 +131,12 @@ class HVNetbox:
         """
         return f'{self.netbox_url}/dcim/devices/{self.device.id}/'
 
-
+    def report_ipmi_address(self):
+        """
+        just to report to JIRA the IPMI address
+        """
+        msg = f"IPMI address for device {self.hostname} according to Netbox: {self.ipmi_address}"
+        self.jira.add(msg)
+        self.jira.send_buffer()
 
 
