@@ -92,7 +92,7 @@ class HyperVisorManager:
                 self.hvkayobe.run_mellanox_playbook()
             self.hvaquilon.reimport()
             self.hvaquilon.remove_interfaces()
-            self.hvaquilon.manage_to_sandbox()
+            #self.hvaquilon.manage_to_sandbox()
             self.hvaquilon.remove_sata_disk()
             self.hvaquilon.make_host()
             self.hvaquilon.pxeswitch_host()
