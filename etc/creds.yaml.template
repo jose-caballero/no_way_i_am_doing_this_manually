@@ -1,0 +1,72 @@
+# ================================================== 
+# Your username and password allowed to
+# perform actions against OpenStack
+# You can most probably find those values in your
+# ~/.openstackrc.sh file (or similar) under 
+# variables:
+#   - OS_USERNAME
+#   - OS_PASSWORD
+# ================================================== 
+openstack:
+  username: 
+  password: 
+  cloud:
+
+# ================================================== 
+# AlertManager Service account, and password,
+# allowed to create and remove silences
+# The value of username is typically "admin"
+# The password can be found in Keeper
+# ================================================== 
+alertmanager:
+  username: 
+  password: 
+
+# ================================================== 
+# Your personal API Token for NetBox
+# ================================================== 
+netbox:
+  api_token: 
+
+# ================================================== 
+# the username and password you usually need
+# to login to the Aquilon host
+# ================================================== 
+aquilon:
+  username: 
+  password: 
+
+# ================================================== 
+# Your Atlassian username, usually your email address
+# and your personal Atlassian API Token
+# ================================================== 
+jira:
+  username: 
+  api_token: 
+
+# ================================================== 
+# The path to the private SSH key you use to login
+# to remote hosts, e.g. HyperVisors,
+# and the username and password 
+# ================================================== 
+ssh:
+  key_path: 
+  username: 
+  passphrase: 
+
+# ================================================== 
+# All the parameters needed to login your Kayobe
+# Management host of your choice:
+#   - the path to your unencrypted SSH key
+#   - the username you will use to login to that
+#     host. e.g. "ubuntu"
+#   - the hostname of the Kayobe Mgmt host
+#   - the path to the file to source to setup the 
+#     kayobe production environment, e.g.
+#     ./kayobe-prod/env-vars.sh
+# ================================================== 
+kayobe:
+  nopassfile:
+  username:
+  hostname:
+  prod_env_path:

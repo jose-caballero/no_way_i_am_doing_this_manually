@@ -1,0 +1,8 @@
+#
+# list with the hypervisors to migrate and the corresponding JIRA ticket
+# lines starting with # are ignored
+#
+
+# hv8880.nubes.rl.ak.uk
+# hv8881.nubes.rl.ak.uk
+# hv8882.nubes.rl.ak.uk

@@ -1,0 +1,82 @@
+#!/usr/bin/expect -f
+
+# Disable Expect's default verbose output
+log_user 0
+
+# Set the maximum wait time for responses
+set timeout 10
+
+# Argument parsing:
+#   
+#   argv[0] -> passphrase for ssh agent 
+#   argv[1] -> kayobe hostname
+#   argv[2] -> username to ssh to the kayobe host
+#   argv[3..N] -> command to run
+#
+set passphrase [lindex $argv 0]
+set remoteHost [lindex $argv 1]
+set username [lindex $argv 2]
+set remaining_args [lrange $argv 3 end]
+set commandToExecute [join $remaining_args " "]
+
+
+# SSH Agent
+spawn /bin/sh -c "eval \$(ssh-agent) && ssh-add"
+# Wait for the passphrase prompt
+expect "Enter passphrase for"
+# Send the passphrase
+send "$passphrase\r"
+
+
+# Spawn SSH
+spawn ssh -A $username@$remoteHost
+
+# Generic prompt pattern
+set prompt {(\$|#|>|~>|\(.*\)>) ?$}
+
+# Wait for a shell prompt (consuming MOTD, etc.)
+expect {
+    -re $prompt {}
+    timeout {
+        exit 1
+    }
+}
+
+# Send the user command
+send "$commandToExecute\r"
+
+# Collect the command's output until the next prompt
+set output ""
+while {1} {
+    expect {
+        -re "(.*)\r\n" {
+            append output $expect_out(1,string)
+            append output "\n"
+            exp_continue
+        }
+        -re $prompt {
+            break
+        }
+        timeout {
+            puts "Error: Command execution timed out"
+            exit 1
+        }
+    }
+}
+
+# Filter out any lines that contain the echoed command
+set filteredLines [list]
+foreach line [split $output "\n"] {
+    if {[string match "*$commandToExecute*" $line]} {
+        continue
+    }
+    lappend filteredLines $line
+}
+
+# Print the final result, trimming extra whitespace
+puts [string trim [join $filteredLines "\n"]]
+
+# Exit the remote session
+send "exit\r"
+expect eof
+
