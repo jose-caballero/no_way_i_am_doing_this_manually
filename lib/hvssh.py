@@ -55,7 +55,7 @@ class HVSSH:
         self.jira.add(results.report_to_jira)
         version = results.stdout[1:-1] # only the number embedded inside double quotes
         if version.startswith('9'):
-            msg = f"the hypervisor {self.hostname} is Rocky 9. Ready to start."
+            msg = f"the hypervisor {self.hostname} is Rocky 9. Ready to continue."
             self.jira.add(msg)
             self.jira.send_buffer()
         else:
