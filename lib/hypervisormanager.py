@@ -108,11 +108,11 @@ class HyperVisorManager:
 
     def _run_post_reinstall(self):
         try:
-            elf.jira.move_to_working_on_post_reinstall()
-            elf.hvssh.is_rocky_9()
-            elf.hvssh.blocks_info()
-            elf.hvssh.gpus_info()
-            elf.hvssh.verify_is_efi()
+            self.jira.move_to_working_on_post_reinstall()
+            self.hvssh.is_rocky_9()
+            self.hvssh.blocks_info()
+            self.hvssh.gpus_info()
+            self.hvssh.verify_is_efi()
             self.hvssh.hardware_specific()
             self.hvnetbox.change({"status":"active", "role":"Openstack Prod Kolla_Compute"})
             self.jira.move_to_ready_for_adoption()
