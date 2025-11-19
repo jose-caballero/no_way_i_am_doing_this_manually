@@ -20,6 +20,15 @@ pip install jira
 pip install pynetbox
 ```
 
+You will also an account for the following services:
+
+- JIRA
+- Netbox
+- AlertManager
+- OpenStack
+- Aquilon
+- a host with kayobe environment
+
 ---
 
 ## Set working environment
