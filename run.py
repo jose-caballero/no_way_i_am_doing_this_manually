@@ -70,15 +70,9 @@ def parse_arguments():
 
         """)
     )
-    parser.add_argument(
-        '--parallel',
-        action='store_true',
-        default=False,
-        help='Run the migration step in parallel mode (default: False)'
-    )
     return parser.parse_args()
 
 if __name__ == '__main__':
     args = parse_arguments()
     manager = MigrationManager(args.creds_file, args.hypervisors_file)
-    manager.run(args.step, args.parallel)
+    manager.run(args.step)

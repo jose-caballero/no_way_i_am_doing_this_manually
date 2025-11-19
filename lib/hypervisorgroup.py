@@ -6,10 +6,7 @@ class HyperVisorGroup(list):
         self.migration_manager = migration_manager
         super(HyperVisorGroup, self).__init__()
 
-    def run(self, step, parallel=False):
-        if parallel == True:
-            self._run_parallel(step)
-        else:
+    def run(self, step):
             self._run_series(step)
 
     def _run_series(self, step):

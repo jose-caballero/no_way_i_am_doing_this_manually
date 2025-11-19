@@ -82,7 +82,6 @@ In the case of the Aquilon scripts, they may use `myaq` library.
 1. **Execution Start** – The user runs `python run.py --step <step>` specifying the credentials file and hypervisor list.
 2. **Initialisation** – `MigrationManager` loads credentials, parses the hypervisor file and prepares logging.
 3. **Step Execution** – For each hypervisor, a `HyperVisorManager` is created. Depending on the chosen step it invokes a series of actions via the service helpers. Results and errors are logged locally and as comments on the corresponding Jira issue.
-4. **Parallel Mode** – When `--parallel` is specified, each hypervisor is processed in its own thread.
 
 ## Directory Layout
 

@@ -30,7 +30,7 @@ class MigrationManager:
                 hvgroup.append(hv)
         return hvgroup
 
-    def run(self, step, parallel):
-        self.hvgroup.run(step, parallel)
+    def run(self, step):
+        self.hvgroup.run(step)
 
 
