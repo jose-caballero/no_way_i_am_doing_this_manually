@@ -23,14 +23,14 @@ def parse_arguments():
     parser.add_argument(
         '--step',
         required=True,
-        choices=['setup', 'pre-drain', 'pre-reinstall', 'post-reinstall', 'noops'],
+        choices=['setup', 'pre_drain', 'pre_reinstall', 'post_reinstall', 'noops'],
         help=textwrap.dedent("""\
             Specify the step to run
 
             setup:
                adds your public SSH key to the hypervisor to grant access as root
 
-            pre-drain:
+            pre_drain:
                verifies the hypervisor is still Rocky 8
                updates the RPM for qemu
                verifies the hypervisor is listed in Netbox
@@ -38,7 +38,7 @@ def parse_arguments():
                disables the hypervisor from OpenStack
                lists the VMs currently running on the hypervisor
 
-            pre-reinstall:
+            pre_reinstall:
                 ensures the hypervisor is not hosting any VM
                 lists block devices
                 gets GPUs info
@@ -52,7 +52,7 @@ def parse_arguments():
                 gets mellanox info from the hypervisor and run ansible playbook if needed
                 gets the IPMI address
 
-            post-reinstall:
+            post_reinstall:
                 ensures the hypervisor is now on Rocky 9
                 lists block devices
                 gets GPU info
