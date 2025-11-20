@@ -110,8 +110,8 @@ Examples:
 
 ```bash
 python ./run.py --help
-python ./run.py --step pre-reinstall
-python ./run.py --step pre-reinstall --creds-file /path/to/my/creds.yaml
+python ./run.py --step pre_reinstall
+python ./run.py --step pre_reinstall --creds-file /path/to/my/creds.yaml
 ```
 
 ## ancillaries
