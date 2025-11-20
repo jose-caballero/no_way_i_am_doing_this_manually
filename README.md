@@ -114,3 +114,29 @@ python ./run.py --step pre-reinstall
 python ./run.py --step pre-reinstall --creds-file /path/to/my/creds.yaml
 ```
 
+## ancillaries
+
+### script to create the JIRA tickets
+
+The JIRA tickets can be created easily with a script included in this repository. 
+
+1. Follow the steps above to get the code and setup your working environment
+2. Add the hostnames to a file, one per row, like this
+
+```bash
+$ cat hypervisors.txt
+hv-rtx4000-26.nubes.rl.ac.uk
+hv-rtx4000-04.nubes.rl.ac.uk
+hv-rtx4000-32.nubes.rl.ac.uk
+``` 
+3. Execute the script
+```bash
+python ./create_jira_tickets.py
+```
+4. if everything went fine, the file with hypervisor names should now contain the Jira ticket IDs
+```bash
+$ cat hypervisors.txt
+hv-rtx4000-26.nubes.rl.ac.uk MH-182
+hv-rtx4000-04.nubes.rl.ac.uk MH-183
+hv-rtx4000-32.nubes.rl.ac.uk MH-186
+```
