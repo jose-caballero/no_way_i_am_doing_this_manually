@@ -23,7 +23,7 @@ def parse_arguments():
     parser.add_argument(
         '--step',
         required=True,
-        choices=['setup', 'pre-drain', 'drain', 'pre-reinstall', 'post-reinstall', 'adoption', 'noops'],
+        choices=['setup', 'pre-drain', 'pre-reinstall', 'post-reinstall', 'noops'],
         help=textwrap.dedent("""\
             Specify the step to run
 
@@ -35,8 +35,6 @@ def parse_arguments():
                updates the RPM for qemu
                verifies the hypervisor is listed in Netbox
                checks the status of the hypervisor in Netbox
-
-            drain:
                disables the hypervisor from OpenStack
                lists the VMs currently running on the hypervisor
 
@@ -46,12 +44,12 @@ def parse_arguments():
                 gets GPUs info
                 creates silences in AlertManager
                 changes the status of the hypervisor in Netbox to "planned"
-                gets mellanox info from the hypervisor
                 executes script "re-import" in the Aquilon host 
                 executes script "remove_interfaces.py" in the Aquilon host to remove unnecessary interfaces
                 executes script "remove_sata_disk.py" in the Aquilon host to remove unnecessary disks
                 executes script "make_host.py" to recompile the hypervisor in Aquilon with the right Domain, Personality and OS info
                 executes script "pxeswitch_host.py" to pxeswitch the hypervisor in Aquilon
+                gets mellanox info from the hypervisor and run ansible playbook if needed
                 gets the IPMI address
 
             post-reinstall:
@@ -61,12 +59,8 @@ def parse_arguments():
                 checks if the hypervisor is not efi-like
                 changes the status in Netbox to "active" and the role to "Openstack Prod Kolla_Compute"
 
-            adoption:
-                updates inventory in the kayobe environment
-                executes kayobe overcloud host configure
-                executes kayobe overcloud deploy hpervisor
-                executes kayobe overcloud deploy controller
-                re-enables the hypervisor in Openstack
+            noops:
+                this step does not anything 
 
         """)
     )
