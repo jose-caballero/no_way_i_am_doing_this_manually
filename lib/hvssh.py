@@ -225,20 +225,45 @@ class HVSSH:
         model = self.hvaquilon.model 
         if model == "hv-2022-lenovo":
             self._hardware_fix_2022_lenovo()
+        if model == "xma-hv-2022-a100":
+            self._hardware_fix_xma_hv_2022_a100()
 
     def _hardware_fix_2022_lenovo(self):
         self.jira.add("Performing hardware specific fixes for 2022 Lenovo HyperVisors")
-        self.run('mkfs.xfs /dev/nvme0n1', 'root')
+        self.run('mkfs.xfs /dev/nvme0n1 -f', 'root')
+        self.jira.add(results.report_to_jira)
         self.run('echo "/dev/nvme0n1 /var/lib/nova/instances xfs rw,relatime,attr2,inode64,logbufs=8,logbsize=32k,noquota" >> /etc/fstab', 'root')
+        self.jira.add(results.report_to_jira)
         self.run('mkdir -p /var/lib/nova/instances', 'root')
+        self.jira.add(results.report_to_jira)
         self.run('mount -a', 'root')
         results = self.run('lsblk', 'root')
+        self.jira.add(results.report_to_jira)
         if "/var/lib/nova/instances" not in results.stdout:
             self.jira.add("New mount did not work as expected. Aborting")
             self.jira.add_block(results.stdout)
             self.jira.send_buffer()
             raise HVException("New mount did not work as expected. Aborting")
         self.run('systemctl daemon-reload', 'root')
+        self.jira.add(results.report_to_jira)
+        self.jira.send_buffer()
+
+    def _hardware_fix_xma_hv_2022_a100(self):
+        self.jira.add("Performing hardware specific fixes for 2022 XMA A100 HyperVisors")
+        sel.run('mdadm --zero-superblock /dev/nvme0n1', 'root')
+        self.jira.add(results.report_to_jira)
+        sel.run('sgdisk -n 1:0:0 /dev/nvme0n1', 'root')
+        self.jira.add(results.report_to_jira)
+        sel.run('sgdisk -t 1:fd00 /dev/nvme0n1', 'root')
+        self.jira.add(results.report_to_jira)
+        sel.run('mdadm --create --verbose /dev/md0 --level=0 --raid-devices=2 /dev/nvme0n1p1 /dev/nvme1n1p1', 'root')
+        self.jira.add(results.report_to_jira)
+        sel.run('mkfs.xfs /dev/md0', 'root')
+        self.jira.add(results.report_to_jira)
+        sel.run('mdadm --detail --scan >> /etc/mdadm.conf', 'root')
+        self.jira.add(results.report_to_jira)
+        self.jira.send_buffer()
+        
 
     # --------------------------------------------
     #   Generic execution methods
