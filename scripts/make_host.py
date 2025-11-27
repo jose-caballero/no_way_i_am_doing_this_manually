@@ -14,7 +14,8 @@ hv = Host(hv_name)
 # 
 # Manage the Hypervisor to the right Domain
 #
-domain = Domain("prod_cloud_hvs")
+#domain = Domain("prod_cloud_hvs")
+domain = Domain("prod")
 results = domain._manage_host(hv)
 print("cmd: ")
 print(results.cmd)
