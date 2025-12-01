@@ -163,11 +163,11 @@ kayobe overcloud service deploy -kl hv8880.nubes.rl.ak.uk:hv8881.nubes.rl.ak.uk:
 
 ### wrapper scripts around the kayobe commands
 
-In case that helps, there are avaialable wrapper bash scripts around the kayobe commands. These wrappers perform the following steps:
+In case that helps, there are wrapper bash scripts around the kayobe commands available in this Github repo. These wrappers perform the following steps:
 - execute the kayobe command and redirect the output to a log file
 - call a parser to extract the relevant parts from that log file:
-    - every paragraph containing the string "fatal:"
-    - every paragraph containing the string "PLAY RECAP"
+    - every paragraph containing the string **fatal:**
+    - every paragraph containing the string **PLAY RECAP**
 
 The list of wrapper scripts is as follows:
 - inventory_from_netbox.sh
