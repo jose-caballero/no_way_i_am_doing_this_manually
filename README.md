@@ -140,3 +140,26 @@ hv-rtx4000-26.nubes.rl.ac.uk MH-182
 hv-rtx4000-04.nubes.rl.ac.uk MH-183
 hv-rtx4000-32.nubes.rl.ac.uk MH-186
 ```
+
+### script to generate the kayobe commands
+
+To avoid typos, you can generate some of the commands to be executed on the kayobe enviroment with this script:
+
+```bash
+$ cat etc/hypervisors.txt
+hv8880.nubes.rl.ak.uk MH-10000
+hv8881.nubes.rl.ak.uk MH-10001
+hv8882.nubes.rl.ak.uk MH-10002
+hv8883.nubes.rl.ak.uk MH-10003
+
+$ python generate_kayobe_commands.py etc/hypervisors.txt
+
+ansible-playbook ansible/mellanox-enable-uefi-pxe.yml -i hv8880.nubes.rl.ak.uk,hv8881.nubes.rl.ak.uk,hv8882.nubes.rl.ak.uk,hv8883.nubes.rl.ak.uk, --extra-vars "pxe_target=hv8880.nubes.rl.ak.uk:hv8881.nubes.rl.ak.uk:hv8882.nubes.rl.ak.uk:hv8883.nubes.rl.ak.uk"
+
+kayobe overcloud host configure -e selinux_do_reboot=true -kl hv8880.nubes.rl.ak.uk:hv8881.nubes.rl.ak.uk:hv8882.nubes.rl.ak.uk:hv8883.nubes.rl.ak.uk --limit hv8880.nubes.rl.ak.uk:hv8881.nubes.rl.ak.uk:hv8882.nubes.rl.ak.uk:hv8883.nubes.rl.ak.uk
+
+kayobe overcloud service deploy -kl hv8880.nubes.rl.ak.uk:hv8881.nubes.rl.ak.uk:hv8882.nubes.rl.ak.uk:hv8883.nubes.rl.ak.uk --limit hv8880.nubes.rl.ak.uk:hv8881.nubes.rl.ak.uk:hv8882.nubes.rl.ak.uk:hv8883.nubes.rl.ak.uk
+```
+
+
+
