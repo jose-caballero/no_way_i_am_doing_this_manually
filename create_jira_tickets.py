@@ -41,6 +41,9 @@ def create_jira_issues_from_file(filename, username, api_token):
     except Exception as e:
         print(f"Error connecting to JIRA: {e}")
         return False
+
+    # get the accountId 
+    my_accountId = conn.myself()['accountId']
     
     # Read the input file
     try:
@@ -86,6 +89,7 @@ def create_jira_issues_from_file(filename, username, api_token):
                 'summary': word,
                 'description': f'Issue created for: {word}',
                 'issuetype': {'name': issue_type},
+                'assignee': {'accountId': my_accountId},
             }
 
             new_issue = conn.create_issue(fields=issue_dict)
