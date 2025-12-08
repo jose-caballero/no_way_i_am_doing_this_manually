@@ -142,15 +142,10 @@ class HVSSH:
         """
         Log information about the detected NVIDIA GPUs on the HyperVisor
         """
-        if ( re.match(r"^hv\d+\.nubes\.rl\.ac\.uk$", self.hostname) != None ):
-            self.jira.add(f"from its hostname pattern, {self.hostname}, the HV is not expected to have GPUs")
-            self.jira.add("no needed to check the output of command lspci")
-            self.jira.send_buffer()
-        else:
-            self.jira.add("checking the nvidia cards on the HV")
-            results = self.run("lspci | grep -i nvidia", "root")
-            self.jira.add(results.report_to_jira)
-            self.jira.send_buffer()
+        self.jira.add("checking the nvidia cards on the HV")
+        results = self.run("lspci | grep -i nvidia", "root")
+        self.jira.add(results.report_to_jira)
+        self.jira.send_buffer()
 
     def mellanox_info(self):
         """

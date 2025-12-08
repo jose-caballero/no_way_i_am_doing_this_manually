@@ -57,7 +57,8 @@ class HyperVisorManager:
             self.hvopenstack.ensure_hv_has_no_servers()
             self.hvssh.is_empty()
             self.hvssh.blocks_info()
-            self.hvssh.gpus_info()
+            if self.hvnetbox.has_gpu:
+                self.hvssh.gpus_info()
             self.hvalertmanager.create_silence()
             self.hvnetbox.change({"status":"planned"})
             self.hvssh.mellanox_info()
@@ -82,7 +83,8 @@ class HyperVisorManager:
             #self.jira.move_to_working_on_post_reinstall()
             self.hvssh.is_rocky_9()
             self.hvssh.blocks_info()
-            self.hvssh.gpus_info()
+            if self.hvnetbox.has_gpu:
+                self.hvssh.gpus_info()
             self.hvssh.verify_is_efi()
             self.hvssh.hardware_specific()
             self.hvnetbox.change({"status":"active", "role":"Openstack Prod Kolla_Compute"})
