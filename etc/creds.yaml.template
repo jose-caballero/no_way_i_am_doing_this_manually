@@ -70,3 +70,12 @@ kayobe:
   username:
   hostname:
   prod_env_path:
+
+# ================================================== 
+# global variables
+#   - your initials for messages to AlertManager or
+#     OpenStack
+# ================================================== 
+general:
+  initials: 
+

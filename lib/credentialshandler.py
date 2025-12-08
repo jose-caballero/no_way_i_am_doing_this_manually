@@ -47,6 +47,11 @@ class Kayobe:
     prod_env_path: str
 
 
+@dataclass
+class General:
+    initials: str
+
+
 # --- Container that loads sections only if they exist ---
 
 @dataclass
@@ -59,6 +64,7 @@ class CredentialsHandler:
     ssh: SSH = field(default=None)
     aquilon: Aquilon = field(default=None)
     kayobe: Kayobe = field(default=None)
+    general: General = field(default=None)
 
     def __init__(self, yaml_path):
         """
@@ -88,3 +94,4 @@ class CredentialsHandler:
         self.ssh = load_section('ssh', SSH)
         self.aquilon = load_section('aquilon', Aquilon)
         self.kayobe = load_section('kayobe', Kayobe)
+        self.general = load_section('general', General)
