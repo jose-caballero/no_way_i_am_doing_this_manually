@@ -142,4 +142,12 @@ class HVNetbox:
         self.jira.add(msg)
         self.jira.send_buffer()
 
+    @property
+    def has_gpu(self):
+        """
+        check from the field Device type > Description 
+        if the HV has GPUs
+        """
+        description = self.device.device_type.description
+        return "gpu" in description.lower()
 
