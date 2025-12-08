@@ -109,7 +109,7 @@ class HVOpenstack:
         """
         Disable the HyperVisor service in OpenStack
         """
-        cmd = f'openstack --os-cloud {self.creds_handler.openstack.cloud} compute service set --disable --disable-reason "Migration to Rocky 9 - JCB" {self.hostname} nova-compute'
+        cmd = f'openstack --os-cloud {self.creds_handler.openstack.cloud} compute service set --disable --disable-reason "Migration to Rocky 9 - {self.creds_handler.general.initials}" {self.hostname} nova-compute'
         self.jira.add("disabling HV")
         results = run(cmd)
         self.jira.add(results.report_to_jira)

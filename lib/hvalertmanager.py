@@ -45,7 +45,7 @@ class HVAlertManager:
             "startsAt": self.time_interval.start_str,
             "endsAt": self.time_interval.end_str, 
             "createdBy": "admin",
-            "comment": f"RL9 Reinstall {self.time_interval.start_str} - JCB"
+            "comment": f"RL9 Reinstall {self.time_interval.start_str} - {self.creds_handler.general.initials}"
         }
         silence_data_instance = {
             "matchers": [
@@ -56,7 +56,7 @@ class HVAlertManager:
             "startsAt": self.time_interval.start_str,
             "endsAt": self.time_interval.end_str, 
             "createdBy": "admin",
-            "comment": f"RL9 Reinstall {self.time_interval.start_str} - JCB"
+            "comment": f"RL9 Reinstall {self.time_interval.start_str} - {self.creds_handler.general.initials}"
         }
         response = self._create_silence_matcher(silence_data_hostname)
         out_msg = f"Silence for hostname: {self.alertmanager_url}/#/silences/{response.json()['silenceID']}"
