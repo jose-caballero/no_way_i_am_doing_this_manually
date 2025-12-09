@@ -43,6 +43,7 @@ class HyperVisorManager:
             self.hvnetbox.check_status_pre_drain()
             self.hvopenstack.disable_hv()
             self.hvopenstack.show_hv()
+            self.hvssh.virsh_info()
         except HVException as ex:
             msg = f"An ERROR occurred {ex}. Aborting automation for hypervisor {self.hostname}"
             print(msg)

@@ -129,6 +129,15 @@ class HVSSH:
             self.jira.send_buffer()
             raise HVException("hypervisor still not empty")
 
+    def virsh_info(self)
+        """
+        Log information about the number of running VMs
+        """
+        self.jira.add("checking the number of running VMs")
+        results = self.run("virsh list --all", "root")
+        self.jira.add(results.report_to_jira)
+        self.jira.send_buffer()
+
     def blocks_info(self):
         """
         Log information about block devices on the HyperVisor
