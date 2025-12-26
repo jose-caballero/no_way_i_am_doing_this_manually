@@ -30,7 +30,7 @@ class HVAquilon:
         remove interfaces other than bmc0 and eth0
         """
         self.jira.add("Removing unnecessary interfaces from the host on Aquilon")
-        cmd = f"python3 ./remove_interfaces.py {self.hostname}"
+        cmd = f"python3 ./no_way_i_am_doing_this_manually/scripts/remove_interfaces.py {self.hostname}"
         results = self.run(cmd)
         self.jira.add(results.report_to_jira)
         self.jira.send_buffer()
@@ -42,7 +42,7 @@ class HVAquilon:
         HyperVisor definition
         """
         self.jira.add("Executing script to re-import the host on Aquilon")
-        cmd = f"./reimport-host.sh {self.hostname}"
+        cmd = f"./no_way_i_am_doing_this_manually/scripts/reimport-host.sh {self.hostname}"
         results = self.run(cmd)
         self.jira.add(results.report_to_jira)
         self.jira.send_buffer()
@@ -53,7 +53,7 @@ class HVAquilon:
         managed the HyperVisor into the development Sandbox
         """
         self.jira.add("Manage the host to David's Sandbox on Aquilon")
-        cmd = f"python3 ./manage_hv_to_sandbox.py {self.hostname}"
+        cmd = f"python3 ./no_way_i_am_doing_this_manually/scripts/manage_hv_to_sandbox.py {self.hostname}"
         results = self.run(cmd)
         self.jira.add(results.report_to_jira)
         self.jira.send_buffer()
@@ -67,7 +67,7 @@ class HVAquilon:
         self.jira.add("Checking if any SATA disk needs to be removed from aquilon")
         if "a100" in self.hostname:
             self.jira.add("HV hostname includes string a100, proceeding")
-            cmd = f'python3 ./remove_sata_disk.py {self.hostname}'
+            cmd = f'python3 ./no_way_i_am_doing_this_manually/scripts/remove_sata_disk.py {self.hostname}'
             results = self.run(cmd)
             self.jira.add(results.report_to_jira)
             self.jira.send_buffer()
@@ -81,7 +81,7 @@ class HVAquilon:
         recompile the host in aquilon
         """
         self.jira.add("Recompiling the HV on Aquilon")
-        cmd = f"python3 ./make_host.py {self.hostname}"
+        cmd = f"python3 ./no_way_i_am_doing_this_manually/scripts/make_host.py {self.hostname}"
         results = self.run(cmd)
         self.jira.add(results.report_to_jira)
         self.jira.send_buffer()
@@ -92,7 +92,7 @@ class HVAquilon:
         pxe switch the host in aquilon
         """
         self.jira.add("PXE-switching the HV on Aquilon")
-        cmd = f"python3 ./pxeswitch_host.py {self.hostname}"
+        cmd = f"python3 ./no_way_i_am_doing_this_manually/scripts/pxeswitch_host.py {self.hostname}"
         results = self.run(cmd)
         self.jira.add(results.report_to_jira)
         self.jira.send_buffer()

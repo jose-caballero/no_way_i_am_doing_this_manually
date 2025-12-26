@@ -77,7 +77,7 @@ If the JIRA tickets already exist, add them to the file like this:
 
 ### Copy scripts to remote hosts
 
-* copy the following scripts to a host with the Kayobe environment, underneath `hv_migration_scripts/` in your home directory:
+* copy the following scripts to a host with the Kayobe environment, underneath `no_way_i_am_doing_this_manually/scripts/` in your HOME directory:
    * cleanup_tmp.sh
    * inventory_from_netbox.sh
    * kayobe_overcloud_deploy_controller.sh
@@ -86,7 +86,7 @@ If the JIRA tickets already exist, add them to the file like this:
    * mellanox_playbook.sh
    * parse_logfile.sh
 
-* copy the following scripts to your account in the Aquilon host:
+* copy the following scripts underneath `no_way_i_am_doing_this_manually/scripts/` directory in your HOME account on the Aquilon host:
    * make_host.py
    * manage_hv_to_sandbox.py
    * prepare_host.py
@@ -95,6 +95,7 @@ If the JIRA tickets already exist, add them to the file like this:
    * remove_interfaces.py
    * remove_sata_disk.py
 
+**The easiest way to deploy those scripts is to clone this repository on both HOME directories, on your Kayobe host and on the Aquilon host.**
 
 ## Execution 
 

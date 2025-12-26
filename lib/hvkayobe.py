@@ -23,7 +23,7 @@ class HVKayobe:
         """
         self.jira.add("Running the Mellanox playbook on the Kayobe host")
         self.jira.send_buffer()
-        cmd = f"~/hv_migration_scripts/mellanox_playbook.sh {self.hostname}"
+        cmd = f"~/no_way_i_am_doing_this_manually/scripts/mellanox_playbook.sh {self.hostname}"
         self.run(cmd)
 
     def run_cleanup_tmp(self):
@@ -39,7 +39,7 @@ class HVKayobe:
         inventory information from netbox
         """
         self.jira.add("updating inventory from netbox on Kayobe host")
-        cmd = f"~/hv_migration_scripts/inventory_from_netbox.sh {self.hostname}"
+        cmd = f"~/no_way_i_am_doing_this_manually/scripts/inventory_from_netbox.sh {self.hostname}"
         results = self.run(cmd)
         self.jira.add(results.report_to_jira)
         if "fatal" in results.stdout:
@@ -55,7 +55,7 @@ class HVKayobe:
         run the overcloud host configure playbooks
         """
         self.jira.add("executing kayobe overcloud host configure on Kayobe host")
-        cmd = f"~/hv_migration_scripts/kayobe_overcloud_host_configure.sh {self.hostname}"
+        cmd = f"~/no_way_i_am_doing_this_manually/scripts/kayobe_overcloud_host_configure.sh {self.hostname}"
         results = self.run(cmd)
         self.jira.add(results.report_to_jira)
         if "fatal" in results.stdout:
@@ -71,7 +71,7 @@ class HVKayobe:
         run the overcloud deploy hypervisor playbooks
         """
         self.jira.add("executing kayobe overcloud deploy hypervisor on Kayobe host")
-        cmd = f"~/hv_migration_scripts/kayobe_overcloud_deploy_hypervisor.sh {self.hostname}"
+        cmd = f"~/no_way_i_am_doing_this_manually/scripts/kayobe_overcloud_deploy_hypervisor.sh {self.hostname}"
         results = self.run(cmd)
         self.jira.add(results.report_to_jira)
         if "fatal" in results.stdout:
@@ -87,7 +87,7 @@ class HVKayobe:
         run the overcloud deploy controller playbooks
         """
         self.jira.add("executing kayobe overcloud deploy controller on Kayobe host")
-        cmd = f"~/hv_migration_scripts/kayobe_overcloud_deploy_controller.sh {self.hostname}"
+        cmd = f"~/no_way_i_am_doing_this_manually/scripts/kayobe_overcloud_deploy_controller.sh {self.hostname}"
         results = self.run(cmd)
         self.jira.add(results.report_to_jira)
         if "fatal" in results.stdout:
